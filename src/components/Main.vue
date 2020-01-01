@@ -1,14 +1,27 @@
 <template>
-    <div id="app">
-        <router-view/>
+    <div id="main">
+        <Header/>
+        <el-row :gutter="20">
+            <el-col :xs="24" :sm="24" :lg="$store.getters.infoEnable ? 20 : 24">
+                <List ref="List"/>
+            </el-col>
+            <el-col v-if="$store.getters.infoEnable" :xs="0" :lg="4">
+                <Info ref="Info"/>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
 <script>
+    import Header from './Header.vue'
+    import List from './List.vue'
+    import Info from './Info.vue'
 
+    document.write("<script>" + "<\/script>");
     export default {
-        name: 'app',
+        name: 'Main',
         components: {
+            List, Header, Info
         }
     }
 </script>

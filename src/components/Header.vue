@@ -1,12 +1,14 @@
 <template>
     <el-form :inline="true" class="demo-form-inline zfile-header" size="mini">
-        <el-form-item>
-            <el-input v-model="search" placeholder="搜索"></el-input>
+        <el-form-item v-if="$store.getters.searchEnable">
+            <el-input v-model="search" placeholder="搜索"/>
         </el-form-item>
         <el-form-item>
             <el-breadcrumb separator="/" separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                <el-breadcrumb-item v-for="item in breadcrumbData" :to="{ path: item.fullPath }" :key="item.path">{{item.name}}</el-breadcrumb-item>
+                <el-breadcrumb-item :to="{path: '/main'}">首页</el-breadcrumb-item>
+                <el-breadcrumb-item v-for="item in breadcrumbData"
+                                    :to="{path: '/main' + item.fullPath}"
+                                    :key="item.path">{{item.name}}</el-breadcrumb-item>
             </el-breadcrumb>
         </el-form-item>
     </el-form>
@@ -20,16 +22,18 @@
         data() {
             return {
                 search: '',
-                breadcrumbData: []
+                breadcrumbData: [],
+                searching: false
             }
         },
         created() {
-            this.buildData();
+            this.buildBreadcrumbData();
         },
         methods: {
-            buildData() {
+            buildBreadcrumbData() {
                 this.breadcrumbData = [];
-                let fullPath = this.$route.fullPath;
+                let fullPath = this.$route.params.pathMatch;
+                fullPath = fullPath ? fullPath : '/';
 
                 while (fullPath !== '/') {
                     let name = path.basename(fullPath);
@@ -40,7 +44,28 @@
         },
         watch: {
             '$route.fullPath': function () {
-                this.buildData();
+                this.buildBreadcrumbData();
+            },
+            'search': function (newVal) {
+                let that = this;
+                clearTimeout(this.timer);
+                this.timer = setTimeout(function () {
+                    that.$http.get('api/search', {params: {name: newVal}}).then((response) => {
+                    })
+                }, 500)
+            },
+            '$store.state.currentDirectory': function (val) {
+                let config = this.$store.state.config;
+                let siteName = '';
+                if (config.viewConfig) {
+                     siteName = ' | ' + this.$store.state.config.viewConfig.siteName;
+                }
+
+                if (val.name === '/' || val.name === '') {
+                    document.title = "首页" + siteName;
+                } else {
+                    document.title = val.name + siteName;
+                }
             }
         }
     }

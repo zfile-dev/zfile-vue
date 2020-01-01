@@ -1,9 +1,9 @@
 <template>
     <div id="List">
-        <markdown-render :text="this.config.header" />
+        <markdown-render :text="$store.state.config.header"/>
         <el-table ref="fileTable" id="ListTable"
                   v-infinite-scroll="infiniteHandler"
-                  infinite-scroll-immediate="false"
+                  infinite-scroll-immediate="true"
                   class="transition-box"
                   :data="tableData"
                   @sort-change="sortList"
@@ -16,25 +16,22 @@
             <el-table-column
                     prop="name"
                     label="文件名"
-                    sortable="true"
                     label-class-name="table-header-left"
                     min-width="100%">
                 <template slot-scope="scope">
-                    <svg class="icon" aria-hidden="true"><use :xlink:href="'#' + fileIconName(scope.row)"></use></svg>
+                    <svg class="icon" aria-hidden="true"><use :xlink:href="'#' + scope.row.icon"/></svg>
                     {{scope.row.name}}
                 </template>
             </el-table-column>
             <el-table-column
                     prop="time"
                     label="修改时间"
-                    sortable="true"
                     class-name="hidden-xs-only"
                     min-width="15%">
             </el-table-column>
             <el-table-column
                     prop="size"
                     label="大小"
-                    sortable="true"
                     class-name="hidden-xs-only"
                     :formatter="fileSizeFilter"
                     min-width="15%">
@@ -47,39 +44,45 @@
                    :top="'5vh'"
                    :width="'90%'"
                    @opened="initTextDialog">
-            <TextPlayer :file="currentClickRow" ref="textDialog"></TextPlayer>
+            <TextPlayer :file="currentClickRow" ref="textDialog"/>
         </el-dialog>
 
         <el-dialog id="videoDialog" :destroy-on-close="true"
                    :visible.sync="dialogVideoVisible"
                    :top="'5vh'"
                    :width="'70%'">
-            <video-player :url="currentClickRow.url"></video-player>
+            <video-player ref="videoPlayer" :url="currentClickRow.url"/>
         </el-dialog>
 
-        <audio-player :file-list="filterFile('audio')" :audio-index="currentClickTypeIndex('audio')"></audio-player>
+        <audio-player :file-list="filterFile('audio')" :audio-index="currentClickTypeIndex('audio')"/>
 
-        <vue-context-menu id="contentMenu" :contextMenuData="contextMenuData"
-                          @preview="preview"
-                          @download="download"></vue-context-menu>
+        <v-contextmenu ref="contextmenu">
+            <v-contextmenu-item @click="preview">
+                <i class="el-icon-view"/>
+                <label v-html="hoverRow.type === 'FILE' ?  '预览' : '打开'"/>
+            </v-contextmenu-item>
+            <v-contextmenu-item @click="download" v-show="hoverRow.type === 'FILE'">
+                <i class="el-icon-download"/>
+                <label>下载</label>
+            </v-contextmenu-item>
+        </v-contextmenu>
     </div>
 </template>
 
 <script>
-    import eventBus from '@/assets/eventBus'
-    import "@/assets/table-animation.less"
     import path from 'path'
     import 'element-ui/lib/theme-chalk/display.css';
     import VideoPlayer from "@/components/VideoPlayer";
     import TextPlayer from "@/components/TextPreview";
     import AudioPlayer from "@/components/AudioPlayer";
     import MarkdownRender from "@/components/MarkdownRender";
+    import store from "@/store";
 
     const fileTypeMap = {
         image: ['gif', 'jpg', 'jpeg', 'png', 'bmp', 'webp'],
         video: ['mp4', 'm3u8', 'rmvb', 'avi', 'swf', '3gp', 'mkv', 'flv'],
         audio: ['mp3', 'wav', 'wma', 'ogg', 'aac', 'flac', 'm4a'],
-        text: ['css', 'js', 'md', 'xml', 'txt', 'py', 'go', 'html', 'less', 'php', 'rb', 'rust', 'script', 'java'],
+        text: ['css', 'js', 'md', 'xml', 'txt', 'py', 'go', 'html', 'less', 'php', 'rb', 'rust', 'script', 'java', 'sh'],
         executable: ['exe', 'dll', 'com', 'vbs'],
         archive: ['7z', 'zip', 'rar', 'tar', 'gz'],
         document: ['doc', 'txt', 'docx', 'pages', 'epub', 'pdf', 'numbers', 'csv', 'xls', 'xlsx', 'keynote', 'ppt', 'pptx']
@@ -87,19 +90,22 @@
 
     let iconFileType = ['css', 'go', 'html', 'js', 'less', 'php', 'py', 'rb', 'rust', 'script', 'md', 'apk', 'deb', 'rpm', 'java'];
 
+    let prefixPath = '/main';
+
     export default {
         components: {
             VideoPlayer, TextPlayer, AudioPlayer, MarkdownRender
         },
         created() {
-            this.searchData.path = this.$route.fullPath;
+            let p = this.$route.params.pathMatch;
+            this.searchData.path = p ? p : '/';
         },
         data() {
             return {
                 // 是否初始化加载完成
                 loading: false,
                 // 当前鼠标悬浮的行
-                hoverRow: null,
+                hoverRow: {},
                 // 是否打开文本浏览器弹出
                 dialogTextVisible: false,
                 // 是否打开视频播放器弹出
@@ -112,29 +118,13 @@
                     password: '',
                     page: 1
                 },
-                config: {},
                 // 表格 data
                 tableData: [],
                 // 当前点击文件
                 currentClickRow: {},
-                contextMenuData: {
-                    // the contextmenu name(@1.4.1 updated)
-                    menuName: 'file',
-                    // The coordinates of the display(菜单显示的位置)
-                    axis: {
-                        x: null,
-                        y: null
-                    },
-                    // Menu options (菜单选项)
-                    menulists: [{
-                        fnHandler: 'preview', // Binding events(绑定事件)
-                        icoName: 'el-icon-view', // icon (icon 图标 )
-                        btnName: '预览' // The name of the menu option (菜单名称)
-                    }, {
-                        fnHandler: 'download',
-                        icoName: 'el-icon-download',
-                        btnName: '下载'
-                    }]
+                contextMenuDataAxis: {
+                    x: null,
+                    y: null
                 }
             }
         },
@@ -143,40 +133,61 @@
                 deep: true,
                 handler() {
                     this.searchData.page = 1;
-                    this.getList();
                     this.loadingConfig();
+                    this.getList();
                 }
             },
-            '$route.fullPath': function (newVal) {
-                this.searchData.path = newVal;
+            '$route.fullPath': function () {
+                this.searchData.path = this.$route.params.pathMatch;
             }
         },
         methods: {
             showMenu() {
                 event.preventDefault();
-                let x = event.clientX;
-                let y = event.clientY;
-                this.contextMenuData.axis = {
-                    x, y
-                }
+                this.$refs.contextmenu.show({
+                    top: event.clientY,
+                    left: event.clientX
+                });
+                this.$refs.contextmenu.$el.hidden = false;
             },
             getList: function () {
                 let that = this;
+                
                 this.$http.get('api/list', {params: this.searchData}).then((response) => {
                     if (response.data.data) {
-                        if (that.searchData.path !== '' && that.searchData.path !== '/') {
-                            let fullPath = this.$route.fullPath;
+                        
+                        let searchPath = that.searchData.path;
+                        
+                        if (searchPath !== '' && searchPath !== '/') {
+                            let fullPath = this.$route.params.pathMatch;
+                            fullPath = fullPath ? fullPath : '/';
                             let parentPathName = path.basename(path.resolve(fullPath, "../"));
                             response.data.data.unshift({
                                 name: parentPathName ? parentPathName : '/',
-                                order: '',
-                                path: path.resolve(that.searchData.path, '../'),
+                                path: path.resolve(searchPath, '../'),
                                 type: 'BACK'
                             });
                         }
                         that.searchData.page++;
                         that.loading = true;
                         that.tableData = response.data.data;
+
+                        that.tableData.forEach((item) => {
+                            item['icon'] = that.getFileIconName(item);
+
+                            if (item.type !== 'FILE') {
+                                let host = window.location.host;
+                                item.url = this.removeDuplicateSeparator(host + "/#/main/" + item.path + '/' + item.name);
+                            }
+                        });
+
+                        let currentDirectory = {
+                            path: searchPath,
+                            name: path.basename(searchPath),
+                            icon: 'el-icon-my-folder',
+                            url: this.removeDuplicateSeparator(window.location.host + "/#/main/" + searchPath)
+                        };
+                        store.commit('currentDirectory', currentDirectory);
                     } else {
                         if (this.searchData.password) {
                             this.$message.error('密码错误, 请重新输入!',);
@@ -194,28 +205,20 @@
                     },
                     inputErrorMessage: '密码不能为空.'
                 }).then(({value}) => {
-                    if (value === this.searchData.password) {
-                        this.getList();
-                    } else {
+                    if (value !== this.searchData.password) {
                         this.searchData.password = value;
                     }
+                    this.getList();
                 }).catch(() => {
-                    this.$router.push(path.resolve(this.searchData.path, '../'));
+                    this.$router.push(prefixPath + path.resolve(this.searchData.path, '../'));
                 });
             },
             updateInfoHover: function (row) {
                 this.hoverRow = row;
-                let file = row;
-                file['icon'] = this.fileIconName(row);
-                eventBus.$emit('updateInfo', file);
+                store.commit('hoverRow', row);
             },
             updateInfoLeave: function () {
-                let fullPath = this.$route.fullPath;
-                this.hoverRow = {
-                    icon : "el-icon-my-folder",
-                    name : path.basename(fullPath) ? path.basename(fullPath) : window.location.host
-                };
-                eventBus.$emit('updateInfo', this.hoverRow);
+                store.commit('hoverRow', null);
             },
             sortList(sortParam) {
                 this.searchData.sortBy = sortParam.prop;
@@ -223,7 +226,7 @@
             },
             loadingConfig() {
                 this.$http.get('api/config', {params: {path: this.searchData.path}}).then((response) => {
-                    this.config = response.data.data;
+                    store.commit('updateConfig', response.data.data);
                 });
             },
             openFolder(row) {
@@ -246,11 +249,7 @@
                             this.openAudio();
                             break;
                         default:
-                            this.$message({
-                                showClose: true,
-                                message: '该格式暂不支持在线预览',
-                                type: 'error'
-                            });
+                            this.download();
                     }
                 } else {
                     let path;
@@ -259,8 +258,12 @@
                     } else {
                         path = this.removeDuplicateSeparator(row.path + '/' + row.name)
                     }
-                    this.searchData.path = path;
-                    this.$router.push(path);
+
+                    if (path.indexOf('/') !== 0) {
+                        path = '/' + path;
+                    }
+
+                    this.$router.push(prefixPath + path);
                 }
             },
             removeDuplicateSeparator(path) {
@@ -301,7 +304,6 @@
                 });
             },
             openAudio() {
-                // this.dialogAudioVisible = true;
             },
             openText() {
                 this.dialogTextVisible = true;
@@ -344,7 +346,7 @@
                 this.openFolder(this.hoverRow);
             },
             download() {
-                window.open(this.hoverRow.url);
+                window.location.href = this.hoverRow.url;
             },
             infiniteHandler() {
                 if (!this.loading) {
@@ -357,6 +359,15 @@
                         that.searchData.page++;
                         that.tableData = that.tableData.concat(fileList);
                     }
+
+                    fileList.forEach((item) => {
+                        item['icon'] = that.getFileIconName(item);
+
+                        if (item.type !== 'FILE') {
+                            let host = window.location.host;
+                            item.url = this.removeDuplicateSeparator(host + "/#/main/" + item.path + '/' + item.name);
+                        }
+                    });
                 });
             },
             fileSizeFilter: (row, column, bytes) => {
@@ -368,7 +379,7 @@
                 let i = Math.floor(Math.log(bytes) / Math.log(k));
                 return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
             },
-            fileIconName(file) {
+            getFileIconName(file) {
                 let ICON_PREFIX = 'el-icon-my-';
                 let iconName;
                 if (file.type === 'BACK' || file.type === 'FOLDER') {
@@ -407,6 +418,34 @@
                         })
                     }
                 }
+            },
+            contextMenuData() {
+                let menulists = [];
+
+                if (this.hoverRow === null || this.hoverRow.type === 'FILE') {
+                    menulists.push({
+                        fnHandler: 'preview', // Binding events(绑定事件)
+                        icoName: 'el-icon-view', // icon (icon 图标 )
+                        btnName: '预览' // The name of the menu option (菜单名称)
+                    }, {
+                        fnHandler: 'download',
+                        icoName: 'el-icon-download',
+                        btnName: '下载'
+                    })
+                } else {
+                    menulists.push({
+                        fnHandler: 'preview', // Binding events(绑定事件)
+                        icoName: 'el-icon-view', // icon (icon 图标 )
+                        btnName: '打开' // The name of the menu option (菜单名称)
+                    })
+                }
+
+                return {
+                    menuName: 'file',
+                    axis: this.contextMenuDataAxis,
+                    // Menu options (菜单选项)
+                    menulists: menulists
+                };
             }
         }
     }
@@ -455,21 +494,8 @@
         margin-bottom: 0;
     }
 
-    #contentMenu {
-        padding-left: 0;
+    .v-contextmenu-item >>> label {
+        margin-left: 10px;
     }
-
-    #contentMenu >>> .no-child-btn.btn-wrapper-simple {
-        padding-right: 0;
-    }
-
-    #contentMenu >>> .nav-icon-fontawe {
-        left: unset;
-    }
-
-    #contentMenu >>> .context-menu-list:hover {
-        background-color: #dddddd;
-    }
-
 
 </style>

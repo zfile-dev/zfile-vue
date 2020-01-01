@@ -1,22 +1,19 @@
 <template>
-    <d-player :options="options" ref="player">
-    </d-player>
+    <div id="dplayer"></div>
 </template>
 
 <script>
-    import Vue from 'vue';
-    import VueDPlayer from 'vue-dplayer'
-    import 'vue-dplayer/dist/vue-dplayer.css'
     import flvjs from 'flv.js'
-
+    import 'dplayer/dist/DPlayer.min.css';
+    import DPlayer from 'dplayer';
     window.flvjs = flvjs;
-    Vue.use(VueDPlayer);
 
     export default {
         name: "VideoPlayer",
         data() {
             return {
                 options: {
+                    container: null,
                     video: {
                         url: ''
                     },
@@ -29,13 +26,16 @@
             url: String
         },
         mounted() {
-            this.player = this.$refs.player.dp;
-            this.switchHandle();
+            this.options.container = document.getElementById("dplayer");
+            this.player = new DPlayer(this.options);
+            this.player.switchVideo({
+                url: this.url
+            })
         },
-        methods: {
-            switchHandle(url) {
+        watch: {
+            url(val) {
                 this.player.switchVideo({
-                    url: url ? url :this.url
+                    url: val
                 })
             }
         }
@@ -43,5 +43,4 @@
 </script>
 
 <style>
-
 </style>

@@ -1,5 +1,6 @@
 <template>
-    <aplayer v-show="fileList.length > 0 && audioIndex !== -1" ref="aplayer" id="aplyer" fixed :audio="fileList" @listSwitch="updateCover"/>
+    <aplayer v-show="fileList.length > 0 && audioIndex !== -1" ref="aplayer" id="aplyer" fixed
+             :audio="fileList" @listSwitch="updateCover"/>
 </template>
 
 <script>
@@ -42,21 +43,6 @@
                     }
                 }
             }
-        },
-        computed: {
-            // musicList() {
-            //     let musicList = [];
-            //     for (let index in this.fileList) {
-            //         let music = {
-            //             artist: this.audioInfo[index] ? this.audioInfo[index].artist : '未知',
-            //             cover: this.audioInfo[index] ? this.audioInfo[index].cover : '未知',
-            //             name: this.fileList[index].name,
-            //             url: this.fileList[index].url
-            //         };
-            //         musicList.push(music);
-            //     }
-            //     return musicList;
-            // }
         },
         mounted() {
             let el = this.$refs.aplayer.$el;

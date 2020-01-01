@@ -4,16 +4,13 @@
         <div class="dialog-scroll markdown-content"
              v-html="markdownHtml" v-if="fileType === 'markdown'">
         </div>
-        <pre v-if="fileType === 'text'" class="dialog-scroll text-content">
-            <code v-html="highlightText"></code>
-        </pre>
+        <pre v-if="fileType === 'text'" class="dialog-scroll text-content"><code v-html="highlightText"/></pre>
     </div>
 </template>
 
 <script>
     import hljs from 'highlight.js';
     import marked from 'marked';
-
     export default {
         name: "TextPlayer",
         data() {
@@ -31,10 +28,18 @@
             },
             init() {
                 let file = this.file;
+
                 this.$http.get('api/content', {params: {url: file.url}}).then((response) => {
                     this.loading = false;
                     this.text = response.data.data;
+                }).catch(() => {
+                    this.$http.get(file.url).then((response) => {
+                        this.loading = false;
+                        this.text = response.data;
+                    })
                 });
+
+
             }
         },
         computed: {
@@ -62,7 +67,13 @@
                     this.$message('文件内容过多, 取消高亮显示');
                     return this.text;
                 } else {
-                    return hljs.highlightAuto(this.text).value;
+                    let result = '';
+                    try {
+                       result = hljs.highlightAuto(this.text).value;
+                    } catch (e) {
+                        result = this.text;
+                    }
+                    return result;
                 }
             },
             fileType() {

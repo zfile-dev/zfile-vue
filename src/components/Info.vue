@@ -1,33 +1,26 @@
 <template>
     <div id="info" class="">
         <div class="icon">
-            <svg class="icon" aria-hidden="true"><use :xlink:href="'#' + infoData.icon"></use></svg>
+            <svg class="icon" aria-hidden="true"><use :xlink:href="'#' + infoData.icon"/></svg>
         </div>
         <div class="block">
             <div class="label">{{infoData.name}}</div>
             <div class="time">{{infoData.time}}</div>
         </div>
-            <div title="" class="qrcode" ref="qrcode"></div>
+        <div title="" class="qrcode" ref="qrcode"></div>
     </div>
 </template>
 
 <script>
 
-    import eventBus from '@/assets/eventBus'
     import QRCode from "qrcodejs2"
-    import Aplayer from 'vue-aplayer'
-    import path from 'path';
 
     export default {
         name: "Info",
         data: function () {
             return {
                 qrcode: null,
-                infoData: {
-                    name: path.basename(this.$route.fullPath) ? path.basename(this.$route.fullPath) : window.location.host,
-                    time: "",
-                    icon: 'el-icon-my-folder'
-                }
+                infoData: {}
             }
         },
         methods: {
@@ -51,16 +44,10 @@
                 return result;
             }
         },
-        created() {
-            eventBus.$on('updateInfo', args => {
-                this.infoData = args;
-            })
-        },
         mounted() {
-            // this.infoData.name = window.
             //  生成二维码
             this.qrcode = new QRCode(this.$refs.qrcode, {
-                text: window.location.href,
+                text: window.location.host,
                 width: 180,
                 height: 180,
                 colorDark: '#999999',
@@ -70,25 +57,23 @@
         },
         watch: {
             'infoData': function (newVal) {
-                let url;
-
-                if (newVal.type === 'FILE') {
-                    url = newVal.url;
-                } else {
-
-                    let host = window.location.host;
-                    if (newVal.path) {
-                        url = this.removeDuplicateSeparator(host + "/#/" + newVal.path + '/' + newVal.name)
-                    } else {
-                        url = this.removeDuplicateSeparator(host + "/#/")
-                    }
-
+                this.qrcode.makeCode(newVal.url);
+            },
+            '$store.state.currentDirectory': function (val) {
+                this.infoData = val;
+                if (val.name === '/' || val.name === '') {
+                    this.infoData.url = window.location.host;
+                    this.infoData.name = window.location.host;
                 }
-
-                this.qrcode.makeCode(url)
+            },
+            '$store.state.hoverRow': function (val) {
+                if (val) {
+                    this.infoData = val;
+                } else {
+                    this.infoData = this.$store.state.currentDirectory;
+                }
             }
-        },
-        components: {QRCode, Aplayer}
+        }
     }
 </script>
 
