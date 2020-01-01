@@ -1,4 +1,5 @@
 export default {
+    tableData: [],
     config: {},
     currentDirectory: {},
     hoverRow: {},

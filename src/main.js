@@ -20,6 +20,9 @@ Vue.config.productionTip = true;
 
 import axios from 'axios'
 
+import common from "./common";
+Vue.prototype.common = common;
+
 // axios.defaults.baseURL = '/';
 axios.defaults.baseURL = 'http://127.0.0.1:8080';
 

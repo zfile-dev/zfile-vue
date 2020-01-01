@@ -23,27 +23,6 @@
                 infoData: {}
             }
         },
-        methods: {
-            removeDuplicateSeparator(path) {
-                let result = '';
-
-                if (path.indexOf("http://") === 0) {
-                    result = "http://";
-                } else if (path.indexOf("https://") === 0) {
-                    result = "https://";
-                }
-
-                for (let i = result.length; i < path.length - 1; i++) {
-                    let current = path.charAt(i);
-                    let next = path.charAt(i + 1);
-                    if (!(current === '/' && next === '/')) {
-                        result += current;
-                    }
-                }
-                result += path.charAt(path.length - 1);
-                return result;
-            }
-        },
         mounted() {
             //  生成二维码
             this.qrcode = new QRCode(this.$refs.qrcode, {

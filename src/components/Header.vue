@@ -16,6 +16,7 @@
 
 <script>
     import path from 'path'
+    import store from "@/store";
 
     export default {
         name: "Header",
@@ -50,7 +51,14 @@
                 let that = this;
                 clearTimeout(this.timer);
                 this.timer = setTimeout(function () {
-                    that.$http.get('api/search', {params: {name: newVal}}).then((response) => {
+                    let url;
+                    if (newVal) {
+                        url = 'api/search';
+                    } else {
+                        url = 'api/list';
+                    }
+                    that.$http.get(url, {params: {name: newVal}}).then((response) => {
+                        store.commit('tableData', response.data.data);
                     })
                 }, 500)
             },

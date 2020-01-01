@@ -5,7 +5,7 @@
                   v-infinite-scroll="infiniteHandler"
                   infinite-scroll-immediate="true"
                   class="transition-box"
-                  :data="tableData"
+                  :data="this.$store.getters.tableData"
                   @sort-change="sortList"
                   @cell-mouse-enter="updateInfoHover"
                   @cell-mouse-leave="updateInfoLeave"
@@ -33,7 +33,7 @@
                     prop="size"
                     label="大小"
                     class-name="hidden-xs-only"
-                    :formatter="fileSizeFilter"
+                    :formatter="this.common.fileSizeFilter"
                     min-width="15%">
             </el-table-column>
         </el-table>
@@ -54,7 +54,7 @@
             <video-player ref="videoPlayer" :url="currentClickRow.url"/>
         </el-dialog>
 
-        <audio-player :file-list="filterFile('audio')" :audio-index="currentClickTypeIndex('audio')"/>
+        <audio-player :file-list="this.$store.getters.filterFileByType('audio')" :audio-index="currentClickTypeIndex('audio')"/>
 
         <v-contextmenu ref="contextmenu">
             <v-contextmenu-item @click="preview">
@@ -78,18 +78,6 @@
     import MarkdownRender from "@/components/MarkdownRender";
     import store from "@/store";
 
-    const fileTypeMap = {
-        image: ['gif', 'jpg', 'jpeg', 'png', 'bmp', 'webp'],
-        video: ['mp4', 'm3u8', 'rmvb', 'avi', 'swf', '3gp', 'mkv', 'flv'],
-        audio: ['mp3', 'wav', 'wma', 'ogg', 'aac', 'flac', 'm4a'],
-        text: ['css', 'js', 'md', 'xml', 'txt', 'py', 'go', 'html', 'less', 'php', 'rb', 'rust', 'script', 'java', 'sh'],
-        executable: ['exe', 'dll', 'com', 'vbs'],
-        archive: ['7z', 'zip', 'rar', 'tar', 'gz'],
-        document: ['doc', 'txt', 'docx', 'pages', 'epub', 'pdf', 'numbers', 'csv', 'xls', 'xlsx', 'keynote', 'ppt', 'pptx']
-    };
-
-    let iconFileType = ['css', 'go', 'html', 'js', 'less', 'php', 'py', 'rb', 'rust', 'script', 'md', 'apk', 'deb', 'rpm', 'java'];
-
     let prefixPath = '/main';
 
     export default {
@@ -98,7 +86,7 @@
         },
         created() {
             let p = this.$route.params.pathMatch;
-            this.searchData.path = p ? p : '/';
+            this.searchParam.path = p ? p : '/';
         },
         data() {
             return {
@@ -111,15 +99,13 @@
                 // 是否打开视频播放器弹出
                 dialogVideoVisible: false,
                 // 查询条件
-                searchData: {
+                searchParam: {
                     sortBy: 'name',
                     order: 'asc',
                     path: '',
                     password: '',
                     page: 1
                 },
-                // 表格 data
-                tableData: [],
                 // 当前点击文件
                 currentClickRow: {},
                 contextMenuDataAxis: {
@@ -129,16 +115,16 @@
             }
         },
         watch: {
-            'searchData.path': {
+            'searchParam.path': {
                 deep: true,
                 handler() {
-                    this.searchData.page = 1;
+                    this.searchParam.page = 1;
                     this.loadingConfig();
                     this.getList();
                 }
             },
             '$route.fullPath': function () {
-                this.searchData.path = this.$route.params.pathMatch;
+                this.searchParam.path = this.$route.params.pathMatch;
             }
         },
         methods: {
@@ -153,43 +139,33 @@
             getList: function () {
                 let that = this;
                 
-                this.$http.get('api/list', {params: this.searchData}).then((response) => {
-                    if (response.data.data) {
-                        
-                        let searchPath = that.searchData.path;
+                this.$http.get('api/list', {params: this.searchParam}).then((response) => {
+                    let data = response.data.data;
+                    if (data) {
+                        let searchPath = that.searchParam.path;
                         
                         if (searchPath !== '' && searchPath !== '/') {
                             let fullPath = this.$route.params.pathMatch;
                             fullPath = fullPath ? fullPath : '/';
                             let parentPathName = path.basename(path.resolve(fullPath, "../"));
-                            response.data.data.unshift({
+                            data.unshift({
                                 name: parentPathName ? parentPathName : '/',
                                 path: path.resolve(searchPath, '../'),
                                 type: 'BACK'
                             });
                         }
-                        that.searchData.page++;
+                        that.searchParam.page++;
                         that.loading = true;
-                        that.tableData = response.data.data;
-
-                        that.tableData.forEach((item) => {
-                            item['icon'] = that.getFileIconName(item);
-
-                            if (item.type !== 'FILE') {
-                                let host = window.location.host;
-                                item.url = this.removeDuplicateSeparator(host + "/#/main/" + item.path + '/' + item.name);
-                            }
-                        });
-
+                        store.commit('tableData', data);
                         let currentDirectory = {
                             path: searchPath,
                             name: path.basename(searchPath),
                             icon: 'el-icon-my-folder',
-                            url: this.removeDuplicateSeparator(window.location.host + "/#/main/" + searchPath)
+                            url: this.common.removeDuplicateSeparator(window.location.host + "/#/main/" + searchPath)
                         };
                         store.commit('currentDirectory', currentDirectory);
                     } else {
-                        if (this.searchData.password) {
+                        if (this.searchParam.password) {
                             this.$message.error('密码错误, 请重新输入!',);
                         }
                         this.popPassword();
@@ -205,12 +181,12 @@
                     },
                     inputErrorMessage: '密码不能为空.'
                 }).then(({value}) => {
-                    if (value !== this.searchData.password) {
-                        this.searchData.password = value;
+                    if (value !== this.searchParam.password) {
+                        this.searchParam.password = value;
                     }
                     this.getList();
                 }).catch(() => {
-                    this.$router.push(prefixPath + path.resolve(this.searchData.path, '../'));
+                    this.$router.push(prefixPath + path.resolve(this.searchParam.path, '../'));
                 });
             },
             updateInfoHover: function (row) {
@@ -221,11 +197,11 @@
                 store.commit('hoverRow', null);
             },
             sortList(sortParam) {
-                this.searchData.sortBy = sortParam.prop;
-                this.searchData.order = sortParam.order === "descending" ? "desc" : "asc";
+                this.searchParam.sortBy = sortParam.prop;
+                this.searchParam.order = sortParam.order === "descending" ? "desc" : "asc";
             },
             loadingConfig() {
-                this.$http.get('api/config', {params: {path: this.searchData.path}}).then((response) => {
+                this.$http.get('api/config', {params: {path: this.searchParam.path}}).then((response) => {
                     store.commit('updateConfig', response.data.data);
                 });
             },
@@ -233,7 +209,7 @@
                 this.currentClickRow = row;
 
                 if (row.type === 'FILE') {
-                    let fileType = this.getFileType(row.name);
+                    let fileType = this.common.getFileType(row.name);
 
                     switch (fileType) {
                         case 'video':
@@ -256,7 +232,7 @@
                     if (row.type === 'BACK') {
                         path = row.path;
                     } else {
-                        path = this.removeDuplicateSeparator(row.path + '/' + row.name)
+                        path = this.common.removeDuplicateSeparator(row.path + '/' + row.name)
                     }
 
                     if (path.indexOf('/') !== 0) {
@@ -266,28 +242,9 @@
                     this.$router.push(prefixPath + path);
                 }
             },
-            removeDuplicateSeparator(path) {
-                let result = '';
-
-                if (path.indexOf("http://") === 0) {
-                    result = "http://";
-                } else if (path.indexOf("https://") === 0) {
-                    result = "https://";
-                }
-
-                for (let i = result.length; i < path.length - 1; i++) {
-                    let current = path.charAt(i);
-                    let next = path.charAt(i + 1);
-                    if (!(current === '/' && next === '/')) {
-                        result += current;
-                    }
-                }
-                result += path.charAt(path.length - 1);
-                return result;
-            },
             openImage() {
                 let imageDate = [];
-                for (let image of this.filterFile('image')) {
+                for (let image of this.$store.getters.filterFileByType('image')) {
                     imageDate.push({
                        alt: image.name,
                        src: image.url
@@ -311,34 +268,6 @@
             openVideo() {
                 this.dialogVideoVisible = true;
             },
-            filterFile(type) {
-                return this.tableData.filter(function (item) {
-                    if (item.type === 'BACK') {
-                        return false
-                    }
-                    let name = item.name;
-                    let suffix = name.substr(name.lastIndexOf('.') + 1);
-                    return fileTypeMap[type].indexOf(suffix) !== -1;
-                });
-            },
-            getFileSuffix(name) {
-                let lastIndex = name.lastIndexOf('.');
-                if (lastIndex === -1) {
-                    return 'other';
-                }
-                return name.substr(lastIndex + 1).toLowerCase();
-            },
-            getFileType(name) {
-                let fileType;
-                for (let key in fileTypeMap) {
-                    let suffix = this.getFileSuffix(name);
-                    if (fileTypeMap[key].indexOf(suffix) !== -1) {
-                        fileType = key;
-                        break;
-                    }
-                }
-                return fileType;
-            },
             initTextDialog() {
                 this.$refs.textDialog.init();
             },
@@ -352,53 +281,13 @@
                 if (!this.loading) {
                     return true;
                 }
-                let that = this;
-                this.$http.get('api/list', {params: this.searchData}).then((response) => {
-                    let fileList = response.data.data;
-                    if (fileList && fileList.length > 0) {
-                        that.searchData.page++;
-                        that.tableData = that.tableData.concat(fileList);
-                    }
-
-                    fileList.forEach((item) => {
-                        item['icon'] = that.getFileIconName(item);
-
-                        if (item.type !== 'FILE') {
-                            let host = window.location.host;
-                            item.url = this.removeDuplicateSeparator(host + "/#/main/" + item.path + '/' + item.name);
-                        }
-                    });
+                this.$http.get('api/list', {params: this.searchParam}).then((response) => {
+                    let data = response.data.data;
+                    store.commit('appendTableData', data);
+                    this.searchParam.page++;
                 });
             },
-            fileSizeFilter: (row, column, bytes) => {
-                if (row.type === "BACK") return '';
-                if (row.type === "FOLDER") return '-';
-                if (bytes === 0) return '0 B';
-                let k = 1024;
-                let sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-                let i = Math.floor(Math.log(bytes) / Math.log(k));
-                return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
-            },
-            getFileIconName(file) {
-                let ICON_PREFIX = 'el-icon-my-';
-                let iconName;
-                if (file.type === 'BACK' || file.type === 'FOLDER') {
-                    return ICON_PREFIX + file.type.toLowerCase();
-                } else {
-                    let fileSuffix = this.getFileSuffix(file.name);
-                    let fileType = this.getFileType(file.name);
 
-                    if (iconFileType.indexOf(fileSuffix) !== -1) {
-                        iconName = ICON_PREFIX + fileSuffix;
-                    } else if (fileType) {
-                        iconName = ICON_PREFIX + fileType;
-                    } else {
-                        iconName = ICON_PREFIX + 'file';
-                    }
-                }
-
-                return iconName;
-            }
         },
         computed: {
             // 当前点击类型的索引
@@ -412,8 +301,8 @@
                     if (JSON.stringify(currentClickRow) === '{}') {
                         return 0;
                     } else {
-                        fileType = fileType ? fileType : this.getFileType(currentClickRow.name);
-                        return this.filterFile(fileType).findIndex((item) => {
+                        fileType = fileType ? fileType : this.common.getFileType(currentClickRow.name);
+                        return this.$store.getters.filterFileByType(fileType).findIndex((item) => {
                             return item.name === currentClickRow.name;
                         })
                     }
