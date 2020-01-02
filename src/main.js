@@ -1,18 +1,15 @@
 import Vue from 'vue';
 import App from './App.vue';
 
-// iconfont
 import '@/assets/font-icon/iconfont.js'
-import '@/assets/font-icon/iconfont.css'
 
 import router from './router'
 import './element-ui'
 
-import layer, {jquery} from '@/assets/layer/layer'
-import '@/assets/layer/theme/default/layer.css'
-
 import store from "@/store";
 
+import layer, {jquery} from '@/assets/layer/layer'
+import '@/assets/layer/theme/default/layer.css'
 Vue.prototype.layer = layer;
 Vue.prototype.$ = jquery;
 
@@ -71,9 +68,10 @@ new Vue({
         this.$http.get('is-installed').then((response) => {
             let data = response.data;
             if (data.code !== 0) {
-                if (!this.$route.fullPath.includes("/main")
-                    && !this.$route.fullPath.includes("/admin")
-                    && !this.$route.fullPath.includes("/login")) {
+                let hash = window.location.hash;
+                if (!hash.includes("#/main")
+                    && !hash.includes("#/admin")
+                    && !hash.includes("#/login")) {
                     this.$router.push('/main');
                 }
             } else {

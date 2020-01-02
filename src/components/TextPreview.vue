@@ -9,8 +9,12 @@
 </template>
 
 <script>
-    import hljs from 'highlight.js';
-    import marked from 'marked';
+
+    let hljs;
+    let marked;
+    require.ensure([], function() { hljs = require('highlight.js')}, 'highlight');
+    require.ensure([], function() { marked = require('marked')}, 'marked');
+
     export default {
         name: "TextPlayer",
         data() {

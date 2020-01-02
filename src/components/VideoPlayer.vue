@@ -3,9 +3,13 @@
 </template>
 
 <script>
-    import flvjs from 'flv.js'
     import 'dplayer/dist/DPlayer.min.css';
-    import DPlayer from 'dplayer';
+
+    let flvjs;
+    let DPlayer;
+    require.ensure([], function() { flvjs = require('flv.js')}, 'flv');
+    require.ensure([], function() { DPlayer = require('dplayer')}, 'dplayer');
+
     window.flvjs = flvjs;
 
     export default {
