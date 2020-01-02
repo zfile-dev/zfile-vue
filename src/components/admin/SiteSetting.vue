@@ -16,7 +16,7 @@
                 </el-form-item>
 
                 <el-form-item label="开启缓存">
-                    <el-switch v-model="form.enableCache"/>
+                    <el-switch v-model="form.enableCache" @change="form.searchEnable = false"/>
                     <span class="zfile-word-aux">默认缓存 60 分钟，每隔 30 分钟自动刷新一次. 暂不支持修改时间.</span>
                 </el-form-item>
 
