@@ -81,11 +81,13 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.$http.post('admin/config', qs.stringify(this.form)).then(() => {
-                            this.$message({
-                                message: '保存成功',
-                                type: 'success'
-                            });
+                        this.$http.post('admin/config', qs.stringify(this.form)).then((response) => {
+                            if (response.response.data.code === 0) {
+                                this.$message({
+                                    message: '保存成功',
+                                    type: 'success'
+                                });
+                            }
                         })
                     } else {
                         return false;
@@ -93,11 +95,13 @@
                 });
             },
             clearCache() {
-                this.$http.get('admin/clear-cache').then(() => {
-                    this.$message({
-                        message: '操作成功',
-                        type: 'success'
-                    });
+                this.$http.post('admin/clear-cache').then((response) => {
+                    if (response.response.data.code === 0) {
+                        this.$message({
+                            message: '操作成功',
+                            type: 'success'
+                        });
+                    }
                 })
             }
         },
