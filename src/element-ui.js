@@ -23,6 +23,7 @@ import {
     Card,
     Steps,
     Step,
+    Popover,
     Loading,
     Message,
     MessageBox,
@@ -53,6 +54,7 @@ Vue.use(Col);
 Vue.use(Card);
 Vue.use(Steps);
 Vue.use(Step);
+Vue.use(Popover);
 Vue.use(InfiniteScroll);
 Vue.use(Loading);
 

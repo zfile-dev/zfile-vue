@@ -44,7 +44,6 @@
 
                 <el-form-item>
                     <el-button type="primary" @click="submitForm('form')" round>保存设置</el-button>
-                    <el-button type="danger" @click="clearCache"  round>清理缓存</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -82,7 +81,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.$http.post('admin/config', qs.stringify(this.form)).then((response) => {
-                            if (response.response.data.code === 0) {
+                            if (response.data.code === 0) {
                                 this.$message({
                                     message: '保存成功',
                                     type: 'success'
@@ -93,16 +92,6 @@
                         return false;
                     }
                 });
-            },
-            clearCache() {
-                this.$http.post('admin/clear-cache').then((response) => {
-                    if (response.response.data.code === 0) {
-                        this.$message({
-                            message: '操作成功',
-                            type: 'success'
-                        });
-                    }
-                })
             }
         },
         mounted() {

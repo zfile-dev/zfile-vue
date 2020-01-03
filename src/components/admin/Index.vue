@@ -17,6 +17,10 @@
                     <i class="el-icon-key"/>
                     <span slot="title">修改密码</span>
                 </el-menu-item>
+                <el-menu-item index="/admin/cache">
+                    <i class="el-icon-collection"/>
+                    <span slot="title">缓存管理</span>
+                </el-menu-item>
             </el-menu>
         </el-col>
         <el-col :span="12">

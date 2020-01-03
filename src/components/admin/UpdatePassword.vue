@@ -63,7 +63,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.$http.post('admin/update-pwd', qs.stringify(this.form)).then((response) => {
-                            if (response.response.data.code === 0) {
+                            if (response.data.code === 0) {
                                 this.$message({
                                     message: '保存成功',
                                     type: 'success'

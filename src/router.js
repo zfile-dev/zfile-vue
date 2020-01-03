@@ -57,6 +57,13 @@ export default new Router({
                     component: r => {
                         require.ensure([], () => r(require('./components/admin/UpdatePassword')), 'updatePassword')
                     },
+                },
+                {
+                    path: 'cache',
+                    name: '缓存管理',
+                    component: r => {
+                        require.ensure([], () => r(require('./components/admin/CacheManager')), 'cacheManager')
+                    },
                 }
             ]
         }
