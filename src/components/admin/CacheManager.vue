@@ -14,7 +14,7 @@
                 <el-button type="danger" size="small"
                            :disabled="!formData.enableCache || !formData.cacheFinish" @click="clearAllCache" round>清理缓存</el-button>
                 <el-button type="primary" size="small"
-                           :disabled="!formData.cacheFinish" @click="cacheAll" round>缓存所有</el-button>
+                           :disabled="formData.cacheFinish" @click="cacheAll" round>缓存所有</el-button>
             </el-form-item>
         </el-form>
         <el-table
