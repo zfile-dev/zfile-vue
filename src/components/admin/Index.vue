@@ -24,7 +24,7 @@
             </el-menu>
         </el-col>
         <el-col :span="12">
-            <keep-alive>
+            <keep-alive exclude="CacheManager">
                 <router-view/>
             </keep-alive>
         </el-col>

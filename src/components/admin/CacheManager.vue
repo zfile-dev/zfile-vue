@@ -11,25 +11,10 @@
                 <span style="font-weight: bold; color: red" v-text="formData.cacheCount"/>
             </el-form-item>
             <el-form-item>
-                <el-popover
-                        placement="top-start"
-                        width="200"
-                        trigger="hover"
-                        :disabled="formData.enableCache || formData.cacheFinish"
-                        content="仅当开启缓存且缓存已完成时, 可以清理缓存">
-                    <el-button slot="reference" type="danger" size="small"
-                               :disabled="!formData.enableCache || !formData.cacheFinish" @click="clearAllCache" round>清理缓存</el-button>
-                </el-popover>
-
-                <el-popover
-                        placement="top-start"
-                        width="200"
-                        trigger="hover"
-                        :disabled="formData.cacheFinish"
-                        content="仅当开启缓存且缓存已完成时, 可以清理缓存">
-                    <el-button slot="reference" type="primary" size="small"
-                               :disabled="!formData.cacheFinish" @click="cacheAll" round>缓存所有</el-button>
-                </el-popover>
+                <el-button type="danger" size="small"
+                           :disabled="!formData.enableCache || !formData.cacheFinish" @click="clearAllCache" round>清理缓存</el-button>
+                <el-button type="primary" size="small"
+                           :disabled="!formData.cacheFinish" @click="cacheAll" round>缓存所有</el-button>
             </el-form-item>
         </el-form>
         <el-table
@@ -90,6 +75,7 @@
                         message: '清理成功',
                         type: 'success'
                     });
+                    this.loadConfig();
                 });
             },
             refreshCache(index, row) {
@@ -100,24 +86,28 @@
                     });
                 });
             },
+            loadConfig() {
+                this.$http.get('admin/cache/config').then((response) => {
+                    let data = response.data.data;
+                    this.formData.enableCache = data.enableCache;
+                    this.formData.cacheFinish = data.cacheFinish;
+                    this.formData.cacheCount = data.cacheKeys.length;
+
+                    let cacheKeys = data.cacheKeys;
+                    cacheKeys.sort(function (a, b) {
+                        return a.length - b.length;
+                    });
+                    let tempData = [];
+                    for (let i = 0; i < cacheKeys.length; i++) {
+                        tempData[i] = {"name": cacheKeys[i]};
+                    }
+                    this.tableData = tempData;
+                })
+            }
         },
         mounted() {
-            this.$http.get('admin/cache/config').then((response) => {
-                let data = response.data.data;
-                this.formData.enableCache = data.enableCache;
-                this.formData.cacheFinish = data.cacheFinish;
-                this.formData.cacheCount = data.cacheKeys.length;
-
-                let cacheKeys = data.cacheKeys;
-                cacheKeys.sort(function (a, b) {
-                    return a.length - b.length;
-                });
-                let tempData = [];
-                for (let i = 0; i < cacheKeys.length; i++) {
-                    tempData[i] = {"name": cacheKeys[i]};
-                }
-                this.tableData = tempData;
-            })
+            alert(1);
+            this.loadConfig();
         }
     }
 </script>
