@@ -106,7 +106,6 @@
             }
         },
         mounted() {
-            alert(1);
             this.loadConfig();
         }
     }
