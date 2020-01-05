@@ -4,10 +4,18 @@
 
 <script>
 
-    let hljs;
-    let marked;
-    require.ensure([], function() { hljs = require('highlight.js')}, 'highlight');
-    require.ensure([], function() { marked = require('marked')}, 'marked');
+    import marked from 'marked';
+    import * as hljs from 'highlight.js/lib/highlight';
+
+    hljs.registerLanguage('markdown', require('highlight.js/lib/languages/markdown'));
+    hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
+    hljs.registerLanguage('css', require('highlight.js/lib/languages/css'));
+    hljs.registerLanguage('xml', require('highlight.js/lib/languages/xml'));
+    hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
+    hljs.registerLanguage('java', require('highlight.js/lib/languages/java'));
+    hljs.registerLanguage('yaml', require('highlight.js/lib/languages/yaml'));
+    hljs.registerLanguage('python', require('highlight.js/lib/languages/python'));
+    hljs.registerLanguage('php', require('highlight.js/lib/languages/php'));
 
     export default {
         name: "MarkdownRender",
