@@ -21,8 +21,6 @@ import {
     Row,
     Col,
     Card,
-    Steps,
-    Step,
     Popover,
     Loading,
     Message,
@@ -52,8 +50,6 @@ Vue.use(Icon);
 Vue.use(Row);
 Vue.use(Col);
 Vue.use(Card);
-Vue.use(Steps);
-Vue.use(Step);
 Vue.use(Popover);
 Vue.use(InfiniteScroll);
 Vue.use(Loading);
