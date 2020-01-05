@@ -2,7 +2,12 @@ import Vue from 'vue';
 import Router from "vue-router";
 Vue.use(Router);
 
-import Main from "@/components/Main";
+import Main from "./components/Main";
+import Login from "./components/Login";
+import SiteSetting from "./components/admin/SiteSetting";
+import StorageStrategy from "./components/admin/StorageStrategy";
+import UpdatePassword from "./components/admin/UpdatePassword";
+import CacheManager from "./components/admin/CacheManager";
 
 export default new Router({
     mode: 'hash', // 路由模式:默认为 hash,如果改为 history,则需要后端进行配合
@@ -20,9 +25,7 @@ export default new Router({
         },
         {
             path: '/login',
-            component: r => {
-                require.ensure([], () => r(require('./components/Login')), 'login')
-            }
+            component: Login
         },
         {
             path: '/admin',
@@ -33,37 +36,27 @@ export default new Router({
                 {
                     path: '/',
                     name: '主页',
-                    component: r => {
-                        require.ensure([], () => r(require('./components/admin/SiteSetting')), 'siteSetting')
-                    },
+                    component: SiteSetting
                 },
                 {
                     path: 'site',
                     name: '站点设置',
-                    component: r => {
-                        require.ensure([], () => r(require('./components/admin/SiteSetting')), 'siteSetting')
-                    },
+                    component: SiteSetting
                 },
                 {
                     path: 'storage',
                     name: '存储策略设置',
-                    component: r => {
-                        require.ensure([], () => r(require('./components/admin/StorageStrategy')), 'storageStrategy')
-                    },
+                    component: StorageStrategy
                 },
                 {
                     path: 'password',
                     name: '密码设置',
-                    component: r => {
-                        require.ensure([], () => r(require('./components/admin/UpdatePassword')), 'updatePassword')
-                    },
+                    component: UpdatePassword
                 },
                 {
                     path: 'cache',
                     name: '缓存管理',
-                    component: r => {
-                        require.ensure([], () => r(require('./components/admin/CacheManager')), 'cacheManager')
-                    },
+                    component: CacheManager
                 }
             ]
         }
