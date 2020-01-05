@@ -60,7 +60,7 @@
                     that.$http.get(url, {params: {name: newVal}}).then((response) => {
                         store.commit('tableData', response.data.data);
                     })
-                }, 500)
+                }, 100)
             },
             '$store.state.currentDirectory': function (val) {
                 let config = this.$store.state.config;
