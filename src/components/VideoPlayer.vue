@@ -3,14 +3,14 @@
 </template>
 
 <script>
+    import Hls from 'hls.js'
+    window.Hls = Hls;
+
     import 'dplayer/dist/DPlayer.min.css';
+    import axios from "axios";
 
-    let flvjs;
     let DPlayer;
-    require.ensure([], function() { flvjs = require('flv.js')}, 'flv');
     require.ensure([], function() { DPlayer = require('dplayer')}, 'dplayer');
-
-    window.flvjs = flvjs;
 
     export default {
         name: "VideoPlayer",
@@ -21,7 +21,14 @@
                     video: {
                         url: ''
                     },
-                    autoplay: false
+                    subtitle: {
+                        url: axios.defaults.baseURL  + '/api/content/origin?url=http://c.jun6.net/testProcess.mp4.vtt',
+                        type: 'webvtt',
+                        fontSize: '25px',
+                        bottom: '10%',
+                        color: '#b7daff',
+                    },
+                    autoplay: false,
                 },
                 player: null,
             }
