@@ -35,7 +35,7 @@ axios.interceptors.request.use(
             url += '?';
             let keys = Object.keys(config.params);
             for (let key of keys) {
-                url += `${key}=${encodeURIComponent(config.params[key])}&`
+                url += `${key}=${encodeURIComponent(decodeURI(config.params[key]))}&`
             }
             url = url.substring(0, url.length - 1);
             config.params = {}
