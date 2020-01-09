@@ -51,7 +51,7 @@
                    :visible.sync="dialogVideoVisible"
                    :top="'5vh'"
                    :width="'70%'">
-            <video-player ref="videoPlayer" :url="currentClickRow.url"/>
+            <video-player v-if="dialogVideoVisible" ref="videoPlayer" :url="currentClickRow.url"/>
         </el-dialog>
 
         <audio-player :file-list="this.$store.getters.filterFileByType('audio')" :audio-index="currentClickTypeIndex('audio')"/>
