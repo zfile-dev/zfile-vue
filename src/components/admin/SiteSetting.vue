@@ -1,6 +1,6 @@
 <template>
     <el-row>
-        <el-col :span="16">
+        <el-col :span="12">
             <el-form id="siteForm" :rules="rules" ref="form" :model="form" label-width="auto" :status-icon="true">
                 <el-form-item label="站点名称" prop="siteName">
                     <el-input v-model="form.siteName"/>
@@ -17,7 +17,7 @@
 
                 <el-form-item label="开启缓存">
                     <el-switch v-model="form.enableCache" @change="form.searchEnable = false"/>
-                    <span class="zfile-word-aux">默认缓存 60 分钟，每隔 30 分钟自动刷新一次. 暂不支持修改时间.</span>
+                    <span class="zfile-word-aux">默认缓存 60 分钟，每隔 30 分钟自动刷新一次.</span>
                 </el-form-item>
 
                 <el-form-item label="搜索" v-if="form.enableCache">
@@ -40,6 +40,7 @@
                         <el-option label="本地存储" value="local"/>
                         <el-option label="minio" value="minio"/>
                     </el-select>
+                    <el-button type="text" style="margin-left: 20px;" @click="jumpStorageStrategyConfig">设置策略</el-button>
                 </el-form-item>
 
                 <el-form-item>
@@ -64,7 +65,7 @@
                     infoEnable: false,
                     searchEnable: false,
                     searchIgnoreCase: false,
-                    enableCache: false,
+                    enableCache: false
                 },
                 rules: {
                     siteName: [
@@ -92,6 +93,10 @@
                         return false;
                     }
                 });
+            },
+            jumpStorageStrategyConfig() {
+                this.$store.commit('changeActiveTab', this.form.storageStrategy);
+                this.$router.push('/admin/storage');
             }
         },
         mounted() {
@@ -109,7 +114,7 @@
     }
 
     #siteForm >>> .el-select {
-        width: 100%;
+        width: 85%;
     }
 
     .zfile-word-aux {

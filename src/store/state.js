@@ -3,5 +3,6 @@ export default {
     config: {},
     currentDirectory: {},
     hoverRow: {},
-    rightClickRow: {}
+    rightClickRow: {},
+    activeTab: ""
 }

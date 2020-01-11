@@ -18,5 +18,8 @@ export default {
         if (v) {
             state.tableData = state.tableData.concat(v);
         }
+    },
+    changeActiveTab(state, v) {
+        state.activeTab = v;
     }
 }

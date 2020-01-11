@@ -47,7 +47,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.form.storageStrategy = this.storageStrategy;
-                        this.$http.post('storage-strategy', qs.stringify(this.form)).then((response) => {
+                        this.$http.post('admin/storage-strategy', qs.stringify(this.form)).then((response) => {
                             if (response.data.code === 0) {
                                 this.$message({
                                     message: '保存成功',

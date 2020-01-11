@@ -92,7 +92,7 @@
         },
         watch: {
             'form.storageStrategy'(newVal) {
-                this.$http.get('api/form', {params: {storageType: newVal}}).then((response) => {
+                this.$http.get('form', {params: {storageType: newVal}}).then((response) => {
                     this.form.storageStrategyConfig.endPoint = null;
                     this.storageStrategyForm = response.data.data;
                 })

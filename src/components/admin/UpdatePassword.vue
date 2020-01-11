@@ -1,6 +1,6 @@
 <template>
     <el-row>
-        <el-col :span="16">
+        <el-col :span="12">
             <el-form id="pwdForm" ref="form"
                      @keyup.enter.native="submitForm('form')"
                      :rules="rules"

@@ -23,8 +23,8 @@
                 </el-menu-item>
             </el-menu>
         </el-col>
-        <el-col :span="12">
-            <keep-alive exclude="CacheManager">
+        <el-col :span="16">
+            <keep-alive exclude="CacheManager,SiteSetting">
                 <router-view/>
             </keep-alive>
         </el-col>

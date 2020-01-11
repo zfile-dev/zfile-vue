@@ -1,18 +1,18 @@
 <template>
-    <el-tabs v-model="activeName" :stretch="true">
-        <el-tab-pane label="阿里云 OSS" name="oss" :lazy="true">
+    <el-tabs v-model="$store.getters.activeTab" :stretch="true">
+        <el-tab-pane label="阿里云 OSS" name="aliyun" :lazy="true">
             <storage-form storageStrategy="aliyun"/>
         </el-tab-pane>
-        <el-tab-pane label="腾讯云 COS" name="cos" :lazy="true">
+        <el-tab-pane label="腾讯云 COS" name="tencent" :lazy="true">
             <storage-form storageStrategy="tencent"/>
         </el-tab-pane>
-        <el-tab-pane label="华为云 OBS" name="obs" :lazy="true">
+        <el-tab-pane label="华为云 OBS" name="huawei" :lazy="true">
             <storage-form storageStrategy="huawei"/>
         </el-tab-pane>
-        <el-tab-pane label="七牛云 KODO" name="kodo" :lazy="true">
+        <el-tab-pane label="七牛云 KODO" name="qiniu" :lazy="true">
             <storage-form storageStrategy="qiniu"/>
         </el-tab-pane>
-        <el-tab-pane label="又拍云 USS" name="uss" :lazy="true">
+        <el-tab-pane label="又拍云 USS" name="upyun" :lazy="true">
             <storage-form storageStrategy="upyun"/>
         </el-tab-pane>
         <el-tab-pane label="FTP" name="ftp" :lazy="true">
@@ -33,11 +33,6 @@
     export default {
         name: "StorageStrategy",
         components: {StorageForm},
-        data() {
-            return {
-                activeName: "oss",
-            }
-        },
     }
 </script>
 
