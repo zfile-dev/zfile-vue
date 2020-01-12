@@ -13,7 +13,7 @@ import '@/assets/layer/theme/default/layer.css'
 Vue.prototype.layer = layer;
 Vue.prototype.$ = jquery;
 
-Vue.config.productionTip = true;
+Vue.config.productionTip = false;
 
 import axios from 'axios'
 
@@ -56,7 +56,7 @@ import APlayer from '@moefe/vue-aplayer';
 
 Vue.use(APlayer, {
     defaultCover: 'http://c.jun6.net/audio.png',
-    productionTip: true,
+    productionTip: false,
 });
 
 new Vue({
@@ -96,3 +96,5 @@ new Vue({
         });
     }
 }).$mount('#app');
+
+console.log("\n %c Zfile %c https://github.com/zhaojun1998/zfile \n\n", "background: #35495e; padding: 1px; border-radius: 3px 0 0 3px; color: #fff", "background: #fadfa3; padding: 1px; border-radius: 0 3px 3px 0; color: #fff");
