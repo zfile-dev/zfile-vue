@@ -18,7 +18,7 @@
         methods: {
             updateCover() {
                 let currentMusic = this.$refs.aplayer.currentMusic;
-                this.$http.get('api/audioInfo', {params: {url: currentMusic.url}}).then((response) => {
+                this.$http.get('common/audio-info', {params: {url: currentMusic.url}}).then((response) => {
                     let data = response.data.data;
                     let el = this.$refs.aplayer.$el;
                     el.getElementsByClassName('aplayer-pic')[0].style.backgroundImage = 'url(' + data.cover + ')';

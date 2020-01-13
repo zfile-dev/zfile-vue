@@ -31,7 +31,7 @@
             },
             init() {
                 let file = this.file;
-                this.$http.get('api/content', {params: {url: file.url}}).then((response) => {
+                this.$http.get('common/content', {params: {url: file.url}}).then((response) => {
                     this.loading = false;
                     this.text = response.data.data;
                 });
