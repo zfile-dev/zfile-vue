@@ -178,7 +178,7 @@
             } else {
                 this.timer = setInterval(() => {
                     this.loadConfig();
-                }, 500);
+                }, 1000);
             }
         },
         destroyed() {
