@@ -6,7 +6,6 @@
                   infinite-scroll-immediate="true"
                   class="transition-box"
                   :data="this.$store.getters.tableData"
-                  @sort-change="sortList"
                   @cell-mouse-enter="updateInfoHover"
                   @cell-mouse-leave="updateInfoLeave"
                   @row-click="openFolder"
@@ -100,8 +99,6 @@
                 dialogVideoVisible: false,
                 // 查询条件
                 searchParam: {
-                    sortBy: 'name',
-                    order: 'asc',
                     path: '',
                     password: '',
                     page: 1
@@ -118,6 +115,9 @@
             'searchParam.path': {
                 deep: true,
                 handler() {
+                    if (this.$store.state.searchParam) {
+                        return;
+                    }
                     this.searchParam.page = 1;
                     this.loadingConfig();
                     this.getList();
@@ -125,6 +125,25 @@
             },
             '$route.fullPath': function () {
                 this.searchParam.path = this.$route.params.pathMatch;
+            },
+            '$store.state.searchParam': function (newVal) {
+                this.$router.push('/main');
+                this.searchParam.page = 1;
+                this.searchParam.path = '/';
+
+                let url, param;
+                if (newVal) {
+                    url = 'api/search';
+                    param = {name: newVal, page: this.searchParam.page};
+                } else {
+                    url = 'api/list';
+                    param = this.searchParam;
+                }
+
+                this.$http.get(url, {params: param}).then((response) => {
+                    this.searchParam.page++;
+                    store.commit('tableData', response.data.data);
+                })
             }
         },
         methods: {
@@ -195,10 +214,6 @@
             },
             updateInfoLeave: function () {
                 store.commit('hoverRow', null);
-            },
-            sortList(sortParam) {
-                this.searchParam.sortBy = sortParam.prop;
-                this.searchParam.order = sortParam.order === "descending" ? "desc" : "asc";
             },
             loadingConfig() {
                 this.$http.get('api/config', {params: {path: this.searchParam.path}}).then((response) => {
@@ -281,7 +296,17 @@
                 if (!this.loading) {
                     return true;
                 }
-                this.$http.get('api/list', {params: this.searchParam}).then((response) => {
+
+                let url, param;
+                if (this.$store.state.searchParam) {
+                    url = 'api/search';
+                    param = {name: this.$store.state.searchParam, page: this.searchParam.page};
+                } else {
+                    url = 'api/list';
+                    param = this.searchParam;
+                }
+
+                this.$http.get(url, {params: param}).then((response) => {
                     let data = response.data.data;
                     store.commit('appendTableData', data);
                     this.searchParam.page++;

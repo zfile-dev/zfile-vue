@@ -4,5 +4,6 @@ export default {
     currentDirectory: {},
     hoverRow: {},
     rightClickRow: {},
-    activeTab: ""
+    activeTab: "",
+    searchParam: ""
 }

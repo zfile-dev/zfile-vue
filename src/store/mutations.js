@@ -21,5 +21,8 @@ export default {
     },
     changeActiveTab(state, v) {
         state.activeTab = v;
+    },
+    updateSearchParam(state, v) {
+        state.searchParam = v;
     }
 }
