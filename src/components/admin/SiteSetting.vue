@@ -31,14 +31,7 @@
 
                 <el-form-item label="存储策略">
                     <el-select v-model="form.storageStrategy" placeholder="请选择存储策略">
-                        <el-option label="阿里云 OSS" value="aliyun"/>
-                        <el-option label="腾讯云 COS" value="tencent"/>
-                        <el-option label="华为云 OBS" value="huawei"/>
-                        <el-option label="七牛云 KODO" value="qiniu"/>
-                        <el-option label="又拍云 USS" value="upyun"/>
-                        <el-option label="FTP" value="ftp"/>
-                        <el-option label="本地存储" value="local"/>
-                        <el-option label="minio" value="minio"/>
+                        <el-option :key="item.key" v-for="(item) in supportStrategy" :label="item.description" :value="item.key"/>
                     </el-select>
                     <el-button type="text" style="margin-left: 20px;" @click="jumpStorageStrategyConfig">设置策略</el-button>
                 </el-form-item>
@@ -67,6 +60,7 @@
                     searchIgnoreCase: false,
                     enableCache: false
                 },
+                supportStrategy: [],
                 rules: {
                     siteName: [
                         {required: true, message: '请输入站点名称', trigger: 'change'},
@@ -100,9 +94,13 @@
             }
         },
         mounted() {
+            this.$http.get('common/support-strategy').then((response) => {
+                this.supportStrategy = response.data.data;
+            });
+
             this.$http.get('admin/config').then((response) => {
                 this.form = response.data.data;
-            })
+            });
         }
     }
 </script>

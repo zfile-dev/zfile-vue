@@ -32,6 +32,6 @@ export default {
         });
     },
     activeTab: state => {
-        return state.activeTab ? state.activeTab : "oss";
+        return state.activeTab ? state.activeTab : "aliyun";
     }
 }
