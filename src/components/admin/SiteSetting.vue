@@ -30,8 +30,18 @@
                 </el-form-item>
 
                 <el-form-item label="存储策略">
-                    <el-select v-model="form.storageStrategy" placeholder="请选择存储策略">
-                        <el-option :key="item.key" v-for="(item) in supportStrategy" :label="item.description" :value="item.key"/>
+                    <el-select filterable v-model="form.storageStrategy" placeholder="请选择存储策略">
+                        <el-option :key="item.key"
+                                   v-for="(item) in supportStrategy"
+                                   :label="item.description"
+                                   :disabled="!item.available"
+                                   :value="item.key">
+                                <span style="float: left">{{ item.description }}</span>
+                                <span style="float: right;">
+                                    <el-badge v-if="item.available" value="有效" class="item" type="success"/>
+                                    <el-badge v-else value="无效" class="item" type="error"/>
+                                </span>
+                        </el-option>
                     </el-select>
                     <el-button type="text" style="margin-left: 20px;" @click="jumpStorageStrategyConfig">设置策略</el-button>
                 </el-form-item>
@@ -94,7 +104,7 @@
             }
         },
         mounted() {
-            this.$http.get('common/support-strategy').then((response) => {
+            this.$http.get('admin/support-strategy').then((response) => {
                 this.supportStrategy = response.data.data;
             });
 
@@ -112,7 +122,7 @@
     }
 
     #siteForm >>> .el-select {
-        width: 85%;
+        width: 70%;
     }
 
     .zfile-word-aux {

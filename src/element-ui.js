@@ -22,6 +22,8 @@ import {
     Col,
     Card,
     Popover,
+    Badge,
+    Link,
     Loading,
     Message,
     MessageBox,
@@ -53,6 +55,8 @@ Vue.use(Card);
 Vue.use(Popover);
 Vue.use(InfiniteScroll);
 Vue.use(Loading);
+Vue.use(Badge);
+Vue.use(Link);
 
 Vue.prototype.$msgbox = MessageBox;
 Vue.prototype.$alert = MessageBox.alert;
