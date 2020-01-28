@@ -25,7 +25,11 @@
                     <span class="zfile-word-aux">从缓存中搜索文件, 可能会存在数据不一致的情况</span>
                 </el-form-item>
 
-                <el-form-item label="区分大小写" v-if="form.enableCache && form.searchEnable">
+                <el-form-item label="搜索包含加密文件" v-if="form.isEncryptedFolder">
+                    <el-switch v-model="form.isEncryptedFolder"/>
+                </el-form-item>
+
+                <el-form-item label="忽略大小写" v-if="form.enableCache && form.searchEnable">
                     <el-switch v-model="form.searchIgnoreCase"/>
                 </el-form-item>
 
@@ -68,7 +72,8 @@
                     infoEnable: false,
                     searchEnable: false,
                     searchIgnoreCase: false,
-                    enableCache: false
+                    enableCache: false,
+                    isEncryptedFolder: true
                 },
                 supportStrategy: [],
                 rules: {
