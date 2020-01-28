@@ -25,8 +25,8 @@
                     <span class="zfile-word-aux">从缓存中搜索文件, 可能会存在数据不一致的情况</span>
                 </el-form-item>
 
-                <el-form-item label="搜索包含加密文件" v-if="form.isEncryptedFolder">
-                    <el-switch v-model="form.isEncryptedFolder"/>
+                <el-form-item label="搜索包含加密文件" v-if="form.enableCache && form.searchEnable">
+                    <el-switch v-model="form.searchContainEncryptedFile"/>
                 </el-form-item>
 
                 <el-form-item label="忽略大小写" v-if="form.enableCache && form.searchEnable">
@@ -48,6 +48,24 @@
                         </el-option>
                     </el-select>
                     <el-button type="text" style="margin-left: 20px;" @click="jumpStorageStrategyConfig">设置策略</el-button>
+                </el-form-item>
+
+                <el-form-item label="自定义 CSS">
+                    <el-input
+                            type="textarea"
+                            :rows="3"
+                            placeholder="请输入自定义 CSS 内容"
+                            v-model="form.customCss">
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="自定义 JS">
+                    <el-input
+                            type="textarea"
+                            :rows="3"
+                            placeholder="请输入自定义 JS 内容"
+                            v-model="form.customJs">
+                    </el-input>
                 </el-form-item>
 
                 <el-form-item>
@@ -73,7 +91,9 @@
                     searchEnable: false,
                     searchIgnoreCase: false,
                     enableCache: false,
-                    isEncryptedFolder: true
+                    searchContainEncryptedFile: true,
+                    customCss: '',
+                    customJs: ''
                 },
                 supportStrategy: [],
                 rules: {
@@ -121,6 +141,10 @@
 </script>
 
 <style scoped>
+    .el-row {
+        overflow-y: auto;
+    }
+
     #siteForm {
         margin-top: 20px;
         margin-left: 20px;

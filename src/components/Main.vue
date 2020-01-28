@@ -17,11 +17,24 @@
     import List from './List.vue'
     import Info from './Info.vue'
 
-    document.write("<script>" + "<\/script>");
     export default {
         name: 'Main',
         components: {
             List, Header, Info
+        },
+        watch: {
+            '$store.state.config.viewConfig.customJs': function (newVal) {
+                let script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.text = newVal;
+                document.getElementsByTagName('head')[0].appendChild(script)
+            },
+            '$store.state.config.viewConfig.customCss': function (newVal) {
+                let style = document.createElement('style');
+                style.type = 'text/css';
+                style.innerHTML = newVal;
+                document.getElementsByTagName('head')[0].appendChild(style)
+            }
         }
     }
 </script>
