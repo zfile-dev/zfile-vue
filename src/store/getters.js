@@ -30,8 +30,5 @@ export default {
             let suffix = name.substr(name.lastIndexOf('.') + 1);
             return common.constant.fileTypeMap[type].indexOf(suffix) !== -1;
         });
-    },
-    activeTab: state => {
-        return state.activeTab ? state.activeTab : "aliyun";
     }
 }

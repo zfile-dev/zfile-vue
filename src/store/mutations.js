@@ -19,9 +19,6 @@ export default {
             state.tableData = state.tableData.concat(v);
         }
     },
-    changeActiveTab(state, v) {
-        state.activeTab = v;
-    },
     updateSearchParam(state, v) {
         state.searchParam = v;
     }

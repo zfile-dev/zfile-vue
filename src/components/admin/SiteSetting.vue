@@ -43,7 +43,7 @@
                                 <span style="float: left">{{ item.description }}</span>
                                 <span style="float: right;">
                                     <el-badge v-if="item.available" value="有效" class="item" type="success"/>
-                                    <el-badge v-else value="无效" class="item" type="error"/>
+                                    <el-badge v-else value="无效" class="item"/>
                                 </span>
                         </el-option>
                     </el-select>
@@ -124,8 +124,7 @@
                 });
             },
             jumpStorageStrategyConfig() {
-                this.$store.commit('changeActiveTab', this.form.storageStrategy);
-                this.$router.push('/admin/storage');
+                this.$router.push({path: '/admin/storage?type=' + this.form.storageStrategy});
             }
         },
         mounted() {

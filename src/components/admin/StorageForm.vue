@@ -1,6 +1,7 @@
 <template>
     <el-row>
-        <el-col :span="16">
+        <el-col :span="16"  v-loading="loading"
+                element-loading-text="初始化中.">
             <el-form id="storageForm" ref="form" :model="form" label-width="auto">
                 <el-form-item
                         v-for="(item) in storageStrategyForm"
@@ -11,7 +12,23 @@
                                v-if="item.key === 'endPoint' && region.hasOwnProperty(storageStrategy)">
                         <el-option v-for="endPoint in region[storageStrategy]" :label="endPoint.name" :value="endPoint.val" :key="endPoint.name"/>
                     </el-select>
+
+                    <div  v-else-if="item.key === 'pathStyle'">
+                        <el-select v-model="form.pathStyle" style="width: 50%">
+                            <el-option label="bucket-virtual-hosting" value="bucket-virtual-hosting"></el-option>
+                            <el-option label="path-style" value="path-style"></el-option>
+                        </el-select>
+                        <el-link class="zfile-word-aux" target="_blank" icon="el-icon-document"
+                                 href="https://docs.aws.amazon.com/zh_cn/AmazonS3/latest/dev/VirtualHosting.html#path-style-access">查看 S3 API 说明文档</el-link>
+                    </div>
+
+                    <div v-else-if="item.key === 'isPrivate'">
+                        <el-switch v-model="form.isPrivate" />
+                        <span class="zfile-word-aux">私有空间会生成带签名的下载链接</span>
+                    </div>
+
                     <el-input placeholder="" @input="change($event)" v-else v-model="form[item.key]"/>
+
                 </el-form-item>
 
                 <el-form-item v-if="this.storageStrategy === 'onedrive'">
@@ -41,9 +58,12 @@
             return {
                 form: {
                     endPoint: '',
+                    pathStyle: '',
+                    isPrivate: ''
                 },
                 storageStrategyForm: [],
-                region: region
+                region: region,
+                loading: false
             };
         },
         props: {
@@ -56,12 +76,19 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+                        this.loading = true;
                         this.form.storageStrategy = this.storageStrategy;
                         this.$http.post('admin/storage-strategy', qs.stringify(this.form)).then((response) => {
+                            this.loading = false;
                             if (response.data.code === 0) {
                                 this.$message({
-                                    message: '保存成功',
+                                    message: '初始化成功',
                                     type: 'success'
+                                });
+                            } else {
+                                this.$message({
+                                    message: response.data.msg,
+                                    type: 'error'
                                 });
                             }
                         })
@@ -77,6 +104,9 @@
                 this.storageStrategyForm = response.data.data;
 
                 for (let item of this.storageStrategyForm) {
+                    if (item.value === 'true' || item.value === 'false') {
+                        item.value = Boolean(item.value);
+                    }
                     this.form[item.key] = item.value;
                 }
             })
