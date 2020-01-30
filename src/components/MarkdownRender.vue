@@ -1,11 +1,12 @@
 <template>
-    <div class="markdown-content" v-if="text" v-html="markdownHtml"></div>
+    <div class="markdown-body" v-if="text" v-html="markdownHtml"></div>
 </template>
 
 <script>
 
     import marked from 'marked';
     import * as hljs from 'highlight.js/lib/highlight';
+    import 'github-markdown-css';
 
     hljs.registerLanguage('markdown', require('highlight.js/lib/languages/markdown'));
     hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
@@ -45,17 +46,22 @@
 </script>
 
 <style scoped>
-    .markdown-content >>> img {
+    .markdown-body >>> img {
         max-height: 150vh;
         max-width: 150vh;
         vertical-align: middle;
     }
 
-    .markdown-content {
-        padding: 10px 30px 10px 30px;
+    .markdown-body {
+        box-sizing: border-box;
+        min-width: 200px;
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 30px;
     }
 
-    .markdown-content >>> pre {
+    .markdown-body >>> pre {
         background-color: rgba(27,31,35,.05);
     }
+
 </style>

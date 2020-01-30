@@ -8,6 +8,7 @@ import SiteSetting from "./components/admin/SiteSetting";
 import StorageStrategy from "./components/admin/StorageStrategy";
 import UpdatePassword from "./components/admin/UpdatePassword";
 import CacheManager from "./components/admin/CacheManager";
+import API from "./components/admin/API";
 
 export default new Router({
     mode: 'hash', // 路由模式:默认为 hash,如果改为 history,则需要后端进行配合
@@ -57,6 +58,11 @@ export default new Router({
                     path: 'cache',
                     name: '缓存管理',
                     component: CacheManager
+                },
+                {
+                    path: 'api',
+                    name: 'API',
+                    component: API
                 }
             ]
         }

@@ -1,7 +1,7 @@
 <template>
     <div class="content" v-loading="loading"
          element-loading-text="拼命加载中">
-        <div class="dialog-scroll markdown-content"
+        <div class="dialog-scroll markdown-body"
              v-html="markdownHtml" v-if="fileType === 'markdown'">
         </div>
         <pre v-if="fileType === 'text'" class="dialog-scroll text-content"><code v-html="highlightText"/></pre>
@@ -12,6 +12,7 @@
 
     import marked from 'marked';
     import * as hljs from 'highlight.js/lib/highlight';
+    import 'github-markdown-css';
 
     hljs.registerLanguage('markdown', require('highlight.js/lib/languages/markdown'));
     hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
@@ -102,7 +103,7 @@
         vertical-align:middle;
     }
 
-    .content .markdown-content >>> pre {
+    .content .markdown-body >>> pre {
         margin-right: 20px;
         background-color: rgba(27,31,35,.05);
     }

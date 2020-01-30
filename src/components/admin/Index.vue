@@ -21,6 +21,10 @@
                     <i class="el-icon-collection"/>
                     <span slot="title">缓存管理</span>
                 </el-menu-item>
+                <el-menu-item index="/admin/api">
+                    <i class="el-icon-document"/>
+                    <span slot="title">API 文档</span>
+                </el-menu-item>
             </el-menu>
         </el-col>
         <el-col :span="16">

@@ -47,7 +47,7 @@
         vertical-align:middle;
     }
 
-    .content .markdown-content >>> pre {
+    .content .markdown-body >>> pre {
         margin-right: 20px;
         background-color: rgba(27,31,35,.05);
     }
