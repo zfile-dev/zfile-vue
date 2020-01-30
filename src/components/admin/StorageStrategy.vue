@@ -10,7 +10,7 @@
                 <el-badge is-dot v-if="item.available" class="item" type="success"/>
                 <el-badge is-dot v-else class="item"/>
             </span>
-            <storage-form :storageStrategy="item.key"/>
+            <storage-form :init="init" :storageStrategy="item.key"/>
         </el-tab-pane>
     </el-tabs>
 </template>
@@ -32,16 +32,19 @@
                 this.activeTab = tab.name;
                 let path = this.$route.path;
                 this.$router.push({path: path + '?type=' + this.activeTab});
+            },
+            init: function () {
+                if (this.$route.query.type) {
+                    this.activeTab = this.$route.query.type;
+                }
+
+                this.$http.get('admin/support-strategy').then((response) => {
+                    this.supportStrategy = response.data.data;
+                });
             }
         },
         mounted() {
-            if (this.$route.query.type) {
-                this.activeTab = this.$route.query.type;
-            }
-
-            this.$http.get('admin/support-strategy').then((response) => {
-                this.supportStrategy = response.data.data;
-            });
+            this.init();
         },
         watch: {
             '$route.query.type': function () {

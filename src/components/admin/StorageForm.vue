@@ -1,7 +1,7 @@
 <template>
     <el-row>
         <el-col :span="16"  v-loading="loading"
-                element-loading-text="初始化中.">
+                element-loading-text="保存并初始化中.">
             <el-form id="storageForm" ref="form" :model="form" label-width="auto">
                 <el-form-item
                         v-for="(item) in storageStrategyForm"
@@ -67,7 +67,8 @@
             };
         },
         props: {
-            storageStrategy: String
+            storageStrategy: String,
+            init: Function
         },
         methods: {
             change() {
@@ -88,9 +89,10 @@
                             } else {
                                 this.$message({
                                     message: response.data.msg,
-                                    type: 'error'
+                                    type: 'warning'
                                 });
                             }
+                            this.init();
                         })
                     } else {
                         return false;
