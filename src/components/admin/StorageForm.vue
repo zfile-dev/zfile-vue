@@ -2,11 +2,12 @@
     <el-row>
         <el-col :span="16"  v-loading="loading"
                 element-loading-text="保存并初始化中.">
-            <el-form id="storageForm" ref="form" :model="form" label-width="auto">
+            <el-form id="storageForm" ref="form" :model="form" :rules="rules" label-width="auto" :status-icon="true">
                 <el-form-item
                         v-for="(item) in storageStrategyForm"
                         :label="item.title"
-                        :key="item.title">
+                        :key="item.title"
+                        :prop="item.key">
 
                     <el-select v-model="form.endPoint"
                                v-if="item.key === 'endPoint' && region.hasOwnProperty(storageStrategy)">
@@ -59,11 +60,38 @@
                 form: {
                     endPoint: '',
                     pathStyle: '',
-                    isPrivate: ''
+                    isPrivate: '',
+                    domain: null,
+                    accessKey: null,
+                    secretKey: null,
+                    'bucket-name': null,
+                    host: null,
+                    port: null,
+                    accessToken: null,
+                    refreshToken: null,
+                    secretId: null,
                 },
                 storageStrategyForm: [],
                 region: region,
-                loading: false
+                loading: false,
+                rules: {
+                    domain: [
+                        {
+                            required: false,
+                            type: 'url',
+                            message: '请输入正确的域名, 需以 http:// 或 https:// 开头',
+                            trigger: 'change'
+                        }
+                    ],
+                    accessKey: [{required: true, message: 'AccessKey 不能为空'}],
+                    secretKey: [{required: true, message: 'SecretKey 不能为空'}],
+                    'bucket-name': [{required: true, message: '此项不能为空'}],
+                    host: [{required: true, message: "域名或 IP 不能为空"}],
+                    port: [{required: true, message: "端口不能为空"}],
+                    accessToken: [{required: true, message: "访问令牌不能为空"}],
+                    refreshToken: [{required: true, message: "刷新令牌不能为空"}],
+                    secretId: [{required: true, message: "SecretId 不能为空"}]
+                }
             };
         },
         props: {

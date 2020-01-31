@@ -1,7 +1,10 @@
 <template>
     <el-row>
         <el-col :span="12">
-            <el-form id="siteForm" :rules="rules" ref="form" :model="form" label-width="auto" :status-icon="true">
+            <el-form id="siteForm"
+                     v-loading="loading"
+                     element-loading-text="保存中..."
+                     :rules="rules" ref="form" :model="form" label-width="auto" :status-icon="true">
                 <el-form-item label="站点名称" prop="siteName">
                     <el-input v-model="form.siteName"/>
                 </el-form-item>
@@ -93,8 +96,9 @@
                     enableCache: false,
                     searchContainEncryptedFile: true,
                     customCss: '',
-                    customJs: ''
+                    customJs: '',
                 },
+                loading: false,
                 supportStrategy: [],
                 rules: {
                     siteName: [
@@ -102,7 +106,7 @@
                     ],
                     domain: [
                         {required: true, type: 'url', message: '请输入正确的域名, 需以 http:// 或 https:// 开头', trigger: 'change'},
-                    ],
+                    ]
                 }
             };
         },
@@ -110,7 +114,9 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+                        this.loading = true;
                         this.$http.post('admin/config', qs.stringify(this.form)).then((response) => {
+                            this.loading = false;
                             if (response.data.code === 0) {
                                 this.$message({
                                     message: '保存成功',
