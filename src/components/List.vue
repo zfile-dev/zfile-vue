@@ -3,6 +3,7 @@
         <markdown-render :text="$store.state.config.header"/>
         <el-table ref="fileTable" id="ListTable"
                   v-infinite-scroll="infiniteHandler"
+                  infinite-scroll-distance="1"
                   infinite-scroll-immediate="true"
                   class="transition-box"
                   :data="this.$store.getters.tableData"
@@ -114,8 +115,8 @@
         watch: {
             'searchParam.path': {
                 deep: true,
-                handler() {
-                    if (this.$store.state.searchParam) {
+                handler(newVal) {
+                    if (this.$store.state.searchParam && newVal === '/') {
                         return;
                     }
                     this.searchParam.page = 1;
@@ -127,7 +128,9 @@
                 this.searchParam.path = this.$route.params.pathMatch;
             },
             '$store.state.searchParam': function (newVal) {
-                this.$router.push('/main');
+                if (!this.$route.fullPath.startsWith("/main")) {
+                    this.$router.push('/main');
+                }
                 this.searchParam.page = 1;
                 this.searchParam.path = '/';
 
