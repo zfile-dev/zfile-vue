@@ -69,4 +69,8 @@
 </script>
 
 <style>
+    .dplayer {
+        margin: 0 auto;
+        height: 85vh;
+    }
 </style>
