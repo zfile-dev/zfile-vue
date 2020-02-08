@@ -36,7 +36,14 @@
         async mounted() {
             this.options.container = document.getElementById("dplayer");
 
-            let vttUrl = axios.defaults.baseURL  + '/common/content/origin?url=' + this.url + ".vtt";
+            var baseUrl = axios.defaults.baseURL;
+
+            if (baseUrl === "/") {
+                baseUrl = window.location.origin;
+            }
+
+            let vttUrl = baseUrl + '/common/content/origin?url=' + this.url + ".vtt";
+
 
             await this.$http.get('common/content/exist', {params: {url: this.url + ".vtt"}}).then((response) => {
                 if (response.data) {
