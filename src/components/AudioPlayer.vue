@@ -1,6 +1,6 @@
 <template>
     <aplayer v-show="fileList.length > 0 && audioIndex !== -1" ref="aplayer" id="aplyer" fixed
-             :audio="fileList" @listSwitch="updateCover"/>
+             :audio="fileList" @listSwitch="updateCover" :listFolded="true"/>
 </template>
 
 <script>
