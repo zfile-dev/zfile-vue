@@ -69,8 +69,17 @@
 </script>
 
 <style>
-    .dplayer {
-        margin: 0 auto;
-        height: 85vh;
+    @media screen and (min-width: 992px) {
+        .dplayer {
+            margin: 0 auto;
+            height: 80vh;
+        }
+    }
+
+    @media screen and (max-width: 992px) {
+        .dplayer {
+            margin: 0 auto;
+            height: 60vh;
+        }
     }
 </style>

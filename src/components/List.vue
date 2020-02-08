@@ -48,9 +48,8 @@
         </el-dialog>
 
         <el-dialog id="videoDialog" :destroy-on-close="true"
-                   :visible.sync="dialogVideoVisible"
-                   :top="'5vh'"
-                   :width="'70%'">
+                   :title="currentClickRow.name"
+                   :visible.sync="dialogVideoVisible">
             <video-player v-if="dialogVideoVisible" ref="videoPlayer" :url="currentClickRow.url"/>
         </el-dialog>
 
@@ -399,12 +398,19 @@
 
     /*视频弹窗样式 -- 去除内容边框*/
     #videoDialog >>> .el-dialog__body {
-        padding: unset;
+        padding: 10px 0 0 0;
     }
 
     /*视频弹窗样式 -- 去除标题栏*/
     #videoDialog >>> .el-dialog__header {
-        display: none;
+        /*display: none;*/
+        text-align: center;
+        margin-bottom: -10px;
+        padding: 5px 0 5px 0;
+    }
+
+    #videoDialog >>> .el-dialog__headerbtn {
+        top: 10px;
     }
 
     #textDialog >>> .el-dialog {
@@ -413,6 +419,20 @@
 
     .v-contextmenu-item >>> label {
         margin-left: 10px;
+    }
+
+    @media screen and (max-device-width: 1920px) {
+        #videoDialog >>> .el-dialog {
+            margin-top: 5vh !important;
+            width: 70% !important;
+        }
+    }
+
+    @media screen and (max-device-width: 769px) {
+        #videoDialog >>> .el-dialog {
+            margin-top: 10vh !important;
+            width: 90% !important;
+        }
     }
 
 </style>
