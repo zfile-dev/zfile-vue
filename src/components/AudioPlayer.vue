@@ -1,6 +1,6 @@
 <template>
     <aplayer v-show="fileList.length > 0 && audioIndex !== -1" ref="aplayer" id="aplyer" fixed
-             :audio="fileList" @listSwitch="updateCover" :listFolded="true"/>
+             :audio="fileList" @listSwitch="updateCover"/>
 </template>
 
 <script>
@@ -46,6 +46,7 @@
         },
         mounted() {
             let el = this.$refs.aplayer.$el;
+            el.getElementsByClassName("aplayer-miniswitcher")[0].click();
             el.getElementsByClassName('aplayer-icon-order')[0].setAttribute('title', '播放顺序');
             el.getElementsByClassName('aplayer-icon-loop')[0].setAttribute('title', '循环模式');
             el.getElementsByClassName('aplayer-icon-menu')[0].setAttribute('title', '播放列表');
