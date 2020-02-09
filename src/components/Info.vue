@@ -71,7 +71,7 @@
     }
 
     #info .icon {
-        width: 240px;
+        width: 220px;
         height: 180px
     }
 
