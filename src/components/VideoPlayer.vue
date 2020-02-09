@@ -86,7 +86,7 @@
     @media screen and (max-width: 992px) {
         .dplayer {
             margin: 0 auto;
-            height: 60vh;
+            height: 35vh;
         }
     }
 </style>
