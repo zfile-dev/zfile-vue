@@ -20,6 +20,10 @@ import axios from 'axios'
 import common from "./common";
 Vue.prototype.common = common;
 
+import VueClipboard from 'vue-clipboard2'
+VueClipboard.config.autoSetContainer = true;
+Vue.use(VueClipboard);
+
 // axios.defaults.baseURL = '/';
 axios.defaults.baseURL = 'http://127.0.0.1:8080';
 

@@ -56,12 +56,16 @@
 
         <v-contextmenu ref="contextmenu">
             <v-contextmenu-item @click="preview">
-                <i class="el-icon-view"/>
-                <label v-html="hoverRow.type === 'FILE' ?  '预览' : '打开'"/>
+                <i class="el-icon-view"></i>
+                <label v-html="hoverRow.type === 'FILE' ?  '预览' : '打开'"></label>
             </v-contextmenu-item>
             <v-contextmenu-item @click="download" v-show="hoverRow.type === 'FILE'">
-                <i class="el-icon-download"/>
+                <i class="el-icon-download"></i>
                 <label>下载</label>
+            </v-contextmenu-item>
+            <v-contextmenu-item @click="directlink" v-show="hoverRow.type === 'FILE'">
+                <i class="el-icon-copy-document"></i>
+                <label>复制直链</label>
             </v-contextmenu-item>
         </v-contextmenu>
     </div>
@@ -292,6 +296,15 @@
             download() {
                 window.location.href = this.hoverRow.url;
             },
+            directlink() {
+                let that = this;
+                let directlink = this.common.removeDuplicateSeparator(window.location.origin + "/directlink/" + this.hoverRow.path + "/" + this.hoverRow.name);
+                this.$copyText(directlink).then(function () {
+                    that.$message.success('复制成功');
+                }, function () {
+                    that.$message.error('复制失败');
+                });
+            },
             infiniteHandler() {
                 if (!this.loading) {
                     return true;
@@ -332,34 +345,6 @@
                         })
                     }
                 }
-            },
-            contextMenuData() {
-                let menulists = [];
-
-                if (this.hoverRow === null || this.hoverRow.type === 'FILE') {
-                    menulists.push({
-                        fnHandler: 'preview', // Binding events(绑定事件)
-                        icoName: 'el-icon-view', // icon (icon 图标 )
-                        btnName: '预览' // The name of the menu option (菜单名称)
-                    }, {
-                        fnHandler: 'download',
-                        icoName: 'el-icon-download',
-                        btnName: '下载'
-                    })
-                } else {
-                    menulists.push({
-                        fnHandler: 'preview', // Binding events(绑定事件)
-                        icoName: 'el-icon-view', // icon (icon 图标 )
-                        btnName: '打开' // The name of the menu option (菜单名称)
-                    })
-                }
-
-                return {
-                    menuName: 'file',
-                    axis: this.contextMenuDataAxis,
-                    // Menu options (菜单选项)
-                    menulists: menulists
-                };
             }
         }
     }
