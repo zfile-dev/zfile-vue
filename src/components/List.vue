@@ -1,6 +1,5 @@
 <template>
     <div id="List">
-        <markdown-render :text="$store.state.config.header"/>
         <el-table ref="fileTable" id="ListTable"
                   v-infinite-scroll="infiniteHandler"
                   infinite-scroll-distance="1"
@@ -74,14 +73,13 @@
     import VideoPlayer from "@/components/VideoPlayer";
     import TextPlayer from "@/components/TextPreview";
     import AudioPlayer from "@/components/AudioPlayer";
-    import MarkdownRender from "@/components/MarkdownRender";
     import store from "@/store";
 
     let prefixPath = '/main';
 
     export default {
         components: {
-            VideoPlayer, TextPlayer, AudioPlayer, MarkdownRender
+            VideoPlayer, TextPlayer, AudioPlayer
         },
         created() {
             let p = this.$route.params.pathMatch;
