@@ -31,9 +31,12 @@
                 if (this.fileList.length > 0 && this.audioIndex !== -1) {
                     this.$refs.aplayer.play();
                     this.$refs.aplayer.switch(this.audioIndex);
+                } else {
+                    this.$refs.aplayer.pause();
                 }
             },
             fileList(data) {
+                console.log(data);
                 if (data.length === 0) {
                     this.$refs.aplayer.pause();
                 } else {
