@@ -5,6 +5,7 @@ Vue.use(Router);
 import Main from "./components/Main";
 import Login from "./components/Login";
 import SiteSetting from "./components/admin/SiteSetting";
+import ViewSetting from "./components/admin/ViewSetting";
 import StorageStrategy from "./components/admin/StorageStrategy";
 import UpdatePassword from "./components/admin/UpdatePassword";
 import CacheManager from "./components/admin/CacheManager";
@@ -41,8 +42,13 @@ export default new Router({
                 },
                 {
                     path: 'site',
-                    name: '站点设置',
+                    name: '基本设置',
                     component: SiteSetting
+                },
+                {
+                    path: 'view',
+                    name: '显示设置',
+                    component: ViewSetting
                 },
                 {
                     path: 'storage',

@@ -24,6 +24,9 @@ import VueClipboard from 'vue-clipboard2'
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 
+import "@/assets/common.css";
+
+
 // axios.defaults.baseURL = '/';
 axios.defaults.baseURL = 'http://127.0.0.1:8080';
 

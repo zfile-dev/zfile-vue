@@ -36,7 +36,6 @@
                 }
             },
             fileList(data) {
-                console.log(data);
                 if (data.length === 0) {
                     this.$refs.aplayer.pause();
                 } else {

@@ -9,7 +9,8 @@
                   @cell-mouse-enter="updateInfoHover"
                   @cell-mouse-leave="updateInfoLeave"
                   @row-click="openFolder"
-                  size="small"
+                  :height="$store.getters.showDocument ? '50vh' : '80vh'"
+                  :size="$store.getters.tableSize"
                   cell-class-name="table-cursor"
                   @row-contextmenu="showMenu">
             <el-table-column
@@ -26,7 +27,7 @@
                     prop="time"
                     label="修改时间"
                     class-name="hidden-xs-only"
-                    min-width="15%">
+                    min-width="20%">
             </el-table-column>
             <el-table-column
                     prop="size"
@@ -34,6 +35,18 @@
                     class-name="hidden-xs-only"
                     :formatter="this.common.fileSizeFilter"
                     min-width="15%">
+            </el-table-column>
+
+            <el-table-column
+                    v-if="$store.getters.showOperator"
+                    label="操作"
+                    min-width="15%">
+                <template slot-scope="scope">
+                    <div v-if="scope.row.type === 'FILE'">
+                        <i class="el-icon-download" style="color: #1E9FFF"></i>
+                        <i class="el-icon-copy-document hidden-sm-and-down" style="color: #1E9FFF; margin-left: 20px"></i>
+                    </div>
+                </template>
             </el-table-column>
         </el-table>
 
@@ -351,6 +364,10 @@
 </script>
 
 <style scoped>
+    #List {
+        overflow: hidden;
+    }
+
     .el-table {
         margin: 20px;
         padding-right: 30px;

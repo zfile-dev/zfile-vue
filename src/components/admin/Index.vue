@@ -7,7 +7,11 @@
                     :router="true">
                 <el-menu-item index="/admin/site">
                     <i class="el-icon-setting"/>
-                    <span slot="title">站点设置</span>
+                    <span slot="title">基本设置</span>
+                </el-menu-item>
+                <el-menu-item index="/admin/view">
+                    <i class="el-icon-view"/>
+                    <span slot="title">显示设置</span>
                 </el-menu-item>
                 <el-menu-item index="/admin/storage">
                     <i class="el-icon-s-operation"/>

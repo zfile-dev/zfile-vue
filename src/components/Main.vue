@@ -1,28 +1,30 @@
 <template>
     <div id="main">
         <Header/>
+        <el-alert type="info"
+                  :closable="false"
+                  :description="$store.getters.announcement"
+                  v-if="$store.getters.showAnnouncement"></el-alert>
         <el-row :gutter="20">
-            <el-col :xs="24" :sm="24" :lg="$store.getters.infoEnable ? 20 : 24">
-                <markdown-render :text="$store.state.config.header"/>
+            <el-col :offset="isFullScreen ? 0 : 3" :xs="24" :sm="24" :lg="isFullScreen ? 24 : 18">
                 <List ref="List"/>
             </el-col>
-            <el-col v-if="$store.getters.infoEnable" :xs="0" :lg="4">
-                <Info ref="Info"/>
-            </el-col>
         </el-row>
+        <el-card class="box-card" :class="isFullScreen ? '' : 'center-box-card'" v-if="$store.getters.showDocument">
+            <markdown-render :text="$store.state.config.header"/>
+        </el-card>
     </div>
 </template>
 
 <script>
     import Header from './Header.vue'
     import List from './List.vue'
-    import Info from './Info.vue'
     import MarkdownRender from "./MarkdownRender";
 
     export default {
         name: 'Main',
         components: {
-            List, Header, Info, MarkdownRender
+            List, Header, MarkdownRender
         },
         watch: {
             '$store.state.config.viewConfig.customJs': function (newVal) {
@@ -36,6 +38,11 @@
                 style.type = 'text/css';
                 style.innerHTML = newVal;
                 document.getElementsByTagName('head')[0].appendChild(style)
+            }
+        },
+        computed: {
+            isFullScreen() {
+                return this.common.isMobile() || this.$store.getters.layout !== 'center';
             }
         }
     }
@@ -75,4 +82,16 @@
     ::-webkit-scrollbar-thumb:vertical:active{background-color: rgba(0,0,0,.38);}
 
     /* ----- 滚动条样式 ----- */
+
+    .center-box-card {
+        width: 1100px;
+        margin: 0 auto;
+    }
+
+    .markdown-body {
+        height: 300px;
+        overflow-y: auto;
+        padding: 0 !important;
+        min-width: 100% !important;
+    }
 </style>

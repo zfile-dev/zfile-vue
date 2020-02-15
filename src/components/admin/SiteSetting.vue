@@ -13,27 +13,23 @@
                     <el-input v-model="form.domain"/>
                 </el-form-item>
 
-                <el-form-item label="右侧信息框">
-                    <el-switch v-model="form.infoEnable"/>
-                    <span class="zfile-word-aux">开启会影响浏览性能</span>
-                </el-form-item>
-
                 <el-form-item label="开启缓存">
                     <el-switch v-model="form.enableCache" @change="form.searchEnable = false"/>
                     <span class="zfile-word-aux">默认缓存 60 分钟，每隔 30 分钟自动刷新一次.</span>
                 </el-form-item>
 
-                <el-form-item label="搜索" v-if="form.enableCache">
+                <el-form-item label="开启搜索">
                     <el-switch v-model="form.searchEnable"/>
                     <span class="zfile-word-aux">从缓存中搜索文件, 可能会存在数据不一致的情况</span>
                 </el-form-item>
 
-                <el-form-item label="搜索包含加密文件" v-if="form.enableCache && form.searchEnable">
+                <el-form-item label="搜索包含加密文件">
                     <el-switch v-model="form.searchContainEncryptedFile"/>
                 </el-form-item>
 
-                <el-form-item label="忽略大小写" v-if="form.enableCache && form.searchEnable">
+                <el-form-item label="忽略大小写">
                     <el-switch v-model="form.searchIgnoreCase"/>
+                    <span class="zfile-word-aux">搜索内容是否包含大小写</span>
                 </el-form-item>
 
                 <el-form-item label="存储策略">
@@ -51,24 +47,6 @@
                         </el-option>
                     </el-select>
                     <el-button type="text" style="margin-left: 20px;" @click="jumpStorageStrategyConfig">设置策略</el-button>
-                </el-form-item>
-
-                <el-form-item label="自定义 CSS">
-                    <el-input
-                            type="textarea"
-                            :rows="3"
-                            placeholder="请输入自定义 CSS 内容"
-                            v-model="form.customCss">
-                    </el-input>
-                </el-form-item>
-
-                <el-form-item label="自定义 JS">
-                    <el-input
-                            type="textarea"
-                            :rows="3"
-                            placeholder="请输入自定义 JS 内容"
-                            v-model="form.customJs">
-                    </el-input>
                 </el-form-item>
 
                 <el-form-item>
@@ -94,9 +72,7 @@
                     searchEnable: false,
                     searchIgnoreCase: false,
                     enableCache: false,
-                    searchContainEncryptedFile: true,
-                    customCss: '',
-                    customJs: '',
+                    searchContainEncryptedFile: true
                 },
                 loading: false,
                 supportStrategy: [],

@@ -4,6 +4,24 @@ export default {
     infoEnable: state => {
         return state.config.viewConfig && state.config.viewConfig.infoEnable;
     },
+    tableSize: state => {
+        return state.config.viewConfig && state.config.viewConfig.tableSize;
+    },
+    showOperator: state => {
+        return state.config.viewConfig && state.config.viewConfig.showOperator;
+    },
+    showDocument: state => {
+        return state.config.viewConfig && state.config.viewConfig.showDocument;
+    },
+    announcement: state => {
+        return state.config.viewConfig && state.config.viewConfig.announcement;
+    },
+    layout: state => {
+        return state.config.viewConfig && state.config.viewConfig.layout;
+    },
+    showAnnouncement: state => {
+        return state.config.viewConfig && state.config.viewConfig.showAnnouncement;
+    },
     searchEnable: state => {
         return state.config.viewConfig && state.config.viewConfig.searchEnable;
     },
