@@ -43,8 +43,8 @@
                     min-width="15%">
                 <template slot-scope="scope">
                     <div v-if="scope.row.type === 'FILE'">
-                        <i class="el-icon-download" style="color: #1E9FFF"></i>
-                        <i class="el-icon-copy-document hidden-sm-and-down" style="color: #1E9FFF; margin-left: 20px"></i>
+                        <i @click.stop="download" class="el-icon-download operator-btn"></i>
+                        <i @click.stop="directlink" class="el-icon-copy-document operator-btn hidden-sm-and-down"></i>
                     </div>
                 </template>
             </el-table-column>
@@ -238,6 +238,7 @@
                 });
             },
             openFolder(row) {
+                alert(2);
                 this.currentClickRow = row;
 
                 if (row.type === 'FILE') {
@@ -307,6 +308,7 @@
                 this.openFolder(this.hoverRow);
             },
             download() {
+                alert(1);
                 window.location.href = this.hoverRow.url;
             },
             directlink() {
@@ -433,6 +435,12 @@
             margin-top: 10vh !important;
             width: 90% !important;
         }
+    }
+
+    .operator-btn {
+        color: #1E9FFF;
+        margin-right: 20px;
+        font-size: 16px
     }
 
 </style>

@@ -10,7 +10,6 @@
                     <el-radio v-model="form.layout" label="center">居中</el-radio>
                 </el-form-item>
 
-
                 <el-form-item label="列表尺寸">
                     <el-radio v-model="form.tableSize" label="medium">大</el-radio>
                     <el-radio v-model="form.tableSize" label="small">中</el-radio>

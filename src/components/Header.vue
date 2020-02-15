@@ -16,7 +16,6 @@
 
 <script>
     import path from 'path'
-    import store from "@/store";
 
     export default {
         name: "Header",

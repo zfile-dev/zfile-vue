@@ -11,7 +11,7 @@
             </el-col>
         </el-row>
         <el-card class="box-card" :class="isFullScreen ? '' : 'center-box-card'" v-if="$store.getters.showDocument">
-            <markdown-render :text="$store.state.config.header"/>
+            <markdown-render :text="$store.state.config.readme"/>
         </el-card>
     </div>
 </template>
