@@ -10,7 +10,8 @@
                 <List ref="List"/>
             </el-col>
         </el-row>
-        <el-card class="box-card" :class="isFullScreen ? '' : 'center-box-card'" v-if="$store.getters.showDocument">
+        <el-card class="box-card" :class="isFullScreen ? '' : 'center-box-card'"
+                 v-if="$store.getters.showDocument && $store.state.config.readme !== null">
             <markdown-render :text="$store.state.config.readme"/>
         </el-card>
     </div>

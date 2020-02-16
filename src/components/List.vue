@@ -9,7 +9,7 @@
                   @cell-mouse-enter="updateInfoHover"
                   @cell-mouse-leave="updateInfoLeave"
                   @row-click="openFolder"
-                  :height="$store.getters.showDocument ? '50vh' : '80vh'"
+                  :height="$store.getters.showDocument && $store.state.config.readme !== null ? '50vh' : '80vh'"
                   :size="$store.getters.tableSize"
                   cell-class-name="table-cursor"
                   @row-contextmenu="showMenu">
@@ -238,7 +238,6 @@
                 });
             },
             openFolder(row) {
-                alert(2);
                 this.currentClickRow = row;
 
                 if (row.type === 'FILE') {
@@ -308,7 +307,6 @@
                 this.openFolder(this.hoverRow);
             },
             download() {
-                alert(1);
                 window.location.href = this.hoverRow.url;
             },
             directlink() {
