@@ -9,7 +9,7 @@
                   @cell-mouse-enter="updateInfoHover"
                   @cell-mouse-leave="updateInfoLeave"
                   @row-click="openFolder"
-                  :height="$store.getters.showDocument && $store.state.config.readme !== null ? '50vh' : '80vh'"
+                  :height="$store.getters.showDocument && $store.state.config.readme !== null ? '50vh' : '83vh'"
                   :size="$store.getters.tableSize"
                   cell-class-name="table-cursor"
                   @row-contextmenu="showMenu">
@@ -369,7 +369,7 @@
     }
 
     .el-table {
-        margin: 20px;
+        margin: 20px 0 30px 20px;
         padding-right: 30px;
         height: calc(100vh - 80px);
         overflow-y: auto;
