@@ -26,10 +26,6 @@ Vue.use(VueClipboard);
 
 import "@/assets/common.css";
 
-
-// axios.defaults.baseURL = '/';
-axios.defaults.baseURL = 'http://127.0.0.1:8080';
-
 // 允许跨域携带 cookie
 axios.defaults.withCredentials = true;
 
@@ -66,42 +62,49 @@ Vue.use(APlayer, {
     productionTip: false,
 });
 
-new Vue({
-    render: h => h(App),
-    router,
-    store,
-    beforeCreate: function () {
-        // 如果已经初始化, 则跳转后文件首页, 否则跳转后初始化页
-        this.$http.get('is-installed').then((response) => {
-            let data = response.data;
-            if (data.code !== 0) {
-                let hash = window.location.hash;
-                if (!hash.includes("#/main")
-                    && !hash.includes("#/admin")
-                    && !hash.includes("#/login")) {
-                    this.$router.push('/main');
-                }
-            } else {
-                this.$router.push('/install')
-            }
-        });
 
-        //  REQUEST 请求异常拦截
-        axios.interceptors.response.use(config=> {
-            return config;
-        }, error=> {
-            let msg = error.response.data.msg;
-            if (msg === '未登录') {
-                this.$router.push('/login');
-            } else {
-                this.$message({
-                    message: msg,
-                    type: 'error'
-                });
-            }
-            return Promise.resolve(error);
-        });
-    }
-}).$mount('#app');
+axios.get('zfile.config.json').then((result) => {
+    axios.defaults.baseURL = result.data.baseUrl;
+    new Vue({
+        render: h => h(App),
+        router,
+        store,
+        beforeCreate: function () {
+            // 如果已经初始化, 则跳转后文件首页, 否则跳转后初始化页
+            this.$http.get('is-installed').then((response) => {
+                let data = response.data;
+                if (data.code !== 0) {
+                    let hash = window.location.hash;
+                    if (!hash.includes("#/main")
+                        && !hash.includes("#/admin")
+                        && !hash.includes("#/login")) {
+                        this.$router.push('/main');
+                    }
+                } else {
+                    this.$router.push('/install')
+                }
+            });
+
+            //  REQUEST 请求异常拦截
+            axios.interceptors.response.use(config=> {
+                return config;
+            }, error=> {
+                let msg = error.response.data.msg;
+                if (msg === '未登录') {
+                    this.$router.push('/login');
+                } else {
+                    this.$message({
+                        message: msg,
+                        type: 'error'
+                    });
+                }
+                return Promise.resolve(error);
+            });
+        }
+    }).$mount('#app');
+}).catch((error) => {
+    console.log('get baseConfig error...' + error)
+});
+
 
 console.log("\n %c Zfile %c https://github.com/zhaojun1998/zfile \n\n", "background: #35495e; padding: 1px; border-radius: 3px 0 0 3px; color: #fff", "background: #fadfa3; padding: 1px; border-radius: 0 3px 3px 0; color: #fff");
