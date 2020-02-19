@@ -62,7 +62,7 @@
         <el-dialog id="videoDialog" :destroy-on-close="true"
                    :title="currentClickRow.name"
                    :visible.sync="dialogVideoVisible">
-            <video-player v-if="dialogVideoVisible" ref="videoPlayer" :url="currentClickRow.url"/>
+            <video-player v-if="dialogVideoVisible" ref="videoPlayer" :data="currentClickRow"/>
         </el-dialog>
 
         <audio-player :file-list="this.$store.getters.filterFileByType('audio')" :audio-index="currentClickTypeIndex('audio')"/>

@@ -31,35 +31,42 @@
             }
         },
         props: {
-            url: String
+            data: Object
         },
         async mounted() {
             this.options.container = document.getElementById("dplayer");
 
-            var baseUrl = axios.defaults.baseURL;
+            let currData = this.data;
 
-            if (baseUrl === "/") {
-                baseUrl = window.location.origin;
-            }
+            let tableData = this.$store.getters.tableData;
 
-            let vttUrl = baseUrl + '/common/content/origin?url=' + this.url + ".vtt";
+            let containerVtt = false;
 
+            let vttUrl;
 
-            await this.$http.get('common/content/exist', {params: {url: this.url + ".vtt"}}).then((response) => {
-                if (response.data) {
-                    this.options.subtitle = {
-                        url: vttUrl,
-                        type: 'webvtt',
-                        fontSize: '25px',
-                        bottom: '10%',
-                        color: '#b7daff',
-                    };
+            tableData.find((value) => {
+                console.log("currData.name", currData.name);
+                console.log("value.name", value.name);
+                if (value.name === (currData.name + ".vtt")) {
+                    containerVtt = true;
+                    vttUrl = value.url;
+                    return true;
                 }
             });
 
+            if (containerVtt) {
+                this.options.subtitle = {
+                    url: vttUrl,
+                    type: 'webvtt',
+                    fontSize: '25px',
+                    bottom: '10%',
+                    color: '#b7daff',
+                };
+            }
+
             this.player = new DPlayer(this.options);
             this.player.switchVideo({
-                url: this.url
+                url: currData.url
             })
         },
         destroyed() {
