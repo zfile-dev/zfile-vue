@@ -1,10 +1,9 @@
 <template>
     <div id="main">
         <Header/>
-        <el-alert type="info"
-                  :closable="false"
-                  :description="$store.getters.announcement"
-                  v-if="$store.getters.showAnnouncement"></el-alert>
+        <div class="alert" v-html="$store.getters.announcement">
+        </div>
+
         <el-row :gutter="20">
             <el-col :offset="isFullScreen ? 0 : 3" :xs="24" :sm="24" :lg="isFullScreen ? 24 : 18">
                 <List ref="List"/>
@@ -94,5 +93,28 @@
         overflow-y: auto;
         padding: 0 !important;
         min-width: 100% !important;
+    }
+
+    .alert {
+        background-color: #f4f4f5;
+        color: #909399;
+        font-size: 12px;
+        margin: 0 0 0;
+        width: 100%;
+        padding: 10px 16px;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        border-radius: 4px;
+        position: relative;
+        overflow: hidden;
+        opacity: 1;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-transition: opacity .2s;
+        transition: opacity .2s;
     }
 </style>
