@@ -13,6 +13,9 @@ export default {
     showDocument: state => {
         return state.config.viewConfig && state.config.viewConfig.showDocument;
     },
+    domain: state => {
+        return state.config.viewConfig && state.config.viewConfig.domain;
+    },
     announcement: state => {
         return state.config.viewConfig && state.config.viewConfig.announcement;
     },

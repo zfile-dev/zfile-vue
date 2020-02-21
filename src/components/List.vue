@@ -311,7 +311,7 @@
             },
             directlink() {
                 let that = this;
-                let directlink = this.common.removeDuplicateSeparator(window.location.origin + "/directlink/" + this.hoverRow.path + "/" + this.hoverRow.name);
+                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.hoverRow.path + "/" + this.hoverRow.name);
                 this.$copyText(directlink).then(function () {
                     that.$message.success('复制成功');
                 }, function () {
