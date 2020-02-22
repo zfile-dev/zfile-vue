@@ -7,6 +7,9 @@ export default {
     tableSize: state => {
         return state.config.viewConfig && state.config.viewConfig.tableSize;
     },
+    storageStrategy: state => {
+        return state.config.viewConfig && state.config.viewConfig.storageStrategy;
+    },
     showOperator: state => {
         return state.config.viewConfig && state.config.viewConfig.showOperator;
     },
@@ -33,11 +36,6 @@ export default {
         tableData.forEach((item) => {
             if (!item.icon) {
                 item['icon'] = common.getFileIconName(item);
-
-                if (item.type !== 'FILE') {
-                    let host = window.location.host;
-                    item.url = common.removeDuplicateSeparator(host + "/#/main/" + item.path + '/' + item.name);
-                }
             }
         });
         return tableData;
