@@ -45,8 +45,6 @@
             let vttUrl;
 
             tableData.find((value) => {
-                console.log("currData.name", currData.name);
-                console.log("value.name", value.name);
                 if (value.name === (currData.name + ".vtt")) {
                     containerVtt = true;
                     vttUrl = value.url;

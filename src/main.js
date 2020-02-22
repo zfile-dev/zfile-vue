@@ -102,8 +102,6 @@ axios.get('zfile.config.json').then((result) => {
             });
         }
     }).$mount('#app');
-}).catch((error) => {
-    console.log('get baseConfig error...' + error)
 });
 
 
