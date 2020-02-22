@@ -239,8 +239,16 @@
             },
             openFolder(row) {
                 this.currentClickRow = row;
-
                 if (row.type === 'FILE') {
+                    if (this.$store.getters.storageStrategy === 'ftp') {
+                        this.$message({
+                            message: 'FTP 模式, 不支持预览功能, 已自动调用下载',
+                            type: 'warning'
+                        });
+                        this.download();
+                        return;
+                    }
+
                     let fileType = this.common.getFileType(row.name);
 
                     switch (fileType) {
