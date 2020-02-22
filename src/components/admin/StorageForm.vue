@@ -14,7 +14,7 @@
                         <el-option v-for="endPoint in region[storageStrategy]" :label="endPoint.name" :value="endPoint.val" :key="endPoint.name"/>
                     </el-select>
 
-                    <div  v-else-if="item.key === 'pathStyle'">
+                    <div v-else-if="item.key === 'pathStyle'">
                         <el-select v-model="form.pathStyle" style="width: 50%">
                             <el-option label="bucket-virtual-hosting" value="bucket-virtual-hosting"></el-option>
                             <el-option label="path-style" value="path-style"></el-option>
@@ -29,6 +29,14 @@
                     </div>
 
                     <el-input placeholder="" @input="change($event)" v-else v-model="form[item.key]"/>
+
+                    <div v-if="item.key === 'base-path'">
+                        <span class="zfile-word-aux" style="margin-left: 0">基路径表示从哪个路径开始文件, 不填写表示从根开始</span>
+                    </div>
+
+                    <div v-if="item.key === 'domain' && storageStrategy === 'ftp'">
+                        <span class="zfile-word-aux" style="margin-left: 0">此域名表示 http 访问域名</span>
+                    </div>
 
                 </el-form-item>
 
@@ -53,6 +61,7 @@
 <script>
     import qs from 'qs';
     import region from "@/region";
+
     export default {
         name: "StorageForm",
         data() {
@@ -77,12 +86,15 @@
                 rules: {
                     domain: [
                         {
-                            required: false,
+                            required: this.storageStrategy !== 'ftp',
                             type: 'url',
                             message: '请输入正确的域名, 需以 http:// 或 https:// 开头',
                             trigger: 'change'
                         }
                     ],
+                    username: [{required: this.storageStrategy === 'upyun', message: '操作员名称不能为空'}],
+                    password: [{required: this.storageStrategy === 'upyun', message: '操作员密码不能为空'}],
+                    endPoint: [{required: true, message: '区域不能为空'}],
                     accessKey: [{required: true, message: 'AccessKey 不能为空'}],
                     secretKey: [{required: true, message: 'SecretKey 不能为空'}],
                     'bucket-name': [{required: true, message: '此项不能为空'}],

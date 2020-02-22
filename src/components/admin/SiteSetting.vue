@@ -19,7 +19,7 @@
                 </el-form-item>
 
                 <el-form-item label="开启搜索">
-                    <el-switch v-model="form.searchEnable"/>
+                    <el-switch v-model="form.searchEnable" :disabled="!form.enableCache"/>
                     <span class="zfile-word-aux">从缓存中搜索文件, 可能会存在数据不一致的情况</span>
                 </el-form-item>
 
@@ -27,9 +27,8 @@
                     <el-switch v-model="form.searchContainEncryptedFile"/>
                 </el-form-item>
 
-                <el-form-item label="忽略大小写">
+                <el-form-item label="搜索忽略大小写">
                     <el-switch v-model="form.searchIgnoreCase"/>
-                    <span class="zfile-word-aux">搜索内容是否包含大小写</span>
                 </el-form-item>
 
                 <el-form-item label="存储策略">
