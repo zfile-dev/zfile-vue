@@ -2,7 +2,7 @@
     <el-row :gutter="20">
         <el-col :span="8" :offset="8">
             <el-card class="box-card" align-center shadow="always">
-                <el-form ref="form" :rules="rules" :model="form" label-width="auto" :status-icon="true" >
+                <el-form ref="form" :rules="rules" :model="form" label-width="auto" :status-icon="true" v-loading="loading" element-loading-text="保存并初始化中.">
                     <el-form-item label="站点名称" prop="siteName">
                         <el-input v-model="form.siteName"/>
                     </el-form-item>
@@ -63,7 +63,8 @@
                     domain: window.location.protocol + "//" + window.location.host,
                     storageStrategyConfig: {
                         endPoint: '',
-                    }
+                    },
+                    loading: true
                 },
                 storageStrategyForm: [],
                 supportStrategy: [],
@@ -94,10 +95,12 @@
         },
         methods: {
             submitForm(formName) {
+                this.loading = true;
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let that = this;
                         this.$http.post('install', qs.stringify(this.form)).then((response) => {
+                            this.loading = false;
                             let data =  response.data;
                             this.$message({
                                 message: data.msg,
