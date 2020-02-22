@@ -10,6 +10,7 @@ import StorageStrategy from "./components/admin/StorageStrategy";
 import UpdatePassword from "./components/admin/UpdatePassword";
 import CacheManager from "./components/admin/CacheManager";
 import API from "./components/admin/API";
+import Monitor from "./components/admin/Monitor";
 
 export default new Router({
     mode: 'hash', // 路由模式:默认为 hash,如果改为 history,则需要后端进行配合
@@ -69,6 +70,11 @@ export default new Router({
                     path: 'api',
                     name: 'API',
                     component: API
+                },
+                {
+                    path: 'monitor',
+                    name: 'Monitor',
+                    component: Monitor
                 }
             ]
         }

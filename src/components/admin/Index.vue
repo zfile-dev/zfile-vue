@@ -29,6 +29,10 @@
                     <i class="el-icon-document"/>
                     <span slot="title">API 文档</span>
                 </el-menu-item>
+                <el-menu-item index="/admin/monitor">
+                    <i class="el-icon-monitor"/>
+                    <span slot="title">系统监控</span>
+                </el-menu-item>
             </el-menu>
         </el-col>
         <el-col :span="16">
