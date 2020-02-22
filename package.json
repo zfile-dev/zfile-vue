@@ -19,7 +19,6 @@
     "highlight.js": "^9.16.2",
     "hls.js": "^0.13.0",
     "marked": "^0.7.0",
-    "qrcodejs2": "0.0.2",
     "v-contextmenu": "^2.8.1",
     "vue": "^2.6.9",
     "vue-aplayer": "^1.6.1",

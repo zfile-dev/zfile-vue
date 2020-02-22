@@ -24,7 +24,6 @@ import {
     Popover,
     Badge,
     Link,
-    Alert,
     Radio,
     Loading,
     Message,
@@ -55,7 +54,6 @@ Vue.use(Row);
 Vue.use(Col);
 Vue.use(Card);
 Vue.use(Popover);
-Vue.use(Alert);
 Vue.use(InfiniteScroll);
 Vue.use(Loading);
 Vue.use(Badge);
