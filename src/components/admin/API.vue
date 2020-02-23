@@ -36,6 +36,10 @@
 
 <style scoped>
 
+    .markdown-body {
+        padding: 20px !important;
+    }
+
     .scroll {
         height: 100vh;
         overflow-y: auto;
