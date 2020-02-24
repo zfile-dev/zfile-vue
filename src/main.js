@@ -58,7 +58,7 @@ import 'v-contextmenu/dist/index.css'
 import APlayer from '@moefe/vue-aplayer';
 
 Vue.use(APlayer, {
-    defaultCover: 'http://c.jun6.net/audio.png',
+    defaultCover: 'https://c.jun6.net/audio.png',
     productionTip: false,
 });
 

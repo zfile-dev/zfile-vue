@@ -18,7 +18,7 @@
             };
         },
         mounted() {
-            let docUrl = 'http://c.jun6.net/ZFILE/ZFILE API.md';
+            let docUrl = 'https://c.jun6.net/ZFILE/ZFILE API.md';
 
             this.$http.get('common/content', {params: {url: docUrl}}).then((response) => {
                 this.loading = false;
