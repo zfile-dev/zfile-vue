@@ -2,15 +2,18 @@ import Vue from 'vue';
 import Router from "vue-router";
 Vue.use(Router);
 
-import Main from "./components/Main";
-import Login from "./components/Login";
-import SiteSetting from "./components/admin/SiteSetting";
-import ViewSetting from "./components/admin/ViewSetting";
-import StorageStrategy from "./components/admin/StorageStrategy";
-import UpdatePassword from "./components/admin/UpdatePassword";
-import CacheManager from "./components/admin/CacheManager";
-import API from "./components/admin/API";
-import Monitor from "./components/admin/Monitor";
+const Install = () => import(/* webpackChunkName: "front" */'./components/Install');
+const Main = () => import(/* webpackChunkName: "front" */'./components/Main');
+
+const Admin = () => import(/* webpackChunkName: "admin" */'./components/admin/Index');
+const Login = () => import(/* webpackChunkName: "admin" */'./components/Login');
+const SiteSetting = () => import(/* webpackChunkName: "admin" */'./components/admin/SiteSetting');
+const ViewSetting = () => import(/* webpackChunkName: "admin" */'./components/admin/ViewSetting');
+const StorageStrategy = () => import(/* webpackChunkName: "admin" */'./components/admin/StorageStrategy');
+const CacheManager = () => import(/* webpackChunkName: "admin" */'./components/admin/CacheManager');
+const UpdatePassword = () => import(/* webpackChunkName: "admin" */'./components/admin/UpdatePassword');
+const API = () => import(/* webpackChunkName: "admin" */'./components/admin/API');
+const Monitor = () => import(/* webpackChunkName: "admin" */'./components/admin/Monitor');
 
 export default new Router({
     mode: 'hash', // 路由模式:默认为 hash,如果改为 history,则需要后端进行配合
@@ -18,9 +21,7 @@ export default new Router({
     routes: [
         {
             path: '/install',
-            component: r => {
-                require.ensure([], () => r(require('./components/Install')), 'install')
-            }
+            component: Install
         },
         {
             path: '/main*',
@@ -32,9 +33,7 @@ export default new Router({
         },
         {
             path: '/admin',
-            component: r => {
-                require.ensure([], () => r(require('./components/admin/Index')), 'adminIndex')
-            },
+            component: Admin,
             children: [
                 {
                     path: '/',

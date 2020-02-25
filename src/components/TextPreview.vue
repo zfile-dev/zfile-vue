@@ -1,35 +1,31 @@
 <template>
     <div class="content" v-loading="loading"
          element-loading-text="拼命加载中">
+        <div id="container" class="editor" v-if="getFileSuffix(file.name) !== 'md'"></div>
+
         <div class="dialog-scroll markdown-body"
-             v-html="markdownHtml" v-if="fileType === 'markdown'">
+             v-html="markdownHtml" v-if="getFileSuffix(file.name) === 'md'">
         </div>
-        <pre v-if="fileType === 'text'" class="dialog-scroll text-content"><code v-html="highlightText"/></pre>
     </div>
 </template>
 
 <script>
-
+    const monaco = () => import(/* webpackChunkName: "front-monaco" */'monaco-editor/esm/vs/editor/editor.api');
     import marked from 'marked';
     import * as hljs from 'highlight.js/lib/highlight';
     import 'github-markdown-css';
 
     hljs.registerLanguage('markdown', require('highlight.js/lib/languages/markdown'));
-    hljs.registerLanguage('javascript', require('highlight.js/lib/languages/javascript'));
-    hljs.registerLanguage('css', require('highlight.js/lib/languages/css'));
-    hljs.registerLanguage('xml', require('highlight.js/lib/languages/xml'));
-    hljs.registerLanguage('json', require('highlight.js/lib/languages/json'));
-    hljs.registerLanguage('java', require('highlight.js/lib/languages/java'));
-    hljs.registerLanguage('yaml', require('highlight.js/lib/languages/yaml'));
-    hljs.registerLanguage('python', require('highlight.js/lib/languages/python'));
-    hljs.registerLanguage('php', require('highlight.js/lib/languages/php'));
 
     export default {
-        name: "TextPlayer",
+        name: "TextPreview",
+        components: {
+        },
         data() {
             return {
                 text: '',
-                loading: true
+                loading: true,
+                editor: '',
             }
         },
         props: {
@@ -37,7 +33,11 @@
         },
         methods: {
             getFileSuffix(name) {
-                return name.substr(name.lastIndexOf('.') + 1);
+                let suffix = name.substr(name.lastIndexOf('.') + 1).toLocaleLowerCase();
+                if (suffix === 'js') {
+                    return 'javascript';
+                }
+                return suffix;
             },
             init() {
                 let file = this.file;
@@ -45,14 +45,21 @@
                 this.$http.get('common/content', {params: {url: file.url}}).then((response) => {
                     this.loading = false;
                     this.text = response.data.data;
+                    this.initMonaco();
                 }).catch(() => {
                     this.$http.get(file.url).then((response) => {
                         this.loading = false;
                         this.text = response.data;
+                        this.initMonaco();
                     })
                 });
-
-
+            },
+            initMonaco() {
+                monaco.editor.create(document.getElementById('container'), {
+                    value: this.text,
+                    language: this.getFileSuffix(this.file.name),
+                    theme: 'vs',
+                });
             }
         },
         computed: {
@@ -72,25 +79,6 @@
                         return hljs.highlightAuto(code).value;
                     }
                 });
-            },
-            highlightText() {
-                if (this.loading) {
-                    return '';
-                } else if (this.file.size > 10240) {
-                    this.$message('文件内容过多, 取消高亮显示');
-                    return this.text;
-                } else {
-                    let result = '';
-                    try {
-                       result = hljs.highlightAuto(this.text).value;
-                    } catch (e) {
-                        result = this.text;
-                    }
-                    return result;
-                }
-            },
-            fileType() {
-                return this.getFileSuffix(this.file.name) === 'md' ? 'markdown' : 'text';
             }
         }
     }
@@ -114,4 +102,8 @@
         margin: 0;
     }
 
+    .editor {
+        width: 100%;
+        height: 80vh;
+    }
 </style>

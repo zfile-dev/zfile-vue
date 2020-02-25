@@ -5,8 +5,6 @@
 <script>
 
     import 'dplayer/dist/DPlayer.min.css';
-    import axios from "axios";
-
     let DPlayer;
     import flvjs from 'flv.js';
     import Hls from 'hls.js';

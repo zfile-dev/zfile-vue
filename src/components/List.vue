@@ -56,7 +56,7 @@
                    :top="'5vh'"
                    :width="'90%'"
                    @opened="initTextDialog">
-            <TextPlayer :file="currentClickRow" ref="textDialog"/>
+            <TextPreview :file="currentClickRow" ref="textDialog"/>
         </el-dialog>
 
         <el-dialog id="videoDialog" :destroy-on-close="true"
@@ -87,16 +87,18 @@
 <script>
     import path from 'path'
     import 'element-ui/lib/theme-chalk/display.css';
-    import VideoPlayer from "@/components/VideoPlayer";
-    import TextPlayer from "@/components/TextPreview";
-    import AudioPlayer from "@/components/AudioPlayer";
+
+    const VideoPlayer = () => import(/* webpackChunkName: "front-video" */'./VideoPlayer');
+    const TextPreview = () => import(/* webpackChunkName: "front-text" */'./TextPreview');
+    const AudioPlayer = () => import(/* webpackChunkName: "front-audio" */'./AudioPlayer');
+
     import store from "@/store";
 
     let prefixPath = '/main';
 
     export default {
         components: {
-            VideoPlayer, TextPlayer, AudioPlayer
+            VideoPlayer, TextPreview, AudioPlayer
         },
         created() {
             let p = this.$route.params.pathMatch;
@@ -319,7 +321,7 @@
             },
             directlink() {
                 let that = this;
-                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.hoverRow.path + "/" + this.hoverRow.name);
+                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.hoverRow.path + "/" + encodeURI(this.hoverRow.name));
                 this.$copyText(directlink).then(function () {
                     that.$message.success('复制成功');
                 }, function () {
@@ -409,9 +411,8 @@
         padding: 10px 0 0 0;
     }
 
-    /*视频弹窗样式 -- 去除标题栏*/
-    #videoDialog >>> .el-dialog__header {
-        /*display: none;*/
+    /* 弹窗标题居中, 高度减少 */
+    #List >>> .el-dialog__header {
         text-align: center;
         margin-bottom: -10px;
         padding: 5px 0 5px 0;
