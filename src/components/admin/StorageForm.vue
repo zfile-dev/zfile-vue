@@ -79,6 +79,8 @@
                     accessToken: null,
                     refreshToken: null,
                     secretId: null,
+                    username: null,
+                    password: null,
                 },
                 storageStrategyForm: [],
                 region: region,
