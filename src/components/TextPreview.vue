@@ -1,6 +1,7 @@
 <template>
     <div class="content" v-loading="loading"
          element-loading-text="拼命加载中">
+
         <div id="container" class="editor" v-if="getFileSuffix(file.name) !== 'md'"></div>
 
         <div class="dialog-scroll markdown-body"
@@ -10,7 +11,7 @@
 </template>
 
 <script>
-    const monaco = () => import(/* webpackChunkName: "front-monaco" */'monaco-editor/esm/vs/editor/editor.api');
+    import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
     import marked from 'marked';
     import * as hljs from 'highlight.js/lib/highlight';
     import 'github-markdown-css';
