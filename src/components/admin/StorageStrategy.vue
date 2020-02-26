@@ -59,6 +59,6 @@
 <style scoped>
     .el-tabs {
         display: block;
-        width: 940px;
+        /*width: 940px;*/
     }
 </style>
