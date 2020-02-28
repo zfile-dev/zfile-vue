@@ -24,6 +24,11 @@ import VueClipboard from 'vue-clipboard2'
 VueClipboard.config.autoSetContainer = true;
 Vue.use(VueClipboard);
 
+
+import InfiniteLoading from 'vue-infinite-loading';
+
+Vue.use(InfiniteLoading, { /* 配置 */ });
+
 import "@/assets/common.css";
 
 // 允许跨域携带 cookie

@@ -28,7 +28,6 @@ import {
     Loading,
     Message,
     MessageBox,
-    InfiniteScroll,
     Notification
 } from 'element-ui';
 
@@ -54,7 +53,6 @@ Vue.use(Row);
 Vue.use(Col);
 Vue.use(Card);
 Vue.use(Popover);
-Vue.use(InfiniteScroll);
 Vue.use(Loading);
 Vue.use(Badge);
 Vue.use(Link);

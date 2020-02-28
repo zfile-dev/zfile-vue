@@ -1,17 +1,13 @@
 <template>
     <div id="List">
         <el-table ref="fileTable" id="ListTable"
-                  v-infinite-scroll="infiniteHandler"
-                  infinite-scroll-distance="1"
-                  infinite-scroll-immediate="true"
                   class="transition-box"
                   :data="this.$store.getters.tableData"
                   @cell-mouse-enter="updateInfoHover"
                   @cell-mouse-leave="updateInfoLeave"
                   @row-click="openFolder"
-                  :height="$store.getters.showDocument && $store.state.config.readme !== null ? '50vh' : '83vh'"
+                  :height="$store.getters.showDocument && $store.state.config.readme !== null ? '50vh' : '84vh'"
                   :size="$store.getters.tableSize"
-                  cell-class-name="table-cursor"
                   @row-contextmenu="showMenu">
             <el-table-column
                     prop="name"
@@ -48,6 +44,36 @@
                     </div>
                 </template>
             </el-table-column>
+
+            <slot></slot>
+            <template slot="append">
+                <!--
+                @infinite: 滚动事件回调函数,当滚动到距离滚动父元素底部特定距离的时候，会被调用
+                distance: 这是滚动的临界值。default: 100; 如果到滚动父元素的底部距离小于这个值，那么 loadMore 回调函数就会被调用。
+                spinner: 通过这个属性，你可以选择一个你最喜爱旋转器作为加载动画
+                      'default' | 'bubbles' | 'circles' | 'spiral' | 'waveDots'
+                direction: 如果你设置这个属性为top,那么这个组件将在你滚到顶部的时候，调用on-infinite函数
+                      'top' | 'bottom'
+                forceUseInfiniteWrapper: (boolean | string) 强制指定滚动容器，使用CSS 选择器
+                identifier: 识别号，改变时刷新
+                -->
+                <infinite-loading
+                        @infinite="infiniteHandler"
+                        ref="infiniteLoading"
+                        spinner="bubbles"
+                        force-use-infinite-wrapper=".el-table__body-wrapper">
+                    <!--   orce-use-infinite-wrapper 属性在存在多个 el-table 需要更详细的css选择器   -->
+                    <div class="no-more" slot="no-more">
+                        我~是有底线的 (～￣▽￣)～
+                    </div>
+                    <div class="no-more" slot="no-results">
+                        暂无结果 Ծ‸Ծ
+                    </div>
+                    <div class="no-more" slot="error">
+                        出错了 (╯‵□′)╯︵┻━┻
+                    </div>
+                </infinite-loading>
+            </template>
         </el-table>
 
         <el-dialog id="textDialog" :destroy-on-close="true"
@@ -110,6 +136,7 @@
                 loading: false,
                 // 当前鼠标悬浮的行
                 hoverRow: {},
+                state: null,
                 // 是否打开文本浏览器弹出
                 dialogTextVisible: false,
                 // 是否打开视频播放器弹出
@@ -120,6 +147,7 @@
                     password: '',
                     page: 1
                 },
+                totalPage: 1,
                 // 当前点击文件
                 currentClickRow: {},
                 contextMenuDataAxis: {
@@ -135,34 +163,27 @@
                     if (this.$store.state.searchParam && newVal === '/') {
                         return;
                     }
+                    this.searchParam.password = this.getPathPwd();
                     this.searchParam.page = 1;
                     this.loadingConfig();
-                    this.getList();
+                    if (this.state) {
+                        store.commit('tableData', []);
+                        this.state.reset();
+                    }
                 }
             },
             '$route.fullPath': function () {
                 this.searchParam.path = this.$route.params.pathMatch;
             },
-            '$store.state.searchParam': function (newVal) {
+            '$store.state.searchParam': function () {
                 if (!this.$route.fullPath.startsWith("/main")) {
                     this.$router.push('/main');
                 }
                 this.searchParam.page = 1;
                 this.searchParam.path = '/';
 
-                let url, param;
-                if (newVal) {
-                    url = 'api/search';
-                    param = {name: newVal, page: this.searchParam.page};
-                } else {
-                    url = 'api/list';
-                    param = this.searchParam;
-                }
-
-                this.$http.get(url, {params: param}).then((response) => {
-                    this.searchParam.page++;
-                    store.commit('tableData', response.data.data);
-                })
+                this.state.reset();
+                store.commit('tableData', []);
             }
         },
         methods: {
@@ -174,41 +195,57 @@
                 });
                 this.$refs.contextmenu.$el.hidden = false;
             },
-            getList: function () {
-                let that = this;
-                
-                this.$http.get('api/list', {params: this.searchParam}).then((response) => {
+            infiniteHandler($state) {
+                if ($state) {
+                    this.state = $state;
+                }
+
+                let url, param;
+                if (this.$store.state.searchParam) {
+                    url = 'api/search';
+                    param = {name: this.$store.state.searchParam, page: this.searchParam.page};
+                } else {
+                    url = 'api/list';
+                    param = this.searchParam;
+                }
+
+                this.$http.get(url, {params: param}).then((response) => {
                     let data = response.data.data;
-                    if (data) {
-                        let searchPath = that.searchParam.path;
-                        
-                        if (searchPath !== '' && searchPath !== '/') {
-                            let fullPath = this.$route.params.pathMatch;
-                            fullPath = fullPath ? fullPath : '/';
-                            let parentPathName = path.basename(path.resolve(fullPath, "../"));
-                            data.unshift({
-                                name: parentPathName ? parentPathName : '/',
-                                path: path.resolve(searchPath, '../'),
-                                type: 'BACK'
-                            });
-                        }
-                        that.searchParam.page++;
-                        that.loading = true;
-                        store.commit('tableData', data);
-                        let currentDirectory = {
-                            path: searchPath,
-                            name: path.basename(searchPath),
-                            icon: 'el-icon-my-folder',
-                            url: this.common.removeDuplicateSeparator(window.location.host + "/#/main/" + searchPath)
-                        };
-                        store.commit('currentDirectory', currentDirectory);
-                    } else {
-                        if (this.searchParam.password) {
+
+                    if (response.data.code === -2 || response.data.code === -3) {
+                        if (response.data.code === -3) {
                             this.$message.error('密码错误, 请重新输入!',);
                         }
                         this.popPassword();
+                        return;
                     }
-                })
+
+
+                    this.totalPage = data.totalPage;
+
+                    let searchPath = this.searchParam.path;
+
+                    if (searchPath !== '' && searchPath !== '/' && this.searchParam.page === 1) {
+                        let fullPath = this.$route.params.pathMatch;
+                        fullPath = fullPath ? fullPath : '/';
+                        let parentPathName = path.basename(path.resolve(fullPath, "../"));
+                        data.fileList.unshift({
+                            name: parentPathName ? parentPathName : '/',
+                            path: path.resolve(searchPath, '../'),
+                            type: 'BACK'
+                        });
+                    }
+
+                    store.commit('appendTableData', data.fileList);
+                    this.searchParam.page++;
+                    if ($state) {
+                        $state.loaded();
+                    }
+
+                    if (data.fileList.length === 0 || this.searchParam.page > this.totalPage) {
+                        $state.complete();
+                    }
+                });
             },
             popPassword() {
                 this.$prompt('请输入密码', '提示', {
@@ -219,13 +256,21 @@
                     },
                     inputErrorMessage: '密码不能为空.'
                 }).then(({value}) => {
-                    if (value !== this.searchParam.password) {
-                        this.searchParam.password = value;
+                    if (value !== this.getPathPwd()) {
+                        this.putPathPwd(value);
                     }
-                    this.getList();
+                    this.state.reset();
                 }).catch(() => {
                     this.$router.push(prefixPath + path.resolve(this.searchParam.path, '../'));
                 });
+            },
+            getPathPwd: function() {
+                let pwd = sessionStorage.getItem("zfile-pwd-" + this.searchParam.path);
+                return pwd === null ? '' : pwd;
+            },
+            putPathPwd: function(value) {
+                sessionStorage.setItem("zfile-pwd-" + this.searchParam.path, value);
+                this.searchParam.password = value;
             },
             updateInfoHover: function (row) {
                 this.hoverRow = row;
@@ -328,27 +373,6 @@
                     that.$message.error('复制失败');
                 });
             },
-            infiniteHandler() {
-                if (!this.loading) {
-                    return true;
-                }
-
-                let url, param;
-                if (this.$store.state.searchParam) {
-                    url = 'api/search';
-                    param = {name: this.$store.state.searchParam, page: this.searchParam.page};
-                } else {
-                    url = 'api/list';
-                    param = this.searchParam;
-                }
-
-                this.$http.get(url, {params: param}).then((response) => {
-                    let data = response.data.data;
-                    store.commit('appendTableData', data);
-                    this.searchParam.page++;
-                });
-            },
-
         },
         computed: {
             // 当前点击类型的索引
@@ -379,10 +403,9 @@
     }
 
     .el-table {
-        margin: 20px 0 30px 20px;
+        margin: 20px 0 0 20px;
         padding-right: 30px;
-        height: calc(100vh - 80px);
-        overflow-y: auto;
+        overflow-y: hidden;
     }
 
     .el-table::before {
