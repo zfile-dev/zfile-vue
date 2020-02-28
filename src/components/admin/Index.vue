@@ -33,6 +33,10 @@
                     <i class="el-icon-monitor"/>
                     <span slot="title">系统监控</span>
                 </el-menu-item>
+                <el-menu-item @click="click">
+                    <i class="el-icon-s-home"/>
+                    <span slot="title">前往首页</span>
+                </el-menu-item>
             </el-menu>
         </el-col>
         <el-col :span="16">
@@ -49,6 +53,11 @@
         data() {
             return {
                 active: '/admin/storage'
+            }
+        },
+        methods: {
+            click() {
+                window.open('/', '_blank');
             }
         }
     }
