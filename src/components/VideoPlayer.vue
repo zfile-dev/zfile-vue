@@ -5,10 +5,9 @@
 <script>
 
     import 'dplayer/dist/DPlayer.min.css';
-    let DPlayer;
     import flvjs from 'flv.js';
     import Hls from 'hls.js';
-    require.ensure([], function() { DPlayer = require('dplayer')}, 'dplayer');
+    import DPlayer from 'dplayer';
 
     window.flvjs = flvjs;
     window.Hls = Hls;
@@ -59,11 +58,10 @@
                     color: '#b7daff',
                 };
             }
-
             this.player = new DPlayer(this.options);
             this.player.switchVideo({
                 url: currData.url
-            })
+            });
         },
         destroyed() {
             this.player.destroy();
