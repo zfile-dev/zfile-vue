@@ -18,7 +18,7 @@
 
                 <el-form-item label="显示操作按钮">
                     <el-switch v-model="form.showOperator"/>
-                    <span class="zfile-word-aux">显示下载和预览按钮, 在移动端只显示下载</span>
+                    <span class="zfile-word-aux">显示下载和复制按钮, 在移动端只显示下载</span>
                 </el-form-item>
 
                 <el-form-item label="显示文档区">
