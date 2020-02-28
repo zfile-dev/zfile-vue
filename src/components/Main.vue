@@ -1,8 +1,7 @@
 <template>
     <div id="main">
         <Header/>
-        <div class="alert" v-html="$store.getters.announcement">
-        </div>
+        <div class="alert" v-html="$store.getters.announcement" v-if="$store.getters.showAnnouncement"></div>
 
         <el-row :gutter="20">
             <el-col :offset="isFullScreen ? 0 : 3" :xs="24" :sm="24" :lg="isFullScreen ? 24 : 18">
