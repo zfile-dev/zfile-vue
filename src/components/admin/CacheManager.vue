@@ -7,7 +7,9 @@
                         <div slot="header" class="clearfix">
                             <span class="card-title">是否已开启缓存</span>
                         </div>
-                        <el-switch v-model="enableCache" :disabled="enableCache && !cacheFinish" @change="switchCache"/>
+                        <div class="card-content">
+                            <el-switch v-model="enableCache" @change="switchCache"/>
+                        </div>
                     </el-card>
                 </el-col>
 
@@ -15,12 +17,9 @@
                     <el-card shadow="always">
                         <div slot="header" class="clearfix">
                             <span class="card-title">是否已完成缓存</span>
-                            <el-button class="card-title-button" type="text" @click="clearAllCache"
-                                       v-show="enableCache && cacheFinish">清理缓存</el-button>
-                            <el-button class="card-title-button" type="text" @click="cacheAll"
-                                       v-show="enableCache && !cacheFinish">缓存所有</el-button>
                         </div>
-                        <el-switch v-model="cacheFinish" disabled/>
+                        <div class="card-content" v-text="cacheFinish ?  'YES' : 'NO'">
+                        </div>
                     </el-card>
                 </el-col>
                 <el-col :span="6">
@@ -35,9 +34,9 @@
                 <el-col :span="6">
                     <el-card shadow="always">
                         <div slot="header" class="clearfix">
-                            <span class="card-title">已缓存文件</span>
+                            <span class="card-title">缓存上次刷新时间</span>
                         </div>
-                        <div class="card-content" v-text="animatedCacheFileCount">
+                        <div class="card-content" v-text="lastCacheAutoRefreshDate ? lastCacheAutoRefreshDate : '暂未开始'">
                         </div>
                     </el-card>
                 </el-col>
@@ -87,15 +86,13 @@
             return {
                 enableCache: true,
                 cacheFinish: true,
-                stopRefreshAfterLastAccess: 0,
                 refreshSeconds: 0,
                 cacheDirectoryCount: 0,
-                cacheFileCount: 0,
                 tweenedCacheDirectoryCount: 0,
-                tweenedCacheFileCount: 0,
                 search: '',
                 timer: null,
-                tableData: []
+                tableData: [],
+                lastCacheAutoRefreshDate: null
             }
         },
         methods: {
@@ -126,23 +123,6 @@
                     }
                 })
             },
-            cacheAll() {
-                this.$http.post('admin/cache/all', qs.stringify(this.form)).then(() => {
-                    this.$message({
-                        message: '操作成功, 开始缓存所有文件',
-                        type: 'success'
-                    });
-                });
-            },
-            clearAllCache() {
-                this.$http.post('admin/cache/clear', qs.stringify(this.form)).then(() => {
-                    this.$message({
-                        message: '清理成功',
-                        type: 'success'
-                    });
-                    this.loadConfig();
-                });
-            },
             refreshCache(index, row) {
                 this.$http.post('admin/cache/refresh', qs.stringify({key: row.name})).then(() => {
                     this.$message({
@@ -157,7 +137,7 @@
                     this.enableCache = data.enableCache;
                     this.cacheFinish = data.cacheFinish;
                     this.cacheDirectoryCount = data.cacheDirectoryCount;
-                    this.cacheFileCount = data.cacheFileCount;
+                    this.lastCacheAutoRefreshDate = data.lastCacheAutoRefreshDate;
 
                     let cacheKeys = data.cacheKeys;
                     cacheKeys.sort(function (a, b) {
@@ -198,14 +178,8 @@
             animatedCacheDirectoryCount: function () {
                 return this.tweenedCacheDirectoryCount.toFixed(0);
             },
-            animatedCacheFileCount: function () {
-                return this.tweenedCacheFileCount.toFixed(0);
-            }
         },
         watch: {
-            cacheFileCount: function(newValue) {
-                TweenLite.to(this.$data, 0.5, { tweenedCacheFileCount: newValue });
-            },
             cacheDirectoryCount: function(newValue) {
                 TweenLite.to(this.$data, 0.5, { tweenedCacheDirectoryCount: newValue });
             }

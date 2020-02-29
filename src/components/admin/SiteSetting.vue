@@ -13,14 +13,9 @@
                     <el-input v-model="form.domain"/>
                 </el-form-item>
 
-                <el-form-item label="开启缓存">
-                    <el-switch v-model="form.enableCache" @change="form.searchEnable = false"/>
-                    <span class="zfile-word-aux">缓存可配置是否自动刷新, 及自动刷新间隔时间</span>
-                </el-form-item>
-
                 <el-form-item label="开启搜索">
-                    <el-switch v-model="form.searchEnable" :disabled="!form.enableCache"/>
-                    <span class="zfile-word-aux">从缓存中搜索文件, 可能会存在数据不一致的情况</span>
+                    <el-switch v-model="form.searchEnable"/>
+                    <span class="zfile-word-aux">从缓存中搜索文件, 仅当开启缓存后有效！</span>
                 </el-form-item>
 
                 <el-form-item label="搜索包含加密文件">
@@ -96,6 +91,11 @@
                                 this.$message({
                                     message: '保存成功',
                                     type: 'success'
+                                });
+                            } else {
+                                this.$message({
+                                    message: response.data.msg,
+                                    type: 'error'
                                 });
                             }
                         })
