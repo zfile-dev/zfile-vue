@@ -51,19 +51,6 @@
                 this.timer = setTimeout(() => {
                     this.$store.commit('updateSearchParam', newVal);
                 }, 150);
-            },
-            '$store.state.currentDirectory': function (val) {
-                let config = this.$store.state.config;
-                let siteName = '';
-                if (config.viewConfig) {
-                     siteName = ' | ' + this.$store.state.config.viewConfig.siteName;
-                }
-
-                if (val.name === '/' || val.name === '') {
-                    document.title = "首页" + siteName;
-                } else {
-                    document.title = val.name + siteName;
-                }
             }
         }
     }

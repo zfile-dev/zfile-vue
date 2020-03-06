@@ -163,6 +163,7 @@
                     if (this.$store.state.searchParam && newVal === '/') {
                         return;
                     }
+                    this.updateTitle();
                     this.searchParam.password = this.getPathPwd();
                     this.searchParam.page = 1;
                     this.loadingConfig();
@@ -187,6 +188,21 @@
             }
         },
         methods: {
+            updateTitle() {
+                let basepath = path.basename(this.searchParam.path);
+
+                let config = this.$store.state.config;
+                let siteName = '';
+                if (config.viewConfig) {
+                    siteName = ' | ' + this.$store.state.config.viewConfig.siteName;
+                }
+
+                if (basepath === '/' || basepath === '') {
+                    document.title = "首页" + siteName;
+                } else {
+                    document.title = basepath + siteName;
+                }
+            },
             showMenu() {
                 event.preventDefault();
                 this.$refs.contextmenu.show({
