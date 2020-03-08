@@ -2,7 +2,11 @@
     <el-row :gutter="20">
         <el-col :span="10" :offset="7">
             <el-card class="box-card" align-center shadow="always">
-                <el-form ref="form" :rules="rules" :model="form" label-width="auto" :status-icon="true" v-loading="loading" element-loading-text="保存并初始化中.">
+                <el-form ref="form" :rules="rules" :model="form"
+                         label-width="auto"
+                         :status-icon="true"
+                         v-loading="loading"
+                         element-loading-text="保存并初始化中.">
                     <el-form-item label="站点名称" prop="siteName">
                         <el-input v-model="form.siteName"/>
                     </el-form-item>
@@ -19,7 +23,7 @@
                         <el-input v-model.trim="form.domain"/>
                     </el-form-item>
 
-                    <el-form-item label="存储策略">
+                    <el-form-item label="存储策略" prop="storageStrategy">
                         <el-select v-model="form.storageStrategy" placeholder="请选择存储策略">
                             <el-option :key="item.key" v-for="(item) in supportStrategy" :label="item.description" :value="item.key"/>
                         </el-select>
@@ -29,7 +33,7 @@
                             v-for="(item) in storageStrategyForm"
                             :label="item.title"
                             :key="item.title"
-                            :prop="'storageStrategyForm' + item.key">
+                            :prop="'storageStrategyConfig.' + item.key">
 
                         <el-select v-model="form.storageStrategyConfig.endPoint"
                                    v-if="item.key === 'endPoint' && region.hasOwnProperty(form.storageStrategy)">
@@ -97,6 +101,16 @@
                     domain: window.location.protocol + "//" + window.location.host,
                     storageStrategyConfig: {
                         endPoint: '',
+                        pathStyle: '',
+                        isPrivate: '',
+                        accessKey: null,
+                        secretKey: null,
+                        'bucket-name': null,
+                        host: null,
+                        port: null,
+                        accessToken: null,
+                        refreshToken: null,
+                        secretId: null,
                     },
                 },
                 loading: false,
@@ -116,7 +130,10 @@
                     domain: [
                         {required: true, type: 'url', message: '请输入正确的域名, 需以 http:// 或 https:// 开头', trigger: 'change'},
                     ],
-                    storageStrategyFormdomain: [
+                    storageStrategy: [
+                        {required: true, message: '存储策略不能为空', trigger: 'change'},
+                    ],
+                    'storageStrategyConfig.domain': [
                         {
                             required: this.storageStrategy !== 'ftp',
                             type: 'url',
@@ -124,17 +141,17 @@
                             trigger: 'change'
                         }
                     ],
-                    storageStrategyFormusername: [{required: this.storageStrategy === 'upyun', message: '操作员名称不能为空'}],
-                    storageStrategyFormpassword: [{required: this.storageStrategy === 'upyun', message: '操作员密码不能为空'}],
-                    storageStrategyFormendPoint: [{required: true, message: '区域不能为空'}],
-                    storageStrategyFormaccessKey: [{required: true, message: 'AccessKey 不能为空'}],
-                    storageStrategyFormsecretKey: [{required: true, message: 'SecretKey 不能为空'}],
-                    'storageStrategyFormbucket-name': [{required: true, message: '此项不能为空'}],
-                    storageStrategyFormhost: [{required: true, message: "域名或 IP 不能为空"}],
-                    storageStrategyFormport: [{required: true, message: "端口不能为空"}],
-                    storageStrategyFormaccessToken: [{required: true, message: "访问令牌不能为空"}],
-                    storageStrategyFormrefreshToken: [{required: true, message: "刷新令牌不能为空"}],
-                    storageStrategyFormsecretId: [{required: true, message: "SecretId 不能为空"}]
+                    'storageStrategyConfig.username': [{required: this.storageStrategy === 'upyun', message: '操作员名称不能为空'}],
+                    'storageStrategyConfig.password': [{required: this.storageStrategy === 'upyun', message: '操作员密码不能为空'}],
+                    'storageStrategyConfig.endPoint': [{required: true, message: '区域不能为空'}],
+                    'storageStrategyConfig.accessKey': [{required: true, message: 'AccessKey 不能为空'}],
+                    'storageStrategyConfig.secretKey': [{required: true, message: 'SecretKey 不能为空'}],
+                    'storageStrategyConfig.bucket-name': [{required: true, message: '此项不能为空'}],
+                    'storageStrategyConfig.host': [{required: true, message: "域名或 IP 不能为空"}],
+                    'storageStrategyConfig.port': [{required: true, message: "端口不能为空"}],
+                    'storageStrategyConfig.accessToken': [{required: true, message: "访问令牌不能为空"}],
+                    'storageStrategyConfig.refreshToken': [{required: true, message: "刷新令牌不能为空"}],
+                    'storageStrategyConfig.secretId': [{required: true, message: "SecretId 不能为空"}]
                 }
             };
         },
