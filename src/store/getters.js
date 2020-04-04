@@ -46,7 +46,7 @@ export default {
                 return false
             }
             let name = item.name;
-            let suffix = name.substr(name.lastIndexOf('.') + 1);
+            let suffix = name.substr(name.lastIndexOf('.') + 1).toLowerCase();
             return common.constant.fileTypeMap[type].indexOf(suffix) !== -1;
         });
     }
