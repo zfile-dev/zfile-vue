@@ -149,7 +149,7 @@
 
                 for (let item of this.storageStrategyForm) {
                     if (item.value === 'true' || item.value === 'false') {
-                        item.value = Boolean(item.value);
+                        item.value = JSON.parse(item.value);
                     }
                     this.form[item.key] = item.value;
                 }
