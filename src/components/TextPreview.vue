@@ -43,24 +43,26 @@
             init() {
                 let file = this.file;
 
-                this.$http.get('common/content', {params: {url: file.url}}).then((response) => {
+                this.$http.get(file.url, {withCredentials: false}).then((response) => {
                     this.loading = false;
-                    this.text = response.data.data;
+                    this.text = response.data;
                     this.initMonaco();
                 }).catch(() => {
-                    this.$http.get(file.url).then((response) => {
+                    this.$http.get('common/content', {params: {url: file.url}}).then((response) => {
                         this.loading = false;
-                        this.text = response.data;
+                        this.text = response.data.data;
                         this.initMonaco();
-                    })
-                });
+                    });
+                })
             },
             initMonaco() {
-                monaco.editor.create(document.getElementById('container'), {
-                    value: this.text,
-                    language: this.getFileSuffix(this.file.name),
-                    theme: 'vs',
-                });
+                if (this.getFileSuffix(this.file.name) !== 'md') {
+                    monaco.editor.create(document.getElementById('container'), {
+                        value: this.text,
+                        language: this.getFileSuffix(this.file.name),
+                        theme: 'vs',
+                    });
+                }
             }
         },
         computed: {

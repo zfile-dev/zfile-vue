@@ -126,6 +126,7 @@
         components: {
             VideoPlayer, TextPreview, AudioPlayer
         },
+        props: ['driveId'],
         created() {
             let p = this.$route.params.pathMatch;
             this.searchParam.path = p ? p : '/';
@@ -153,7 +154,8 @@
                 contextMenuDataAxis: {
                     x: null,
                     y: null
-                }
+                },
+                driveList: []
             }
         },
         watch: {
@@ -175,6 +177,18 @@
             },
             '$route.fullPath': function () {
                 this.searchParam.path = this.$route.params.pathMatch;
+                if (this.$store.state.searchParam && this.searchParam.path === '/') {
+                    return;
+                }
+                this.updateTitle();
+                this.searchParam.password = this.getPathPwd();
+                this.searchParam.page = 1;
+                this.loadingConfig();
+                if (this.state) {
+                    store.commit('tableData', []);
+                    this.state.reset();
+                }
+
             },
             '$store.state.searchParam': function () {
                 if (!this.$route.fullPath.startsWith("/main")) {
@@ -216,12 +230,16 @@
                     this.state = $state;
                 }
 
+                if (!this.driveId) {
+                    return;
+                }
+
                 let url, param;
                 if (this.$store.state.searchParam) {
                     url = 'api/search';
                     param = {name: this.$store.state.searchParam, page: this.searchParam.page};
                 } else {
-                    url = 'api/list';
+                    url = 'api/list/' + this.driveId;
                     param = this.searchParam;
                 }
 
@@ -277,7 +295,7 @@
                     }
                     this.state.reset();
                 }).catch(() => {
-                    this.$router.push(prefixPath + path.resolve(this.searchParam.path, '../'));
+                    this.$router.push("/" + this.driveId + prefixPath + path.resolve(this.searchParam.path, '../'));
                 });
             },
             getPathPwd: function() {
@@ -296,9 +314,11 @@
                 store.commit('hoverRow', null);
             },
             loadingConfig() {
-                this.$http.get('api/config', {params: {path: this.searchParam.path}}).then((response) => {
-                    store.commit('updateConfig', response.data.data);
-                });
+                if (this.driveId) {
+                    this.$http.get('api/config/' + this.driveId, {params: {path: this.searchParam.path}}).then((response) => {
+                        store.commit('updateConfig', response.data.data);
+                    });
+                }
             },
             openFolder(row) {
                 this.currentClickRow = row;
@@ -342,7 +362,7 @@
                         path = '/' + path;
                     }
 
-                    this.$router.push(prefixPath + path);
+                    this.$router.push("/" + this.driveId + prefixPath + path);
                 }
             },
             openImage() {
@@ -382,7 +402,7 @@
             },
             directlink() {
                 let that = this;
-                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.hoverRow.path + "/" + encodeURI(this.hoverRow.name));
+                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + this.hoverRow.path + "/" + encodeURI(this.hoverRow.name));
                 this.$copyText(directlink).then(function () {
                     that.$message.success('复制成功');
                 }, function () {

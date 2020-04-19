@@ -13,36 +13,6 @@
                     <el-input v-model="form.domain"/>
                 </el-form-item>
 
-                <el-form-item label="开启搜索">
-                    <el-switch v-model="form.searchEnable"/>
-                    <span class="zfile-word-aux">从缓存中搜索文件, 仅当开启缓存后有效！</span>
-                </el-form-item>
-
-                <el-form-item label="搜索包含加密文件">
-                    <el-switch v-model="form.searchContainEncryptedFile"/>
-                </el-form-item>
-
-                <el-form-item label="搜索忽略大小写">
-                    <el-switch v-model="form.searchIgnoreCase"/>
-                </el-form-item>
-
-                <el-form-item label="存储策略">
-                    <el-select filterable v-model="form.storageStrategy" placeholder="请选择存储策略">
-                        <el-option :key="item.key"
-                                   v-for="(item) in supportStrategy"
-                                   :label="item.description"
-                                   :disabled="!item.available"
-                                   :value="item.key">
-                                <span style="float: left">{{ item.description }}</span>
-                                <span style="float: right;">
-                                    <el-badge v-if="item.available" value="有效" class="item" type="success"/>
-                                    <el-badge v-else value="无效" class="item"/>
-                                </span>
-                        </el-option>
-                    </el-select>
-                    <el-button type="text" style="margin-left: 20px;" @click="jumpStorageStrategyConfig">设置策略</el-button>
-                </el-form-item>
-
                 <el-form-item>
                     <el-button type="primary" @click="submitForm('form')" round>保存设置</el-button>
                 </el-form-item>
@@ -60,16 +30,9 @@
             return {
                 form: {
                     siteName: '',
-                    storageStrategy: '',
                     domain: '',
-                    infoEnable: false,
-                    searchEnable: false,
-                    searchIgnoreCase: false,
-                    enableCache: false,
-                    searchContainEncryptedFile: true
                 },
                 loading: false,
-                supportStrategy: [],
                 rules: {
                     siteName: [
                         {required: true, message: '请输入站点名称', trigger: 'change'},
@@ -104,15 +67,8 @@
                     }
                 });
             },
-            jumpStorageStrategyConfig() {
-                this.$router.push({path: '/admin/storage?type=' + this.form.storageStrategy});
-            }
         },
         mounted() {
-            this.$http.get('admin/support-strategy').then((response) => {
-                this.supportStrategy = response.data.data;
-            });
-
             this.$http.get('admin/config').then((response) => {
                 this.form = response.data.data;
             });
@@ -132,10 +88,5 @@
 
     #siteForm >>> .el-select {
         width: 70%;
-    }
-
-    .zfile-word-aux {
-        margin-left: 20px;
-        color: #aaaaaa;
     }
 </style>

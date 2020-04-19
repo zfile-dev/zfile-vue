@@ -1,11 +1,11 @@
 <template>
     <div id="main">
-        <Header/>
+        <Header :drive-id="driveId"/>
         <div class="alert" v-html="$store.getters.announcement" v-if="$store.getters.showAnnouncement"></div>
 
         <el-row :gutter="20">
             <el-col :offset="isFullScreen ? 0 : 3" :xs="24" :sm="24" :lg="isFullScreen ? 24 : 18">
-                <List ref="List"/>
+                <List :drive-id="driveId" ref="List"/>
             </el-col>
         </el-row>
         <el-card class="box-card" :class="isFullScreen ? '' : 'center-box-card'"
@@ -22,17 +22,18 @@
 
     export default {
         name: 'Main',
+        props: ['driveId'],
         components: {
             List, Header, MarkdownRender
         },
         watch: {
-            '$store.state.config.viewConfig.customJs': function (newVal) {
+            '$store.state.config.customJs': function (newVal) {
                 let script = document.createElement('script');
                 script.type = 'text/javascript';
                 script.text = newVal;
                 document.getElementsByTagName('head')[0].appendChild(script)
             },
-            '$store.state.config.viewConfig.customCss': function (newVal) {
+            '$store.state.config.customCss': function (newVal) {
                 let style = document.createElement('style');
                 style.type = 'text/css';
                 style.innerHTML = newVal;

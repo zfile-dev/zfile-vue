@@ -6,7 +6,7 @@ import '@/assets/font-icon/iconfont.js'
 import router from './router'
 import './element-ui'
 
-import store from "@/store";
+import store from "./store";
 
 import layer, {jquery} from '@/assets/layer/layer'
 import '@/assets/layer/theme/default/layer.css'
@@ -80,7 +80,7 @@ axios.get('zfile.config.json').then((result) => {
                 let data = response.data;
                 if (data.code !== 0) {
                     let hash = window.location.hash;
-                    if (!hash.includes("#/main")
+                    if (!hash.includes("main")
                         && !hash.includes("#/admin")
                         && !hash.includes("#/login")) {
                         this.$router.push('/main');
@@ -110,4 +110,4 @@ axios.get('zfile.config.json').then((result) => {
 });
 
 
-console.log("\n %c ZFile 2.2 %c https://github.com/zhaojun1998/zfile \n\n", "background: #35495e; padding: 1px; border-radius: 3px 0 0 3px; color: #fff", "background: #fadfa3; padding: 1px; border-radius: 0 3px 3px 0; color: #fff");
+console.log("\n %c ZFile 2.3 %c https://github.com/zhaojun1998/zfile \n\n", "background: #35495e; padding: 1px; border-radius: 3px 0 0 3px; color: #fff", "background: #fadfa3; padding: 1px; border-radius: 0 3px 3px 0; color: #fff");

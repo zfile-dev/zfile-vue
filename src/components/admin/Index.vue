@@ -9,21 +9,17 @@
                     <i class="el-icon-setting"/>
                     <span slot="title">基本设置</span>
                 </el-menu-item>
+                <el-menu-item index="/admin/drive-list">
+                    <i class="el-icon-folder-opened"/>
+                    <span slot="title">驱动器列表</span>
+                </el-menu-item>
                 <el-menu-item index="/admin/view">
                     <i class="el-icon-view"/>
                     <span slot="title">显示设置</span>
                 </el-menu-item>
-                <el-menu-item index="/admin/storage">
-                    <i class="el-icon-s-operation"/>
-                    <span slot="title">存储策略</span>
-                </el-menu-item>
                 <el-menu-item index="/admin/password">
                     <i class="el-icon-key"/>
                     <span slot="title">修改密码</span>
-                </el-menu-item>
-                <el-menu-item index="/admin/cache">
-                    <i class="el-icon-collection"/>
-                    <span slot="title">缓存管理</span>
                 </el-menu-item>
                 <el-menu-item index="/admin/api">
                     <i class="el-icon-document"/>

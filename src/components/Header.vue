@@ -1,8 +1,5 @@
 <template>
     <el-form :inline="true" class="demo-form-inline zfile-header" size="mini">
-        <el-form-item v-if="$store.getters.searchEnable">
-            <el-input v-model="search" placeholder="搜索"/>
-        </el-form-item>
         <el-form-item>
             <el-breadcrumb separator="/" separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item :to="{path: '/main'}">首页</el-breadcrumb-item>
@@ -11,6 +8,16 @@
                                     :key="item.path">{{item.name}}</el-breadcrumb-item>
             </el-breadcrumb>
         </el-form-item>
+        <div style="float: right; margin-right: 20px">
+            <span style="margin-right: 10px">驱动器</span>
+            <el-select v-model="currentDrive" placeholder="请选择存储器" @change="changeDrive">
+                <el-option v-for="item in driveList"
+                           :key="item.id"
+                           :label="item.name"
+                           :value="item.id">
+                </el-option>
+            </el-select>
+        </div>
     </el-form>
 </template>
 
@@ -19,8 +26,11 @@
 
     export default {
         name: "Header",
+        props: ['driveId'],
         data() {
             return {
+                driveList: [],
+                currentDrive: "",
                 search: '',
                 breadcrumbData: [],
                 searching: false
@@ -40,6 +50,9 @@
                     this.breadcrumbData.unshift({name, fullPath});
                     fullPath = path.resolve(fullPath, "../");
                 }
+            },
+            changeDrive(driveId) {
+                this.$router.push('/' + driveId + '/main');
             }
         },
         watch: {
@@ -52,6 +65,17 @@
                     this.$store.commit('updateSearchParam', newVal);
                 }, 150);
             }
+        },
+        async mounted() {
+            await this.$http.get('api/drive/list').then((response) => {
+                this.driveList = response.data.data;
+                if (this.driveId) {
+                    this.currentDrive = Number(this.driveId);
+                } else if (this.driveList.length > 0) {
+                    this.currentDrive = this.driveList[0].id;
+                    this.$router.push('/' + this.driveList[0].id + '/main');
+                }
+            });
         }
     }
 </script>

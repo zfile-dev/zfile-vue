@@ -2,34 +2,34 @@ import common from "../common";
 
 export default {
     infoEnable: state => {
-        return state.config.viewConfig && state.config.viewConfig.infoEnable;
+        return state.config && state.config.infoEnable;
     },
     tableSize: state => {
-        return state.config.viewConfig && state.config.viewConfig.tableSize;
+        return state.config && state.config.tableSize;
     },
     storageStrategy: state => {
-        return state.config.viewConfig && state.config.viewConfig.storageStrategy;
+        return state.config && state.config.storageStrategy;
     },
     showOperator: state => {
-        return state.config.viewConfig && state.config.viewConfig.showOperator;
+        return state.config && state.config.showOperator;
     },
     showDocument: state => {
-        return state.config.viewConfig && state.config.viewConfig.showDocument;
+        return state.config && state.config.showDocument;
     },
     domain: state => {
-        return state.config.viewConfig && state.config.viewConfig.domain;
+        return state.config && state.config.domain;
     },
     announcement: state => {
-        return state.config.viewConfig && state.config.viewConfig.announcement;
+        return state.config && state.config.announcement;
     },
     layout: state => {
-        return state.config.viewConfig && state.config.viewConfig.layout;
+        return state.config && state.config.layout;
     },
     showAnnouncement: state => {
-        return state.config.viewConfig && state.config.viewConfig.showAnnouncement;
+        return state.config && state.config.showAnnouncement;
     },
     searchEnable: state => {
-        return state.config.viewConfig && state.config.viewConfig.searchEnable;
+        return state.config && state.config.searchEnable;
     },
     tableData: state => {
         let tableData = state.tableData;

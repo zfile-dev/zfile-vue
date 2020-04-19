@@ -25,6 +25,7 @@ import {
     Badge,
     Link,
     Radio,
+    Divider,
     Loading,
     Message,
     MessageBox,
@@ -41,6 +42,7 @@ Vue.use(Select);
 Vue.use(Option);
 Vue.use(Button);
 Vue.use(Table);
+Vue.use(Divider);
 Vue.use(TableColumn);
 Vue.use(Breadcrumb);
 Vue.use(BreadcrumbItem);

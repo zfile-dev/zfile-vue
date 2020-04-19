@@ -9,11 +9,10 @@ const Admin = () => import(/* webpackChunkName: "admin" */'./components/admin/In
 const Login = () => import(/* webpackChunkName: "admin" */'./components/Login');
 const SiteSetting = () => import(/* webpackChunkName: "admin" */'./components/admin/SiteSetting');
 const ViewSetting = () => import(/* webpackChunkName: "admin" */'./components/admin/ViewSetting');
-const StorageStrategy = () => import(/* webpackChunkName: "admin" */'./components/admin/StorageStrategy');
-const CacheManager = () => import(/* webpackChunkName: "admin" */'./components/admin/CacheManager');
 const UpdatePassword = () => import(/* webpackChunkName: "admin" */'./components/admin/UpdatePassword');
 const API = () => import(/* webpackChunkName: "admin" */'./components/admin/API');
 const Monitor = () => import(/* webpackChunkName: "admin" */'./components/admin/Monitor');
+const DriveList = () => import(/* webpackChunkName: "admin" */'./components/admin/DriveList');
 
 export default new Router({
     mode: 'hash', // 路由模式:默认为 hash,如果改为 history,则需要后端进行配合
@@ -24,8 +23,9 @@ export default new Router({
             component: Install
         },
         {
-            path: '/main*',
-            component: Main
+            path: '/:driveId?/main*',
+            component: Main,
+            props: true
         },
         {
             path: '/login',
@@ -51,19 +51,9 @@ export default new Router({
                     component: ViewSetting
                 },
                 {
-                    path: 'storage',
-                    name: '存储策略设置',
-                    component: StorageStrategy
-                },
-                {
                     path: 'password',
                     name: '密码设置',
                     component: UpdatePassword
-                },
-                {
-                    path: 'cache',
-                    name: '缓存管理',
-                    component: CacheManager
                 },
                 {
                     path: 'api',
@@ -74,6 +64,11 @@ export default new Router({
                     path: 'monitor',
                     name: 'Monitor',
                     component: Monitor
+                },
+                {
+                    path: 'drive-list',
+                    name: 'DriveList',
+                    component: DriveList
                 }
             ]
         }
