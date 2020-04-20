@@ -2,9 +2,9 @@
     <el-form :inline="true" class="demo-form-inline zfile-header" size="mini">
         <el-form-item>
             <el-breadcrumb separator="/" separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{path: '/main'}">首页</el-breadcrumb-item>
+                <el-breadcrumb-item :to="{path: '/' + driveId + '/main'}">首页</el-breadcrumb-item>
                 <el-breadcrumb-item v-for="item in breadcrumbData"
-                                    :to="{path: '/main' + item.fullPath}"
+                                    :to="{path: '/' + driveId + '/main' + item.fullPath}"
                                     :key="item.path">{{item.name}}</el-breadcrumb-item>
             </el-breadcrumb>
         </el-form-item>
@@ -50,6 +50,7 @@
                     this.breadcrumbData.unshift({name, fullPath});
                     fullPath = path.resolve(fullPath, "../");
                 }
+                console.log(this.breadcrumbData);
             },
             changeDrive(driveId) {
                 this.$router.push('/' + driveId + '/main');
