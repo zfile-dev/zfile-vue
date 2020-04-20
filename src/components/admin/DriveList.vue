@@ -48,7 +48,9 @@
 
             <el-dialog width="80%" title="编辑" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
 
-                <el-form id="siteForm" ref="form" :model="driveItem" :rules="rules" label-width="auto" :status-icon="true">
+                <el-form v-loading="loading"
+                         element-loading-text="保存并初始化中."
+                         id="siteForm" ref="form" :model="driveItem" :rules="rules" label-width="auto" :status-icon="true">
                     <el-row :gutter="50">
                         <el-col :span="12">
                             <el-form-item label="驱动器名称" prop="name">
@@ -126,7 +128,7 @@
                     </el-row>
                 </el-form>
                 <div slot="footer" class="dialog-footer" style="text-align: center">
-                    <el-button type="primary" @click="submitForm('form')">保存</el-button>
+                    <el-button type="primary" :disabled="loading" @click="submitForm('form')">保存</el-button>
                     <el-button @click="driveEditDialogVisible = false">取 消</el-button>
                 </div>
             </el-dialog>
@@ -142,6 +144,7 @@
         name: "DriveList",
         data() {
             return {
+                loading: false,
                 driveList: [],
                 supportStrategy: [],
                 storageStrategyForm: [],
@@ -224,7 +227,6 @@
         },
         methods: {
             switchEnableStatus(row) {
-                console.log(row);
                 let action = row.enableCache ? 'enable' : 'disable';
                 this.$http.post('admin/cache/' + row.id + "/" + action).then(() => {
                     this.$message.success('修改成功');
@@ -236,9 +238,6 @@
                         return this.supportStrategy[index].description;
                     }
                 }
-            },
-            searchEnableFormatter: (row, column, val) => {
-                return val ? "开启" : "关闭";
             },
             change() {
                 this.$forceUpdate();
@@ -278,6 +277,7 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
+                        this.loading = true;
                         this.$http.post('admin/drive', this.driveItem).then((response) => {
                             let data =  response.data;
                             this.$message({
@@ -287,6 +287,9 @@
                             });
                             this.driveEditDialogVisible = false;
                             this.init();
+                            this.loading = false;
+                        }).catch(()=>{
+                            this.loading = false;
                         })
                     } else {
                         return false;
