@@ -160,7 +160,7 @@
                     storageStrategyConfig: {
                         endPoint: '',
                         pathStyle: '',
-                        isPrivate: '',
+                        isPrivate: false,
                         accessKey: null,
                         secretKey: null,
                         bucketName: null,
@@ -172,6 +172,7 @@
                         secretId: null,
                         username: null,
                         password: null,
+                        basePath: "",
                     },
                 },
                 driveEditDialogVisible: false,
