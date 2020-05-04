@@ -173,6 +173,7 @@
                         username: null,
                         password: null,
                         basePath: "",
+                        domain: ""
                     },
                 },
                 driveEditDialogVisible: false,
@@ -194,14 +195,44 @@
                     ],
                     'storageStrategyConfig.domain': [
                         {
-                            required: this.type !== 'ftp',
+                            validator: (rule, value, callback) => {
+                                let domainCheck = /(http|https):\/\/([\w.]+\/?)\S*/
+                                if ((value === undefined || value === '') && this.driveItem.type !== 'ftp') {
+                                    callback(new Error('域名不能为空'));
+                                    return;
+                                }
+                                if (!domainCheck.test(value)) {
+                                    callback(new Error('请输入正确的域名, 需以 http:// 或 https:// 开头'));
+                                } else {
+                                    callback();
+                                }
+                            },
                             type: 'url',
-                            message: '请输入正确的域名, 需以 http:// 或 https:// 开头',
                             trigger: 'change'
                         }
                     ],
-                    // 'storageStrategyConfig.username': [{required: this.driveItemType == 'upyun', message: '操作员名称不能为空'}],
-                    // 'storageStrategyConfig.password': [{required: this.driveItemType == 'upyun', message: '操作员密码不能为空'}],
+                    'storageStrategyConfig.username': [
+                        {
+                            validator: (rule, value, callback) => {
+                                if ((this.driveItem.type === 'upyun' || this.driveItem.type === 'ufile') && (value === undefined || value === '')) {
+                                    callback(new Error('操作员名称不能为空'));
+                                } else {
+                                    callback();
+                                }
+                            }
+                        }
+                    ],
+                    'storageStrategyConfig.password': [
+                        {
+                            validator: (rule, value, callback) => {
+                                if ((this.driveItem.type === 'upyun' || this.driveItem.type === 'ufile') && (value === undefined || value === '')) {
+                                    callback(new Error('操作员密码不能为空'));
+                                } else {
+                                    callback();
+                                }
+                            }
+                        }
+                    ],
                     'storageStrategyConfig.endPoint': [{required: true, message: '区域不能为空'}],
                     'storageStrategyConfig.accessKey': [{required: true, message: 'AccessKey 不能为空'}],
                     'storageStrategyConfig.filePath': [{required: true, message: '文件路径不能为空'}],
