@@ -50,7 +50,6 @@
                     this.breadcrumbData.unshift({name, fullPath});
                     fullPath = path.resolve(fullPath, "../");
                 }
-                console.log(this.breadcrumbData);
             },
             changeDrive(driveId) {
                 this.$router.push('/' + driveId + '/main');
