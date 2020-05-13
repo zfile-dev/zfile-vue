@@ -106,6 +106,10 @@
                 <i class="el-icon-copy-document"></i>
                 <label>复制直链</label>
             </v-contextmenu-item>
+            <v-contextmenu-item @click="shortLink" v-show="hoverRow.type === 'FILE'">
+                <i class="el-icon-copy-document"></i>
+                <label>复制短链</label>
+            </v-contextmenu-item>
         </v-contextmenu>
     </div>
 </template>
@@ -400,9 +404,21 @@
             download() {
                 window.location.href = this.hoverRow.url;
             },
+            shortLink() {
+                let that = this;
+                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.hoverRow.path) + "/" + encodeURI(this.hoverRow.name));
+
+                this.$http.get('https://v1.alapi.cn/api/url', {params: {url: directlink}, withCredentials: false}).then((response) => {
+                    this.$copyText(response.data.data.short_url).then(function () {
+                        that.$message.success('复制成功');
+                    }, function () {
+                        that.$message.error('复制失败');
+                    });
+                });
+            },
             directlink() {
                 let that = this;
-                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + this.hoverRow.path + "/" + encodeURI(this.hoverRow.name));
+                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.hoverRow.path) + "/" + encodeURI(this.hoverRow.name));
                 this.$copyText(directlink).then(function () {
                     that.$message.success('复制成功');
                 }, function () {
