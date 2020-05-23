@@ -3,13 +3,13 @@
         <el-form-item>
             <el-breadcrumb separator="/" separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item :to="{path: '/' + driveId + '/main'}">首页</el-breadcrumb-item>
-                <el-breadcrumb-item v-for="item in breadcrumbData"
+                <el-breadcrumb-item v-for="item in breadcrumbData" class="hidden-xs-only"
                                     :to="{path: '/' + driveId + '/main' + item.fullPath}"
                                     :key="item.path">{{item.name}}</el-breadcrumb-item>
             </el-breadcrumb>
         </el-form-item>
         <div style="float: right; margin-right: 20px">
-            <span style="margin-right: 10px">驱动器</span>
+            <span style="margin-right: 10px" class="hidden-xs-only">驱动器</span>
             <el-select v-model="currentDrive" placeholder="请选择存储器" @change="changeDrive">
                 <el-option v-for="item in driveList"
                            :key="item.id"
@@ -95,5 +95,12 @@
 
     .zfile-header .el-input {
         line-height: 48px;
+    }
+
+
+    @media only screen and (max-width:767px) {
+        .zfile-header >>> .el-breadcrumb__separator {
+            display: none !important;
+        }
     }
 </style>

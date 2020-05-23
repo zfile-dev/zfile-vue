@@ -50,12 +50,12 @@
 
 <style>
     #app {
-        font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+        font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif !important;
         font-size: 16px;
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        color: #2c3e50;
+        color: #555;
         overflow-x: hidden;
     }
 
