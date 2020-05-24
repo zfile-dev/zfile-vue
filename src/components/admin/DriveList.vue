@@ -35,18 +35,27 @@
                     </template>
                 </el-table-column>
                 <el-table-column
+                        prop="autoRefreshCache"
+                        width="150"
+                        label="缓存自动刷新">
+                    <template slot-scope="scope">
+                        <el-switch @change="switchAutoRefreshStatus(scope.row)" v-model="scope.row.autoRefreshCache"></el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column
                         label="操作"
                         width="300">
                     <template slot-scope="scope">
                         <template>
                             <el-button slot="reference" class="el-icon-edit" size="mini" type="primary" @click="editDrive(scope.row)">编辑</el-button>
+                            <el-button slot="reference" :disabled="!scope.row.enableCache" class="el-icon-s-operation" size="mini" type="primary" @click="cacheManage(scope.row)">缓存管理</el-button>
                             <el-button @click="deleteDrive(scope.row)" class="el-icon-delete" size="mini" type="danger">删除</el-button>
                         </template>
                     </template>
                 </el-table-column>
             </el-table>
 
-            <el-dialog width="80%" title="编辑" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
+            <el-dialog width="80%" title="驱动器设置" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
 
                 <el-form v-loading="loading"
                          element-loading-text="保存并初始化中."
@@ -64,6 +73,16 @@
                                 </div>
                                 <div class="zfile-word-aux" style="margin-left: 0">
                                     参数 N 在配置文件中设置 {zfile.cache.timeout}，默认为 1800 秒。
+                                </div>
+                            </el-form-item>
+
+                            <el-form-item label="开启缓存自动刷新">
+                                <el-switch v-model="driveItem.autoRefreshCache"/>
+                                <div class="zfile-word-aux" style="margin-left: 0">
+                                    每隔 N 秒检测到期的缓存, 对于过期缓存尝试调用 API, 重新写入缓存.
+                                </div>
+                                <div class="zfile-word-aux" style="margin-left: 0">
+                                    参数 N 在配置文件中设置 {zfile.cache.auto-refresh-interval}，默认为 5 秒。
                                 </div>
                             </el-form-item>
 
@@ -128,17 +147,83 @@
                     </el-row>
                 </el-form>
                 <div slot="footer" class="dialog-footer" style="text-align: center">
-                    <el-button type="primary" :disabled="loading" @click="submitForm('form')">保存</el-button>
+                    <el-button type="primary" :disabled="loading" @click="submitForm('form')">保 存</el-button>
                     <el-button @click="driveEditDialogVisible = false">取 消</el-button>
                 </div>
             </el-dialog>
 
+
+            <el-dialog width="70%" title="缓存管理" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true" @close="closeCacheManage">
+
+                <el-row :gutter="20" style="margin-bottom: 20px">
+                    <el-col :span="8">
+                        <el-card shadow="always">
+                            <div slot="header" class="clearfix">
+                                <span class="card-title">缓存数</span>
+                                <el-button size="mini" round style="float: right" type="danger" @click="clearCache">清理缓存</el-button>
+                            </div>
+                            <div class="card-content" v-text="driveCacheInfo.cacheCount">
+                            </div>
+                        </el-card>
+                    </el-col>
+
+                    <el-col :span="8">
+                        <el-card shadow="always">
+                            <div slot="header" class="clearfix">
+                                <span class="card-title">命中数</span>
+                            </div>
+                            <div class="card-content" v-text="driveCacheInfo.hitCount">
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="8">
+                        <el-card shadow="always">
+                            <div slot="header" class="clearfix">
+                                <span class="card-title">未命中数</span>
+                            </div>
+                            <div class="card-content" v-text="driveCacheInfo.missCount">
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+
+                <el-row :gutter="20">
+                    <el-col :span="20">
+                        <el-input placeholder="输入关键字搜索" v-model="cacheSearch"></el-input>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-button size="small" type="primary" style="float: right" @click="refreshCacheManageData">刷新统计信息</el-button>
+                    </el-col>
+                </el-row>
+
+                <el-table
+                        height="50vh"
+                        :data="driveCacheInfo.cacheKeys.filter(data => !cacheSearch || data.name.toLowerCase().includes(cacheSearch.toLowerCase()))"
+                        style="width: 100%; overflow-y: auto">
+                    <el-table-column
+                            prop="name"
+                            label="缓存 Key (文件夹名称)"
+                            min-width="75%">
+                    </el-table-column>
+                    <el-table-column min-width="25%"
+                                     label="操作">
+                        <template slot-scope="scope">
+                            <el-button
+                                    size="mini"
+                                    type="primary"
+                                    round
+                                    @click="refreshCache(scope.row)">刷新缓存</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-dialog>
         </el-col>
     </el-row>
 </template>
 
 <script>
     import region from "@/region";
+    import qs from 'qs';
 
     export default {
         name: "DriveList",
@@ -176,7 +261,16 @@
                         domain: ""
                     },
                 },
+                driveCacheInfo: {
+                    cacheCount: 0,
+                    hitCount: 0,
+                    missCount: 0,
+                    cacheKeys: []
+                },
                 driveEditDialogVisible: false,
+                cacheManageVisible: false,
+                currentCacheManageId: null,
+                cacheSearch: '',
                 rules: {
                     siteName: [
                         {required: true, message: '请输入站点名称', trigger: 'change'},
@@ -258,9 +352,64 @@
             }
         },
         methods: {
+            clearCache() {
+                this.$http.post('admin/cache/' + this.currentCacheManageId +'/clear').then(() => {
+                    this.loadCacheManageData();
+                    this.$message({
+                        message: '清理成功',
+                        type: 'success'
+                    });
+                });
+            },
+            closeCacheManage() {
+                this.cacheSearch = "";
+            },
+            refreshCache(row) {
+                this.$http.post('admin/cache/' + this.currentCacheManageId +'/refresh', qs.stringify({key: row.name})).then(() => {
+                    this.$message({
+                        message: '刷新成功',
+                        type: 'success'
+                    });
+                });
+            },
+            cacheManage(row) {
+                this.currentCacheManageId = row.id;
+                this.loadCacheManageData();
+            },
+            refreshCacheManageData() {
+                this.loadCacheManageData();
+                this.$message({
+                    message: '刷新成功',
+                    type: 'success'
+                });
+            },
+            loadCacheManageData() {
+                this.$http.get('admin/cache/' + this.currentCacheManageId + '/info').then((response) => {
+                    let data = response.data.data;
+
+                    let cacheKeys = data.cacheKeys;
+                    cacheKeys.sort(function (a, b) {
+                        return a.length - b.length;
+                    });
+                    let tempData = [];
+                    for (let i = 0; i < cacheKeys.length; i++) {
+                        tempData[i] = {"name": cacheKeys[i]};
+                    }
+                    data.cacheKeys = tempData;
+                    this.driveCacheInfo = data;
+
+                    this.cacheManageVisible = true;
+                });
+            },
             switchEnableStatus(row) {
                 let action = row.enableCache ? 'enable' : 'disable';
                 this.$http.post('admin/cache/' + row.id + "/" + action).then(() => {
+                    this.$message.success('修改成功');
+                })
+            },
+            switchAutoRefreshStatus(row) {
+                let action = row.autoRefreshCache ? 'start' : 'stop';
+                this.$http.post('admin/cache/' + row.id + "/auto-refresh/" + action).then(() => {
                     this.$message.success('修改成功');
                 })
             },
@@ -354,5 +503,34 @@
     .zfile-word-aux {
         margin-left: 20px;
         color: #aaaaaa;
+    }
+
+    .el-row {
+        padding: 20px;
+    }
+
+    .el-form-item {
+        margin-right: 50px;
+    }
+
+    .card-title {
+        color: rgba(0,0,0,.45);
+        font-size: 14px;
+    }
+
+    .card-content {
+        color: rgba(0,0,0,.85);
+        font-size: 25px;
+        line-height: 30px;
+    }
+
+    .card-title-button {
+        float: right;
+        padding: 3px 0;
+    }
+
+    .table-search-input {
+        width: 300px;
+        float: right;
     }
 </style>
