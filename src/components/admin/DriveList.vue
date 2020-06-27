@@ -12,9 +12,9 @@
                     :data="driveList"
                     style="width: 100%">
                 <el-table-column
-                        type="index"
-                        label="序号"
-                        width="100">
+                        prop="id"
+                        width="100"
+                        label="驱动器ID">
                 </el-table-column>
                 <el-table-column
                         prop="name"
@@ -27,11 +27,19 @@
                         label="所属策略">
                 </el-table-column>
                 <el-table-column
+                        prop="enable"
+                        width="150"
+                        label="是否启用">
+                    <template slot-scope="scope">
+                        <el-switch @change="switchEnableStatus(scope.row)" v-model="scope.row.enable"></el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column
                         prop="enableCache"
                         width="150"
                         label="缓存开启">
                     <template slot-scope="scope">
-                        <el-switch @change="switchEnableStatus(scope.row)" v-model="scope.row.enableCache"></el-switch>
+                        <el-switch @change="switchCacheEnableStatus(scope.row)" v-model="scope.row.enableCache"></el-switch>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -41,6 +49,11 @@
                     <template slot-scope="scope">
                         <el-switch @change="switchAutoRefreshStatus(scope.row)" v-model="scope.row.autoRefreshCache"></el-switch>
                     </template>
+                </el-table-column>
+                <el-table-column
+                        prop="orderNum"
+                        width="100"
+                        label="排序字段">
                 </el-table-column>
                 <el-table-column
                         label="操作"
@@ -64,6 +77,13 @@
                         <el-col :span="12">
                             <el-form-item label="驱动器名称" prop="name">
                                 <el-input v-model="driveItem.name"/>
+                            </el-form-item>
+
+                            <el-form-item label="是否启用">
+                                <el-switch v-model="driveItem.enable"/>
+                                <div class="zfile-word-aux" style="margin-left: 0">
+                                    如不启用，则在前台不展示。
+                                </div>
                             </el-form-item>
 
                             <el-form-item label="开启缓存">
@@ -94,6 +114,20 @@
                                                :value="item.key">
                                     </el-option>
                                 </el-select>
+                            </el-form-item>
+
+                            <el-form-item label="排序值" prop="name">
+                                <el-input-number v-model="driveItem.orderNum" controls-position="right"></el-input-number>
+                                <div class="zfile-word-aux" style="margin-left: 0">
+                                    排序值越小，越靠前。
+                                </div>
+                            </el-form-item>
+
+                            <el-form-item label="正则过滤器" prop="name">
+                                <el-input v-model="driveItem.regexFilter"></el-input>
+                                <div class="zfile-word-aux" style="margin-left: 0">
+                                    如文件/文件夹名称包含此表达式, 则文件不会显示将会隐藏.
+                                </div>
                             </el-form-item>
                         </el-col>
 
@@ -130,7 +164,7 @@
                                 </div>
 
                                 <div v-if="item.key === 'domain' && driveItem.type === 'ftp'">
-                                    <span class="zfile-word-aux" style="margin-left: 0">此域名表示 http 访问域名</span>
+                                    <span class="zfile-word-aux" style="margin-left: 0">此域名表示 http 访问域名，如有端口，也需要写明。</span>
                                 </div>
                             </el-form-item>
 
@@ -235,6 +269,8 @@
                 storageStrategyForm: [],
                 region: region,
                 driveItem: {
+                    regexFilter: "",
+                    orderNum: null,
                     name: '',
                     type: null,
                     searchEnable: false,
@@ -402,6 +438,12 @@
                 });
             },
             switchEnableStatus(row) {
+                let action = row.enable ? 'enable' : 'disable';
+                this.$http.post('admin/drive/' + row.id + "/" + action).then(() => {
+                    this.$message.success('修改成功');
+                })
+            },
+            switchCacheEnableStatus(row) {
                 let action = row.enableCache ? 'enable' : 'disable';
                 this.$http.post('admin/cache/' + row.id + "/" + action).then(() => {
                     this.$message.success('修改成功');
