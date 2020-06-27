@@ -16,7 +16,7 @@
             window.removeEventListener('unload', e => this.unloadHandler(e))
         },
         methods: {
-            unloadHandler(e){
+            unloadHandler(){
                 localStorage.clear()
             },
         }
