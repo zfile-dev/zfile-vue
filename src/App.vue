@@ -8,6 +8,17 @@
     export default {
         name: 'app',
         components: {
+        },
+        mounted() {
+            window.addEventListener('unload', e => this.unloadHandler(e))
+        },
+        destroyed() {
+            window.removeEventListener('unload', e => this.unloadHandler(e))
+        },
+        methods: {
+            unloadHandler(e){
+                localStorage.clear()
+            },
         }
     }
 </script>
