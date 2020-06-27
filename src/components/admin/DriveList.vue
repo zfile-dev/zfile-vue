@@ -163,6 +163,14 @@
                                     <span class="zfile-word-aux" style="margin-left: 0">基路径表示从哪个路径开始文件, 不填写表示从根开始</span>
                                 </div>
 
+                                <div v-if="item.key === 'filePath'">
+                                    <span class="zfile-word-aux" style="margin-left: 0">Linux 或对象存储等需以 / 开头</span>
+                                    <br>
+                                    <span class="zfile-word-aux" style="margin-left: 0">Windows 支持 C:/ 类的盘符开头</span>
+                                    <br>
+                                    <span class="zfile-word-aux" style="margin-left: 0">结尾不需要加 /</span>
+                                </div>
+
                                 <div v-if="item.key === 'domain' && driveItem.type === 'ftp'">
                                     <span class="zfile-word-aux" style="margin-left: 0">此域名表示 http 访问域名，如有端口，也需要写明。</span>
                                 </div>
@@ -176,6 +184,14 @@
                             <el-form-item v-if="driveItem.type === 'onedrive-china'">
                                 <el-link target="_blank" icon="el-icon-edit"
                                          href="https://login.chinacloudapi.cn/common/oauth2/v2.0/authorize?client_id=4a72d927-1907-488d-9eb2-1b465c53c1c5&response_type=code&redirect_uri=https://zfile.jun6.net/onedrive/china-callback&scope=offline_access%20User.Read%20Files.ReadWrite.All">前往获取授权</el-link>
+                            </el-form-item>
+
+                            <el-form-item v-if="driveItem.type === 'ftp'">
+                                <span class="zfile-word-aux" style="margin: unset">注意: FTP 协议，如果不填写加速域名 (HTTP 下载地址)，则会使用 FTP 协议进行下载</span>
+                                <br>
+                                <span class="zfile-word-aux" style="margin: unset">FTP 协议会在 URL 中暴露用户名密码，如：<b>ftp://用户名:密码@IP:端口/文件路径/文件名</b></span>
+                                <br>
+                                <span class="zfile-word-aux" style="margin: unset">如为 FTP 提供了加速域名 (HTTP 下载地址)，则会使用 HTTP 协议，如：<b>http(s)://加速域名/文件路径/文件名</b></span>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -327,7 +343,13 @@
                         {
                             validator: (rule, value, callback) => {
                                 let domainCheck = /(http|https):\/\/([\w.]+\/?)\S*/
-                                if ((value === undefined || value === '') && this.driveItem.type !== 'ftp') {
+
+                                if ((value === undefined || value === '') && this.driveItem.type === 'ftp') {
+                                    callback();
+                                    return;
+                                }
+
+                                if (value === undefined || value === '') {
                                     callback(new Error('域名不能为空'));
                                     return;
                                 }
