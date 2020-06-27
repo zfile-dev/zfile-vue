@@ -10,7 +10,7 @@
         </el-form-item>
         <div style="float: right; margin-right: 20px">
             <span style="margin-right: 10px" class="hidden-xs-only">驱动器</span>
-            <el-select v-model="currentDrive" placeholder="请选择存储器" @change="changeDrive">
+            <el-select v-model="currentDrive" placeholder="请选择驱动器" @change="changeDrive">
                 <el-option v-for="item in driveList"
                            :key="item.id"
                            :label="item.name"
