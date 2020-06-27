@@ -5,6 +5,7 @@ import {
     Menu,
     MenuItem,
     Input,
+    InputNumber,
     Switch,
     Option,
     Button,
@@ -37,6 +38,7 @@ Vue.use(Dialog);
 Vue.use(Menu);
 Vue.use(MenuItem);
 Vue.use(Input);
+Vue.use(InputNumber);
 Vue.use(Switch);
 Vue.use(Select);
 Vue.use(Option);
