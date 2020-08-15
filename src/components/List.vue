@@ -214,8 +214,8 @@
 
                 let config = this.$store.state.common.config;
                 let siteName = '';
-                if (config.viewConfig) {
-                    siteName = ' | ' + this.$store.state.common.config.viewConfig.siteName;
+                if (config) {
+                    siteName = ' | ' + this.$store.state.common.config.siteName;
                 }
 
                 if (basepath === '/' || basepath === '') {
@@ -324,6 +324,7 @@
                 if (this.driveId) {
                     this.$http.get('api/config/' + this.driveId, {params: {path: this.searchParam.path}}).then((response) => {
                         store.commit('updateConfig', response.data.data);
+                        this.updateTitle();
                     });
                 }
             },
