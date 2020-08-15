@@ -77,9 +77,11 @@
                     // 否则读取驱动器列表中的第一个, 并跳转到响应的 URL 中.
                     this.currentDriveId = this.driveList[0].id;
                     this.$router.push('/' + this.driveList[0].id + '/main');
+                } else if (this.driveList.length === 0) {
+                    this.$message.error("尚未初始化驱动器, 请联系管理员.")
                 }
 
-                this.driveList.some((item) => {
+                let result = this.driveList.some((item) => {
                     if (item.id === this.currentDriveId) {
                         this.$store.commit('updateCurrentStorageStrategy', item);
                     }
