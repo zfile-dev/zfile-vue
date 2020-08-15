@@ -5,7 +5,6 @@ const state = {
 
 const mutations = {
     updateConfig(state, v) {
-        debugger;
         state.config = v;
     },
     currentDirectory(state, v) {
