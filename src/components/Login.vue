@@ -47,6 +47,9 @@
                 checked: false
             }
         },
+        mounted() {
+            document.title = '登录 | 后台管理';
+        },
         methods: {
             handleSubmit(){
                 let that = this;
