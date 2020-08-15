@@ -10,7 +10,7 @@
         </el-form-item>
         <div style="float: right; margin-right: 20px">
             <span style="margin-right: 10px" class="hidden-xs-only">驱动器</span>
-            <el-select v-model="currentDrive" placeholder="请选择驱动器" @change="changeDrive">
+            <el-select v-model="currentDriveId" placeholder="请选择驱动器" @change="changeDrive">
                 <el-option v-for="item in driveList"
                            :key="item.id"
                            :label="item.name"
@@ -30,7 +30,7 @@
         data() {
             return {
                 driveList: [],
-                currentDrive: "",
+                currentDriveId: "",
                 search: '',
                 breadcrumbData: [],
                 searching: false
@@ -57,6 +57,7 @@
         },
         watch: {
             '$route.fullPath': function () {
+                // 当 URL 变化, 则自动重新 build 面包屑
                 this.buildBreadcrumbData();
             },
             'search': function (newVal) {
@@ -69,10 +70,12 @@
         async mounted() {
             await this.$http.get('api/drive/list').then((response) => {
                 this.driveList = response.data.data;
+                // 如果当前 URL 参数中有驱动器 ID, 则直接用当前的.
                 if (this.driveId) {
-                    this.currentDrive = Number(this.driveId);
+                    this.currentDriveId = Number(this.driveId);
                 } else if (this.driveList.length > 0) {
-                    this.currentDrive = this.driveList[0].id;
+                    // 否则读取驱动器列表中的第一个, 并跳转到响应的 URL 中.
+                    this.currentDriveId = this.driveList[0].id;
                     this.$router.push('/' + this.driveList[0].id + '/main');
                 }
             });
