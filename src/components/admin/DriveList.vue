@@ -57,11 +57,12 @@
                 </el-table-column>
                 <el-table-column
                         label="操作"
-                        width="300">
+                        width="400">
                     <template slot-scope="scope">
                         <template>
                             <el-button slot="reference" class="el-icon-edit" size="mini" type="primary" @click="editDrive(scope.row)">编辑</el-button>
                             <el-button slot="reference" :disabled="!scope.row.enableCache" class="el-icon-s-operation" size="mini" type="primary" @click="cacheManage(scope.row)">缓存管理</el-button>
+                            <el-button class="el-icon-view" size="mini" type="primary" @click="showFilterDialog(scope.row)">文件过滤</el-button>
                             <el-button @click="deleteDrive(scope.row)" class="el-icon-delete" size="mini" type="danger">删除</el-button>
                         </template>
                     </template>
@@ -120,13 +121,6 @@
                                 <el-input-number v-model="driveItem.orderNum" controls-position="right"></el-input-number>
                                 <div class="zfile-word-aux" style="margin-left: 0">
                                     排序值越小，越靠前。
-                                </div>
-                            </el-form-item>
-
-                            <el-form-item label="正则过滤器" prop="name">
-                                <el-input v-model="driveItem.regexFilter"></el-input>
-                                <div class="zfile-word-aux" style="margin-left: 0">
-                                    如文件/文件夹名称包含此表达式, 则文件不会显示将会隐藏.
                                 </div>
                             </el-form-item>
                         </el-col>
@@ -202,6 +196,49 @@
                 </div>
             </el-dialog>
 
+
+            <el-dialog width="40%" title="过滤规则" :visible.sync="filterDialogVisible" top="10vh" :destroy-on-close="true">
+                <el-form id="filterForm" ref="filterForm" :model="filterForm" label-width="120px" style="margin-left: 60px">
+                    <div v-for="(item, index) in filterForm.filterList" :key="index">
+                        <el-row>
+                            <el-col :span="20">
+                                <el-form-item :prop="'filterList.' + index + '.expression'"
+                                              :rules="{required: true, message: '此项不能为空', trigger: 'blur'}"
+                                              :label="'表达式 ' + (index + 1)">
+                                    <el-input v-model="item.expression"></el-input>
+                                </el-form-item>
+                            </el-col>
+
+                            <el-col :span="4">
+                                <el-button type="danger" size="small"  @click="deleteFilterItem(index)"
+                                           icon="el-icon-delete">删除
+                                </el-button>
+                            </el-col>
+                        </el-row>
+                    </div>
+                    <el-form-item>
+                        <el-button type="primary" size="mini"
+                                   icon="el-icon-plus" @click="addFilterItem">添加更多
+                        </el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <span class="zfile-word-aux" style="margin-left: 0;">
+                            表达式规则:
+                            <br>
+                            *: 单级路径通配符，如表达式 /*.jpg，可以匹配根路径下所有的 jpg 后缀的文件
+                            <br>
+                            **: 多级路径通配符，如表达式 **.jpg，可以匹配所有路径下的 jpg 后缀的文件
+                            <br>
+                            注意：<b>/a.png</b> 表示根路径下的 a.png。 <b>/a/b/c.png</b>，表示 /a/b/ 路径下的 c.png。 <b>a.png</b>，什么都不表示，因为未标注路径。
+                        </span>
+                    </el-form-item>
+                </el-form>
+
+
+                <div slot="footer" class="dialog-footer" style="text-align: right; margin-top: 15px">
+                    <el-button type="primary" size="mini" icon="el-icon-check" @click="saveFilterForm">保存</el-button>
+                </div>
+            </el-dialog>
 
             <el-dialog width="70%" title="缓存管理" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true" @close="closeCacheManage">
 
@@ -285,7 +322,6 @@
                 storageStrategyForm: [],
                 region: region,
                 driveItem: {
-                    regexFilter: "",
                     orderNum: null,
                     name: '',
                     type: null,
@@ -319,7 +355,11 @@
                     missCount: 0,
                     cacheKeys: []
                 },
+                filterForm: {
+                    filterList: []
+                },
                 driveEditDialogVisible: false,
+                filterDialogVisible: false,
                 cacheManageVisible: false,
                 currentCacheManageId: null,
                 cacheSearch: '',
@@ -429,6 +469,28 @@
                         type: 'success'
                     });
                 });
+            },
+            saveFilterForm() {
+                this.$http.post(`admin/drive/${this.currentCacheManageId}/filters`, this.filterForm.filterList).then(() => {
+                    this.$message({
+                        message: '保存成功',
+                        type: 'success'
+                    });
+                    this.filterDialogVisible = false;
+                });
+            },
+            showFilterDialog(row) {
+                this.currentCacheManageId = row.id;
+                this.$http.get(`admin/drive/${this.currentCacheManageId}/filters`).then((response) => {
+                    this.filterForm.filterList = response.data.data;
+                    this.filterDialogVisible = true;
+                });
+            },
+            addFilterItem() {
+                this.filterForm.filterList.push({expression: '', driveId: this.currentCacheManageId});
+            },
+            deleteFilterItem(index) {
+                this.filterForm.filterList.splice(index, 1);
             },
             cacheManage(row) {
                 this.currentCacheManageId = row.id;
@@ -596,5 +658,9 @@
     .table-search-input {
         width: 300px;
         float: right;
+    }
+
+    #filterForm .el-row {
+        padding: 0;
     }
 </style>
