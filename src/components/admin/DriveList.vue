@@ -10,6 +10,9 @@
 
             <el-table
                     :data="driveList"
+                    ref="driveTable"
+                    row-key="id"
+                    highlight-current-row
                     style="width: 100%">
                 <el-table-column
                         prop="id"
@@ -309,6 +312,7 @@
 </template>
 
 <script>
+    import Sortable from "sortablejs";
     import region from "@/region";
     import qs from 'qs';
 
@@ -355,6 +359,7 @@
                     missCount: 0,
                     cacheKeys: []
                 },
+                sortable: null,
                 filterForm: {
                     filterList: []
                 },
@@ -450,8 +455,24 @@
             }
         },
         methods: {
+            setSort() {
+                const tbody = document.querySelector('.el-table__body-wrapper tbody')
+                Sortable.create(tbody, {
+                    onEnd: e => {
+                        const currRow = this.driveList.splice(e.oldIndex, 1)[0];
+                        this.driveList.splice(e.newIndex, 0, currRow)
+
+                        this.$http.post('admin/drive/drag', this.driveList).then(() => {
+                            this.$message({
+                                message: '调整排序成功',
+                                type: 'success'
+                            });
+                        });
+                    }
+                })
+            },
             clearCache() {
-                this.$http.post('admin/cache/' + this.currentCacheManageId +'/clear').then(() => {
+                this.$http.post(`admin/cache/${this.currentCacheManageId}/clear`).then(() => {
                     this.loadCacheManageData();
                     this.$message({
                         message: '清理成功',
@@ -621,6 +642,7 @@
         },
         mounted() {
             this.init();
+            this.setSort();
         }
     }
 </script>

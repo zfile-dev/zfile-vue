@@ -20,6 +20,7 @@
     "hls.js": "^0.13.0",
     "marked": "^0.7.0",
     "monaco-editor": "^0.20.0",
+    "sortablejs": "^1.10.2",
     "v-contextmenu": "^2.8.1",
     "vue": "^2.6.9",
     "vue-aplayer": "^1.6.1",
