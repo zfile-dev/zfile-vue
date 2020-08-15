@@ -163,10 +163,10 @@
             }
         },
         watch: {
-            'searchParam.path': {
+            'file.searchParam.path': {
                 deep: true,
                 handler(newVal) {
-                    if (this.$store.state.searchParam && newVal === '/') {
+                    if (this.$store.state.file.searchParam && newVal === '/') {
                         return;
                     }
                     this.updateTitle();
@@ -181,7 +181,7 @@
             },
             '$route.fullPath': function () {
                 this.searchParam.path = this.$route.params.pathMatch;
-                if (this.$store.state.searchParam && this.searchParam.path === '/') {
+                if (this.$store.state.file.searchParam && this.searchParam.path === '/') {
                     return;
                 }
                 this.updateTitle();
@@ -194,7 +194,7 @@
                 }
 
             },
-            '$store.state.searchParam': function () {
+            '$store.state.file.searchParam': function () {
                 if (!this.$route.fullPath.startsWith("/main")) {
                     this.$router.push('/main');
                 }
@@ -205,14 +205,17 @@
                 store.commit('tableData', []);
             }
         },
+        mounted() {
+            this.loadingConfig();
+        },
         methods: {
             updateTitle() {
                 let basepath = path.basename(this.searchParam.path);
 
-                let config = this.$store.state.config;
+                let config = this.$store.state.common.config;
                 let siteName = '';
                 if (config.viewConfig) {
-                    siteName = ' | ' + this.$store.state.config.viewConfig.siteName;
+                    siteName = ' | ' + this.$store.state.common.config.viewConfig.siteName;
                 }
 
                 if (basepath === '/' || basepath === '') {
@@ -239,9 +242,9 @@
                 }
 
                 let url, param;
-                if (this.$store.state.searchParam) {
+                if (this.$store.state.file.searchParam) {
                     url = 'api/search';
-                    param = {name: this.$store.state.searchParam, page: this.searchParam.page};
+                    param = {name: this.$store.state.file.searchParam, page: this.searchParam.page};
                 } else {
                     url = 'api/list/' + this.driveId;
                     param = this.searchParam;
@@ -327,7 +330,7 @@
             openFolder(row) {
                 this.currentClickRow = row;
                 if (row.type === 'FILE') {
-                    if (this.$store.getters.storageStrategy === 'ftp') {
+                    if (this.$store.getters.currentStorageStrategyType === 'ftp') {
                         this.$message({
                             message: 'FTP 模式, 不支持预览功能, 已自动调用下载',
                             type: 'warning'
