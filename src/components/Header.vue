@@ -78,6 +78,12 @@
                     this.currentDriveId = this.driveList[0].id;
                     this.$router.push('/' + this.driveList[0].id + '/main');
                 }
+
+                this.driveList.some((item) => {
+                    if (item.id === this.currentDriveId) {
+                        this.$store.commit('updateCurrentStorageStrategy', item);
+                    }
+                });
             });
         }
     }
