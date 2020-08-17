@@ -54,11 +54,6 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                        prop="orderNum"
-                        width="100"
-                        label="排序字段">
-                </el-table-column>
-                <el-table-column
                         label="操作"
                         width="400">
                     <template slot-scope="scope">
@@ -118,13 +113,6 @@
                                                :value="item.key">
                                     </el-option>
                                 </el-select>
-                            </el-form-item>
-
-                            <el-form-item label="排序值" prop="name">
-                                <el-input-number v-model="driveItem.orderNum" controls-position="right"></el-input-number>
-                                <div class="zfile-word-aux" style="margin-left: 0">
-                                    排序值越小，越靠前。
-                                </div>
                             </el-form-item>
                         </el-col>
 
