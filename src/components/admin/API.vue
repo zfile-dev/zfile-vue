@@ -35,7 +35,7 @@
 
 <style scoped>
 
-    .markdown-body {
+    .zfile-markdown-body {
         padding: 20px !important;
     }
 

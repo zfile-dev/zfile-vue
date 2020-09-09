@@ -1,13 +1,15 @@
 <template>
-    <div class="login-container">
+    <div class="zfile-login">
         <el-form :model="loginForm" :rules="rules"
                  status-icon
                  ref="loginForm"
                  @keyup.enter.native="handleSubmit"
                  label-position="left"
                  label-width="0px"
-                 class="demo-loginForm login-page">
-            <h3 class="title">管理员登录</h3>
+                 class="zfile-login-form">
+
+            <h3 class="zfile-login-title">管理员登录</h3>
+
             <el-form-item prop="username">
                 <el-input type="text"
                           v-model.trim="loginForm.username"
@@ -22,12 +24,14 @@
                           placeholder="密码">
                 </el-input>
             </el-form-item>
-            <el-form-item style="width:100%;">
-                <el-button type="primary" style="width:100%;"
+
+            <el-form-item>
+                <el-button type="primary" class="el-col-24"
                            @click="handleSubmit"
                            :loading="loading">登录
                 </el-button>
             </el-form-item>
+
         </el-form>
     </div>
 </template>
@@ -44,8 +48,7 @@ export default {
             rules: {
                 username: [{required: true, message: '账号不能为空', trigger: 'blur'}],
                 password: [{required: true, message: '密码不能为空', trigger: 'blur'}]
-            },
-            checked: false
+            }
         }
     },
     mounted() {
@@ -59,16 +62,15 @@ export default {
     },
     methods: {
         handleSubmit() {
-            let that = this;
             this.$refs.loginForm.validate((valid) => {
                 if (valid) {
-                    that.$http.post('login', qs.stringify(this.loginForm)).then((response) => {
-                        that.$message({
+                    this.$http.post('login', qs.stringify(this.loginForm)).then((response) => {
+                        this.$message({
                             message: response.data.msg,
                             type: 'success',
                             duration: 1000,
-                            onClose() {
-                                that.$router.push('/admin')
+                            onClose: () => {
+                                this.$router.push('/admin')
                             }
                         });
                     });
@@ -82,12 +84,17 @@ export default {
 </script>
 
 <style scoped>
-.login-container {
+
+.zfile-login {
     width: 100%;
     height: 100%;
 }
 
-.login-page {
+.zfile-login-title {
+    text-align: center;
+}
+
+.zfile-login-form {
     -webkit-border-radius: 5px;
     border-radius: 5px;
     margin: 180px auto;
@@ -98,8 +105,4 @@ export default {
     box-shadow: 0 0 25px #cac6c6;
 }
 
-label.el-checkbox.rememberme {
-    margin: 0 0 15px;
-    text-align: left;
-}
 </style>

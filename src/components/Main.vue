@@ -1,16 +1,33 @@
 <template>
-    <div id="main">
+    <div>
+        <!-- 头部: 搜索栏、面包屑、驱动器设置 -->
         <Header :drive-id="driveId"/>
-        <div class="alert" v-html="$store.getters.announcement" v-if="$store.getters.showAnnouncement"></div>
 
-        <el-row :gutter="20">
-            <el-col :offset="isFullScreen ? 0 : 3" :xs="24" :sm="24" :lg="isFullScreen ? 24 : 18">
+        <!-- 公告区 -->
+        <div class="zfile-header-announcement"
+             v-html="$store.getters.announcement"
+             v-if="$store.getters.showAnnouncement">
+        </div>
+
+        <!--
+            文件区
+            全屏布局：占用满屏
+            居中布局: 占用 75% 屏幕, 并垂直居中, 但当屏幕过小时, 还是会恢复全屏.
+         -->
+        <el-row>
+            <el-col
+                :offset="isFullScreen ? 0 : 3"
+                :xs="24"
+                :sm="24"
+                :lg="isFullScreen ? 24 : 18">
                 <List :drive-id="driveId" ref="List"/>
             </el-col>
         </el-row>
-        <el-card class="box-card" :class="isFullScreen ? '' : 'center-box-card'"
-                 v-if="$store.getters.showDocument && $store.state.config.readme !== null">
-            <markdown-render :text="$store.state.config.readme"/>
+
+        <!-- 文档区 -->
+        <el-card :class="isFullScreen ? '' : 'zfile-readme-center'"
+                 v-if="$store.getters.showDocument && $store.state.common.config.readme !== null">
+            <markdown-render :text="$store.state.common.config.readme"/>
         </el-card>
     </div>
 </template>
@@ -27,13 +44,14 @@
             List, Header, MarkdownRender
         },
         watch: {
-            '$store.state.config.customJs': function (newVal) {
+            // 如果有自定义 css, js, 则加载到页面上.
+            '$store.state.common.config.customJs': function (newVal) {
                 let script = document.createElement('script');
                 script.type = 'text/javascript';
                 script.text = newVal;
                 document.getElementsByTagName('head')[0].appendChild(script)
             },
-            '$store.state.config.customCss': function (newVal) {
+            '$store.state.common.config.customCss': function (newVal) {
                 let style = document.createElement('style');
                 style.type = 'text/css';
                 style.innerHTML = newVal;
@@ -49,53 +67,23 @@
 </script>
 
 <style>
-    #app {
-        font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif !important;
-        font-size: 16px;
-        line-height: 1.5;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        color: #555;
-        overflow-x: hidden;
-    }
-
     body {
-        margin: unset;
         overflow: hidden;
     }
 
-    .icon {
-        width: 1em;
-        height: 1em;
-        vertical-align: -0.15em;
-        fill: currentColor;
-        overflow: hidden;
-    }
-
-    /* ----- 滚动条样式 ----- */
-
-    ::-webkit-scrollbar {width: 6px; height: 8px; background: rgba(144,147,153,.3);}
-    ::-webkit-scrollbar-button:vertical{display: none;}
-    ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner{background-color: #e2e2e2;}
-    ::-webkit-scrollbar-thumb{border-radius: 8px; background-color: #a6a6a6;}
-    ::-webkit-scrollbar-thumb:vertical:hover{background-color: #7f7f7f;}
-    ::-webkit-scrollbar-thumb:vertical:active{background-color: rgba(0,0,0,.38);}
-
-    /* ----- 滚动条样式 ----- */
-
-    .center-box-card {
+    .zfile-readme-center {
         width: 1100px;
         margin: 0 auto;
     }
 
-    .markdown-body {
+    .zfile-markdown-body {
         height: 300px;
         overflow-y: auto;
         padding: 0 !important;
         min-width: 100% !important;
     }
 
-    .alert {
+    .zfile-header-announcement {
         background-color: #f4f4f5;
         color: #909399;
         font-size: 12px;
@@ -115,6 +103,28 @@
         -ms-flex-align: center;
         align-items: center;
         -webkit-transition: opacity .2s;
-        transition: opacity .2s;
+        transition: opacity 10s;
     }
+
+
+
+    /* ----- icon 图标样式 ----- */
+    .icon {
+        width: 1em;
+        height: 1em;
+        vertical-align: -0.15em;
+        fill: currentColor;
+        overflow: hidden;
+    }
+    /* ----- icon 图标样式 ----- */
+
+
+    /* ----- 滚动条样式 ----- */
+    ::-webkit-scrollbar {width: 6px; height: 8px; background: rgba(144,147,153,.3);}
+    ::-webkit-scrollbar-button:vertical{display: none;}
+    ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner{background-color: #e2e2e2;}
+    ::-webkit-scrollbar-thumb{border-radius: 8px; background-color: #a6a6a6;}
+    ::-webkit-scrollbar-thumb:vertical:hover{background-color: #7f7f7f;}
+    ::-webkit-scrollbar-thumb:vertical:active{background-color: rgba(0,0,0,.38);}
+    /* ----- 滚动条样式 ----- */
 </style>

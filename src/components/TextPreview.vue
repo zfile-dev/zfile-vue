@@ -4,7 +4,7 @@
 
         <div id="container" class="editor" v-if="getFileSuffix(file.name) !== 'md'"></div>
 
-        <div class="dialog-scroll markdown-body"
+        <div class="dialog-scroll zfile-markdown-body"
              v-html="markdownHtml" v-if="getFileSuffix(file.name) === 'md'">
         </div>
     </div>
@@ -94,7 +94,7 @@
         vertical-align:middle;
     }
 
-    .content .markdown-body >>> pre {
+    .content .zfile-markdown-body >>> pre {
         margin-right: 20px;
         background-color: rgba(27,31,35,.05);
     }

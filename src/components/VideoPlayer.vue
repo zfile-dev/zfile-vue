@@ -35,7 +35,7 @@
 
             let currData = this.data;
 
-            let tableData = this.$store.getters.file.tableData;
+            let tableData = this.$store.getters.tableData;
 
             let containerVtt = false;
 

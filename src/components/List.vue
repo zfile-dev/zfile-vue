@@ -6,7 +6,7 @@
                   @cell-mouse-enter="updateInfoHover"
                   @cell-mouse-leave="updateInfoLeave"
                   @row-click="openFolder"
-                  :height="$store.getters.showDocument && $store.state.config.readme !== null ? '50vh' : '84vh'"
+                  :height="$store.getters.showDocument && $store.state.common.config.readme !== null ? '50vh' : '84vh'"
                   :size="$store.getters.tableSize"
                   @row-contextmenu="showMenu">
             <el-table-column
