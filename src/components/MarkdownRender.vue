@@ -1,5 +1,5 @@
 <template>
-    <div class="zfile-markdown-body" v-if="text" v-html="markdownHtml"></div>
+    <div class="markdown-body" v-if="text" v-html="markdownHtml"></div>
 </template>
 
 <script>
@@ -46,13 +46,13 @@
 </script>
 
 <style scoped>
-    .zfile-markdown-body >>> img {
+    .markdown-body >>> img {
         max-height: 150vh;
         max-width: 150vh;
         vertical-align: middle;
     }
 
-    .zfile-markdown-body {
+    .markdown-body {
         box-sizing: border-box;
         min-width: 200px;
         max-width: 980px;
@@ -60,7 +60,7 @@
         padding: 30px;
     }
 
-    .zfile-markdown-body >>> pre {
+    .markdown-body >>> pre {
         background-color: rgba(27,31,35,.05);
     }
 

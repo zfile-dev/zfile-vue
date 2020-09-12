@@ -1,32 +1,29 @@
 <template>
-    <el-row>
-        <el-col :span="12">
-            <el-form id="pwdForm" ref="form"
-                     @keyup.enter.native="submitForm('form')"
-                     :rules="rules"
-                     :model="form" label-width="auto" :status-icon="true">
-                <el-form-item label="管理员账号">
-                    <el-input v-model.trim="form.username"/>
-                </el-form-item>
+    <el-card shadow="false">
+        <el-form id="pwdForm" ref="form"
+                 @keyup.enter.native="submitForm('form')"
+                 :rules="rules"
+                 :model="form" label-width="auto" :status-icon="true">
+            <el-form-item label="管理员账号" class="box animate__animated animate__fadeInUp">
+                <el-input v-model.trim="form.username"/>
+            </el-form-item>
 
-                <el-form-item label="设置新密码" prop="password">
-                    <el-input v-model.trim="form.password"/>
-                </el-form-item>
+            <el-form-item label="设置新密码" prop="password" class="box animate__animated animate__fadeInUp">
+                <el-input v-model.trim="form.password"/>
+            </el-form-item>
 
-                <el-form-item label="确认密码" prop="repassword">
-                    <el-input v-model.trim="form.repassword"/>
-                </el-form-item>
+            <el-form-item label="确认密码" prop="repassword" class="box animate__animated animate__fadeInUp">
+                <el-input v-model.trim="form.repassword"/>
+            </el-form-item>
 
-                <el-form-item>
-                    <el-button type="primary" @click="submitForm('form')">确认</el-button>
-                </el-form-item>
-            </el-form>
-        </el-col>
-    </el-row>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('form')">确认</el-button>
+            </el-form-item>
+        </el-form>
+    </el-card>
 </template>
 
 <script>
-
     import qs from 'qs'
 
     export default {
@@ -85,8 +82,4 @@
 </script>
 
 <style scoped>
-    #pwdForm {
-        margin-top: 20px;
-        margin-left: 20px;
-    }
 </style>

@@ -1,22 +1,24 @@
 <template>
-    <div class="monitor-body">
-        <h1>
-            <span>系统监控</span>
-            <el-button style="float: right" type="primary" @click="downloadLog" icon="el-icon-download" size="medium">诊断日志下载</el-button>
-        </h1>
-        <el-table
-                :data="tableData">
-            <el-table-column
-                    prop="key"
-                    label="属性"
-                    width="300">
-            </el-table-column>
-            <el-table-column
-                    prop="value"
-                    label="值">
-            </el-table-column>
-        </el-table>
-    </div>
+    <el-card>
+        <div class="monitor-body">
+            <h1>
+                <span>系统监控</span>
+                <el-button style="float: right" type="primary" @click="downloadLog" icon="el-icon-download" size="medium">诊断日志下载</el-button>
+            </h1>
+            <el-table
+                    :data="tableData">
+                <el-table-column
+                        prop="key"
+                        label="属性"
+                        width="300">
+                </el-table-column>
+                <el-table-column
+                        prop="value"
+                        label="值">
+                </el-table-column>
+            </el-table>
+        </div>
+    </el-card>
 </template>
 
 <script>

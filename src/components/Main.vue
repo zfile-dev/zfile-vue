@@ -76,7 +76,7 @@
         margin: 0 auto;
     }
 
-    .zfile-markdown-body {
+    .markdown-body {
         height: 300px;
         overflow-y: auto;
         padding: 0 !important;

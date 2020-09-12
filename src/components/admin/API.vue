@@ -1,9 +1,11 @@
 <template>
-    <markdown-render v-loading="loading"
-                     element-loading-text="拼命加载中"
-                     class="scroll"
-                     :text="md">
-    </markdown-render>
+    <el-card shadow="false">
+        <markdown-render v-loading="loading"
+                         element-loading-text="拼命加载中"
+                         class="scroll"
+                         :text="md">
+        </markdown-render>
+    </el-card>
 </template>
 
 <script>
@@ -35,12 +37,8 @@
 
 <style scoped>
 
-    .zfile-markdown-body {
-        padding: 20px !important;
+    .markdown-body {
+        padding: unset;
     }
 
-    .scroll {
-        height: 100vh;
-        overflow-y: auto;
-    }
 </style>
