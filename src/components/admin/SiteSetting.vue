@@ -1,24 +1,22 @@
 <template>
-    <el-row>
-        <el-col :span="12">
-            <el-form id="siteForm"
-                     v-loading="loading"
-                     element-loading-text="保存中..."
-                     :rules="rules" ref="form" :model="form" label-width="auto" :status-icon="true">
-                <el-form-item label="站点名称" prop="siteName">
-                    <el-input v-model="form.siteName"/>
-                </el-form-item>
+    <el-card shadow="false">
+        <el-form id="siteForm"
+                 v-loading="loading"
+                 element-loading-text="保存中..."
+                 :rules="rules" ref="form" :model="form" label-width="auto" :status-icon="true">
+            <el-form-item label="站点名称" prop="siteName">
+                <el-input v-model="form.siteName"/>
+            </el-form-item>
 
-                <el-form-item label="站点域名" prop="domain">
-                    <el-input v-model="form.domain"/>
-                </el-form-item>
+            <el-form-item label="站点域名" prop="domain">
+                <el-input v-model="form.domain"/>
+            </el-form-item>
 
-                <el-form-item>
-                    <el-button type="primary" @click="submitForm('form')" round>保存设置</el-button>
-                </el-form-item>
-            </el-form>
-        </el-col>
-    </el-row>
+            <el-form-item>
+                <el-button type="primary" size="small" @click="submitForm('form')">保存设置</el-button>
+            </el-form-item>
+        </el-form>
+    </el-card>
 </template>
 
 <script>
@@ -83,7 +81,6 @@
 
     #siteForm {
         margin-top: 20px;
-        margin-left: 20px;
     }
 
     #siteForm >>> .el-select {
