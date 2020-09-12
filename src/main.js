@@ -1,6 +1,9 @@
 import Vue from 'vue';
 import App from './App.vue';
 
+import animate from "animate.css";
+Vue.use(animate)
+
 import '@/assets/font-icon/iconfont.js'
 
 import router from './router'
@@ -29,7 +32,7 @@ import InfiniteLoading from 'vue-infinite-loading';
 
 Vue.use(InfiniteLoading, { /* 配置 */ });
 
-import "@/assets/common.css";
+import "@/assets/common.scss";
 
 // 允许跨域携带 cookie
 axios.defaults.withCredentials = true;

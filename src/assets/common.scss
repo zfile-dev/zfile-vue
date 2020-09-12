@@ -1,0 +1,27 @@
+@import '/~element-ui/lib/theme-chalk/index.css';
+
+@media screen and (max-device-width: 769px) {
+    .el-message-box {
+        width: 90% !important;
+    }
+}
+
+.zfile-word-aux {
+    margin-left: 20px;
+    color: #aaaaaa;
+}
+
+.zfile-info-tooltip {
+    margin-left: 10px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+
+.zfile-margin-left-unset {
+    margin-left: unset;
+}
+
+.zfile-text-align-center {
+    text-align: center;
+}
