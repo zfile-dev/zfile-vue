@@ -27,6 +27,7 @@ import {
     Link,
     Radio,
     Divider,
+    Tooltip,
     Loading,
     Message,
     MessageBox,
@@ -56,6 +57,7 @@ Vue.use(Icon);
 Vue.use(Row);
 Vue.use(Col);
 Vue.use(Card);
+Vue.use(Tooltip);
 Vue.use(Popover);
 Vue.use(Loading);
 Vue.use(Badge);
