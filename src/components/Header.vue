@@ -78,7 +78,7 @@
                     this.currentDriveId = this.driveList[0].id;
                     this.$router.push('/' + this.driveList[0].id + '/main');
                 } else if (this.driveList.length === 0) {
-                    this.$message.error("尚未初始化驱动器, 请联系管理员.")
+                    this.$message.error("无可用驱动器, 请先初始化驱动器.")
                 }
 
                 let result = this.driveList.some((item) => {
