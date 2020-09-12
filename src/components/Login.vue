@@ -8,10 +8,14 @@
                  label-width="0px"
                  class="zfile-login-form">
 
-            <h3 class="zfile-login-title">管理员登录</h3>
+            <div class="zfile-login-title">
+                Z-File
+                <small>Admin</small>
+            </div>
 
             <el-form-item prop="username">
                 <el-input type="text"
+                          prefix-icon="el-icon-user"
                           v-model.trim="loginForm.username"
                           auto-complete="off"
                           placeholder="用户名">
@@ -19,6 +23,7 @@
             </el-form-item>
             <el-form-item prop="password">
                 <el-input type="password"
+                          prefix-icon="el-icon-key"
                           v-model.trim="loginForm.password"
                           auto-complete="off"
                           placeholder="密码">
@@ -85,24 +90,37 @@ export default {
 
 <style scoped>
 
-.zfile-login {
-    width: 100%;
-    height: 100%;
-}
+    .zfile-login {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: -200px;
+        width: 100%;
+        height: 100%;
+    }
 
-.zfile-login-title {
-    text-align: center;
-}
+    .zfile-login-title  {
+        text-align: center;
+        vertical-align: text-bottom;
+        font-size: 30px;
+        font-weight: 600;
+        color: red;
+        background-image: linear-gradient(-20deg, #6e45e2, #88d3ce);
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;
+        line-height: 80px;
+    }
 
-.zfile-login-form {
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-    margin: 180px auto;
-    width: 350px;
-    padding: 35px 35px 15px;
-    background: #fff;
-    border: 1px solid #eaeaea;
-    box-shadow: 0 0 25px #cac6c6;
-}
+    .zfile-login-title small  {
+        font-size: 20px;
+    }
 
+    .zfile-login-form {
+        width: 350px;
+        padding: 30px 35px 15px;
+        background: #fff;
+        border: 1px solid #eaeaea;
+        box-shadow: 0 0 25px #cac6c6;
+    }
 </style>
