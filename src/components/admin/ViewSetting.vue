@@ -124,9 +124,4 @@
         margin-top: 20px;
         margin-left: 20px;
     }
-
-    .zfile-word-aux {
-        margin-left: 20px;
-        color: #aaaaaa;
-    }
 </style>
