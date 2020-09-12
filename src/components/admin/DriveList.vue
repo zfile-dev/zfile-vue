@@ -1,37 +1,34 @@
 <template>
-    <el-row>
-        <el-col :offset="1"
-                element-loading-text="保存并初始化中.">
-            <h1>驱动器列表</h1>
+    <el-card>
+        <div>
+            <el-button type="primary" icon="el-icon-plus" size="mini" @click="addDrive">新增</el-button>
+        </div>
 
-            <div style="margin-top: 20px">
-                <el-button type="primary" size="mini" @click="addDrive">新增</el-button>
-            </div>
-
-            <el-table
-                    :data="driveList"
-                    ref="driveTable"
-                    row-key="id"
-                    highlight-current-row
-                    style="width: 100%">
+        <el-table
+            :data="driveList"
+            ref="driveTable"
+            row-key="id"
+            highlight-current-row>
                 <el-table-column
                         prop="id"
-                        width="100"
+                        width="80"
                         label="驱动器ID">
                 </el-table-column>
                 <el-table-column
                         prop="name"
+                        :show-overflow-tooltip="true"
                         label="驱动器名称">
                 </el-table-column>
                 <el-table-column
                         prop="type"
                         :formatter="typeFormatter"
-                        width="150"
+                        :show-overflow-tooltip="true"
+                        width="100"
                         label="所属策略">
                 </el-table-column>
                 <el-table-column
                         prop="enable"
-                        width="150"
+                        width="100"
                         label="是否启用">
                     <template slot-scope="scope">
                         <el-switch @change="switchEnableStatus(scope.row)" v-model="scope.row.enable"></el-switch>
@@ -39,7 +36,7 @@
                 </el-table-column>
                 <el-table-column
                         prop="enableCache"
-                        width="150"
+                        width="100"
                         label="缓存开启">
                     <template slot-scope="scope">
                         <el-switch @change="switchCacheEnableStatus(scope.row)" v-model="scope.row.enableCache"></el-switch>
@@ -47,7 +44,7 @@
                 </el-table-column>
                 <el-table-column
                         prop="autoRefreshCache"
-                        width="150"
+                        width="120"
                         label="缓存自动刷新">
                     <template slot-scope="scope">
                         <el-switch @change="switchAutoRefreshStatus(scope.row)" v-model="scope.row.autoRefreshCache"></el-switch>
@@ -67,128 +64,11 @@
                 </el-table-column>
             </el-table>
 
-            <el-dialog width="80%" title="驱动器设置" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
+        <el-dialog width="80%" title="驱动器设置" :modal-append-to-body="false" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
+            <drive-edit :drive-item="driveItem" :dialog-visible="driveEditDialogVisible" :support-strategy="supportStrategy"></drive-edit>
+        </el-dialog>
 
-                <el-form v-loading="loading"
-                         element-loading-text="保存并初始化中."
-                         id="siteForm" ref="form" :model="driveItem" :rules="rules" label-width="auto" :status-icon="true">
-                    <el-row :gutter="50">
-                        <el-col :span="12">
-                            <el-form-item label="驱动器名称" prop="name">
-                                <el-input v-model="driveItem.name"/>
-                            </el-form-item>
-
-                            <el-form-item label="是否启用">
-                                <el-switch v-model="driveItem.enable"/>
-                                <div class="zfile-word-aux" style="margin-left: 0">
-                                    如不启用，则在前台不展示。
-                                </div>
-                            </el-form-item>
-
-                            <el-form-item label="开启缓存">
-                                <el-switch v-model="driveItem.enableCache"/>
-                                <div class="zfile-word-aux" style="margin-left: 0">
-                                    开启缓存后，N 秒内重复请求相同文件夹，不会重复调用 API。
-                                </div>
-                                <div class="zfile-word-aux" style="margin-left: 0">
-                                    参数 N 在配置文件中设置 {zfile.cache.timeout}，默认为 1800 秒。
-                                </div>
-                            </el-form-item>
-
-                            <el-form-item label="开启缓存自动刷新">
-                                <el-switch v-model="driveItem.autoRefreshCache"/>
-                                <div class="zfile-word-aux" style="margin-left: 0">
-                                    每隔 N 秒检测到期的缓存, 对于过期缓存尝试调用 API, 重新写入缓存.
-                                </div>
-                                <div class="zfile-word-aux" style="margin-left: 0">
-                                    参数 N 在配置文件中设置 {zfile.cache.auto-refresh-interval}，默认为 5 秒。
-                                </div>
-                            </el-form-item>
-
-                            <el-form-item label="存储策略" prop="type">
-                                <el-select filterable v-model="driveItem.type" placeholder="请选择存储策略">
-                                    <el-option :key="item.key"
-                                               v-for="(item) in supportStrategy"
-                                               :label="item.description"
-                                               :value="item.key">
-                                    </el-option>
-                                </el-select>
-                            </el-form-item>
-                        </el-col>
-
-                        <el-col :span="12">
-                            <el-form-item
-                                    v-for="(item) in storageStrategyForm"
-                                    :label="item.title"
-                                    :key="item.title"
-                                    :prop="'storageStrategyConfig.' + item.key">
-
-                                <el-select v-model="driveItem.storageStrategyConfig.endPoint"
-                                           v-if="item.key === 'endPoint' && region.hasOwnProperty(driveItem.type)">
-                                    <el-option v-for="endPoint in region[driveItem.type]" :label="endPoint.name" :value="endPoint.val" :key="endPoint.name"/>
-                                </el-select>
-
-                                <div v-else-if="item.key === 'pathStyle'">
-                                    <el-select v-model="driveItem.storageStrategyConfig.pathStyle" style="width: 50%">
-                                        <el-option label="bucket-virtual-hosting" value="bucket-virtual-hosting"></el-option>
-                                        <el-option label="path-style" value="path-style"></el-option>
-                                    </el-select>
-                                    <el-link class="zfile-word-aux" target="_blank" icon="el-icon-document"
-                                             href="https://docs.aws.amazon.com/zh_cn/AmazonS3/latest/dev/VirtualHosting.html#path-style-access">查看 S3 API 说明文档</el-link>
-                                </div>
-
-                                <div v-else-if="item.key === 'isPrivate'">
-                                    <el-switch v-model="driveItem.storageStrategyConfig.isPrivate" />
-                                    <span class="zfile-word-aux">私有空间会生成带签名的下载链接</span>
-                                </div>
-
-                                <el-input placeholder="" @input="change($event)" v-else v-model="driveItem.storageStrategyConfig[item.key]"/>
-
-                                <div v-if="item.key === 'basePath'">
-                                    <span class="zfile-word-aux" style="margin-left: 0">基路径表示从哪个路径开始文件, 不填写表示从根开始</span>
-                                </div>
-
-                                <div v-if="item.key === 'filePath'">
-                                    <span class="zfile-word-aux" style="margin-left: 0">Linux 或对象存储等需以 / 开头</span>
-                                    <br>
-                                    <span class="zfile-word-aux" style="margin-left: 0">Windows 支持 C:/ 类的盘符开头</span>
-                                    <br>
-                                    <span class="zfile-word-aux" style="margin-left: 0">结尾不需要加 /</span>
-                                </div>
-
-                                <div v-if="item.key === 'domain' && driveItem.type === 'ftp'">
-                                    <span class="zfile-word-aux" style="margin-left: 0">此域名表示 http 访问域名，如有端口，也需要写明。</span>
-                                </div>
-                            </el-form-item>
-
-                            <el-form-item v-if="driveItem.type === 'onedrive'">
-                                <el-link target="_blank" icon="el-icon-edit"
-                                         href="https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=09939809-c617-43c8-a220-a93c1513c5d4&response_type=code&redirect_uri=https://zfile.jun6.net/onedrive/callback&scope=offline_access%20User.Read%20Files.ReadWrite.All">前往获取授权</el-link>
-                            </el-form-item>
-
-                            <el-form-item v-if="driveItem.type === 'onedrive-china'">
-                                <el-link target="_blank" icon="el-icon-edit"
-                                         href="https://login.chinacloudapi.cn/common/oauth2/v2.0/authorize?client_id=4a72d927-1907-488d-9eb2-1b465c53c1c5&response_type=code&redirect_uri=https://zfile.jun6.net/onedrive/china-callback&scope=offline_access%20User.Read%20Files.ReadWrite.All">前往获取授权</el-link>
-                            </el-form-item>
-
-                            <el-form-item v-if="driveItem.type === 'ftp'">
-                                <span class="zfile-word-aux" style="margin: unset">注意: FTP 协议，如果不填写加速域名 (HTTP 下载地址)，则会使用 FTP 协议进行下载</span>
-                                <br>
-                                <span class="zfile-word-aux" style="margin: unset">FTP 协议会在 URL 中暴露用户名密码，如：<b>ftp://用户名:密码@IP:端口/文件路径/文件名</b></span>
-                                <br>
-                                <span class="zfile-word-aux" style="margin: unset">如为 FTP 提供了加速域名 (HTTP 下载地址)，则会使用 HTTP 协议，如：<b>http(s)://加速域名/文件路径/文件名</b></span>
-                            </el-form-item>
-                        </el-col>
-                    </el-row>
-                </el-form>
-                <div slot="footer" class="dialog-footer" style="text-align: center">
-                    <el-button type="primary" :disabled="loading" @click="submitForm('form')">保 存</el-button>
-                    <el-button @click="driveEditDialogVisible = false">取 消</el-button>
-                </div>
-            </el-dialog>
-
-
-            <el-dialog width="40%" title="过滤规则" :visible.sync="filterDialogVisible" top="10vh" :destroy-on-close="true">
+        <el-dialog width="40%" title="过滤规则" :visible.sync="filterDialogVisible" top="10vh" :destroy-on-close="true">
                 <el-form id="filterForm" ref="filterForm" :model="filterForm" label-width="120px" style="margin-left: 60px">
                     <div v-for="(item, index) in filterForm.filterList" :key="index">
                         <el-row>
@@ -231,7 +111,7 @@
                 </div>
             </el-dialog>
 
-            <el-dialog width="70%" title="缓存管理" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true" @close="closeCacheManage">
+        <el-dialog width="70%" title="缓存管理" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true" @close="closeCacheManage">
 
                 <el-row :gutter="20" style="margin-bottom: 20px">
                     <el-col :span="8">
@@ -295,24 +175,22 @@
                     </el-table-column>
                 </el-table>
             </el-dialog>
-        </el-col>
-    </el-row>
+    </el-card>
 </template>
 
 <script>
     import Sortable from "sortablejs";
-    import region from "@/region";
     import qs from 'qs';
+    import DriveEdit from "@/components/admin/DriveEdit";
 
     export default {
         name: "DriveList",
+        components: {DriveEdit},
         data() {
             return {
                 loading: false,
                 driveList: [],
                 supportStrategy: [],
-                storageStrategyForm: [],
-                region: region,
                 driveItem: {
                     orderNum: null,
                     name: '',
@@ -356,90 +234,6 @@
                 cacheManageVisible: false,
                 currentCacheManageId: null,
                 cacheSearch: '',
-                rules: {
-                    siteName: [
-                        {required: true, message: '请输入站点名称', trigger: 'change'},
-                    ],
-                    username: [
-                        {required: true, message: '请输入管理员账号', trigger: 'change'},
-                    ],
-                    password: [
-                        {required: true, message: '请输入管理员密码', trigger: 'change'},
-                    ],
-                    domain: [
-                        {required: true, type: 'url', message: '请输入正确的域名, 需以 http:// 或 https:// 开头', trigger: 'change'},
-                    ],
-                    type: [
-                        {required: true, message: '存储策略不能为空', trigger: 'change'},
-                    ],
-                    'storageStrategyConfig.domain': [
-                        {
-                            validator: (rule, value, callback) => {
-                                let domainCheck = /(http|https):\/\/([\w.]+\/?)\S*/
-
-                                if ((value === undefined || value === '') && this.driveItem.type === 'ftp') {
-                                    callback();
-                                    return;
-                                }
-
-                                if (value === undefined || value === '') {
-                                    callback(new Error('域名不能为空'));
-                                    return;
-                                }
-                                if (!domainCheck.test(value)) {
-                                    callback(new Error('请输入正确的域名, 需以 http:// 或 https:// 开头'));
-                                } else {
-                                    callback();
-                                }
-                            },
-                            type: 'url',
-                            trigger: 'change'
-                        }
-                    ],
-                    'storageStrategyConfig.username': [
-                        {
-                            validator: (rule, value, callback) => {
-                                if ((this.driveItem.type === 'upyun' || this.driveItem.type === 'ufile') && (value === undefined || value === '')) {
-                                    callback(new Error('操作员名称不能为空'));
-                                } else {
-                                    callback();
-                                }
-                            }
-                        }
-                    ],
-                    'storageStrategyConfig.password': [
-                        {
-                            validator: (rule, value, callback) => {
-                                if ((this.driveItem.type === 'upyun' || this.driveItem.type === 'ufile') && (value === undefined || value === '')) {
-                                    callback(new Error('操作员密码不能为空'));
-                                } else {
-                                    callback();
-                                }
-                            }
-                        }
-                    ],
-                    'storageStrategyConfig.endPoint': [{required: true, message: '区域不能为空'}],
-                    'storageStrategyConfig.accessKey': [{required: true, message: 'AccessKey 不能为空'}],
-                    'storageStrategyConfig.filePath': [{required: true, message: '文件路径不能为空'}],
-                    'storageStrategyConfig.secretKey': [{required: true, message: 'SecretKey 不能为空'}],
-                    'storageStrategyConfig.bucketName': [{required: true, message: '此项不能为空'}],
-                    'storageStrategyConfig.host': [{required: true, message: "域名或 IP 不能为空"}],
-                    'storageStrategyConfig.port': [{required: true, message: "端口不能为空"}],
-                    'storageStrategyConfig.accessToken': [{required: true, message: "访问令牌不能为空"}],
-                    'storageStrategyConfig.refreshToken': [{required: true, message: "刷新令牌不能为空"}],
-                    'storageStrategyConfig.secretId': [{required: true, message: "SecretId 不能为空"}]
-                }
-            }
-        },
-        watch: {
-            'driveItem.type'(newVal) {
-                if (newVal) {
-                    this.$http.get('admin/strategy-form', {params: {storageType: newVal}}).then((response) => {
-                        this.storageStrategyForm = response.data.data;
-                    })
-                } else  {
-                    this.storageStrategyForm = null;
-                }
             }
         },
         methods: {
@@ -447,6 +241,9 @@
                 const tbody = document.querySelector('.el-table__body-wrapper tbody')
                 Sortable.create(tbody, {
                     onEnd: e => {
+                        if (this.driveList.length < 2) {
+                            return;
+                        }
                         const currRow = this.driveList.splice(e.oldIndex, 1)[0];
                         this.driveList.splice(e.newIndex, 0, currRow)
 
@@ -555,16 +352,13 @@
                     }
                 }
             },
-            change() {
-                this.$forceUpdate();
-            },
             editDrive(row) {
                 this.$http.get('admin/drive/' + row.id).then((response) => {
                     let data = response.data.data;
                     data.type = data.type.key;
                     this.driveItem = data;
+                    this.driveEditDialogVisible = true;
                 });
-                this.driveEditDialogVisible = true;
             },
             deleteDrive(row) {
                 this.$confirm('是否确认删除？', '提示', {
@@ -589,28 +383,7 @@
                 Object.assign(this.driveItem, this.$options.data().driveItem);
                 this.driveItem.id = null;
                 this.driveEditDialogVisible = true;
-            },
-            submitForm(formName) {
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        this.loading = true;
-                        this.$http.post('admin/drive', this.driveItem).then((response) => {
-                            let data =  response.data;
-                            this.$message({
-                                message: data.msg,
-                                type: data.code === 0 ? 'success' : 'error',
-                                duration: 1500,
-                            });
-                            this.driveEditDialogVisible = false;
-                            this.init();
-                            this.loading = false;
-                        }).catch(()=>{
-                            this.loading = false;
-                        })
-                    } else {
-                        return false;
-                    }
-                });
+                console.log(this.supportStrategy)
             },
             init() {
                 this.$http.get('admin/support-strategy').then((response) => {
@@ -636,11 +409,6 @@
 </script>
 
 <style scoped>
-    .zfile-word-aux {
-        margin-left: 20px;
-        color: #aaaaaa;
-    }
-
     .el-row {
         padding: 20px;
     }
