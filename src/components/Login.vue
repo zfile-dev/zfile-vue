@@ -4,8 +4,6 @@
                  status-icon
                  ref="loginForm"
                  @keyup.enter.native="handleSubmit"
-                 label-position="left"
-                 label-width="0px"
                  class="zfile-login-form">
 
             <div class="zfile-login-title box animate__animated animate__fadeIn">
