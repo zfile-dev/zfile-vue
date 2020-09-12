@@ -8,12 +8,12 @@
                  label-width="0px"
                  class="zfile-login-form">
 
-            <div class="zfile-login-title">
+            <div class="zfile-login-title box animate__animated animate__fadeIn">
                 Z-File
                 <small>Admin</small>
             </div>
 
-            <el-form-item prop="username">
+            <el-form-item prop="username" class="box animate__animated animate__fadeInUp">
                 <el-input type="text"
                           prefix-icon="el-icon-user"
                           v-model.trim="loginForm.username"
@@ -21,7 +21,7 @@
                           placeholder="用户名">
                 </el-input>
             </el-form-item>
-            <el-form-item prop="password">
+            <el-form-item prop="password" class="box animate__animated animate__fadeInUp">
                 <el-input type="password"
                           prefix-icon="el-icon-key"
                           v-model.trim="loginForm.password"
