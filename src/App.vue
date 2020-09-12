@@ -32,9 +32,11 @@
         -moz-osx-font-smoothing: grayscale;
         color: #555;
         overflow-x: hidden;
+        height: 100%;
     }
 
-    body {
+    html, body {
+        height: 100%;
         margin: unset;
         overflow: hidden;
     }
