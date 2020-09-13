@@ -1,15 +1,15 @@
 <template>
-    <el-form :inline="true" class="demo-form-inline zfile-header" size="mini">
+    <el-form :inline="true" class="zfile-header" size="mini">
         <el-form-item>
             <el-breadcrumb separator="/" separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{path: '/' + driveId + '/main'}">首页</el-breadcrumb-item>
+                <el-breadcrumb-item :to="{path: '/' + driveId + '/main'}">{{this.$store.state.common.config.siteName ? this.$store.state.common.config.siteName : '首页'}}</el-breadcrumb-item>
                 <el-breadcrumb-item v-for="item in breadcrumbData" class="hidden-xs-only"
                                     :to="{path: '/' + driveId + '/main' + item.fullPath}"
                                     :key="item.path">{{item.name}}</el-breadcrumb-item>
             </el-breadcrumb>
         </el-form-item>
-        <div style="float: right; margin-right: 20px">
-            <span style="margin-right: 10px" class="hidden-xs-only">驱动器</span>
+        <div class="zfile-header-drive box animate__animated animate__fadeIn">
+            <span class="hidden-xs-only">驱动器</span>
             <el-select v-model="currentDriveId" placeholder="请选择驱动器" @change="changeDrive">
                 <el-option v-for="item in driveList"
                            :key="item.id"
@@ -113,5 +113,14 @@
         .zfile-header >>> .el-breadcrumb__separator {
             display: none !important;
         }
+    }
+
+    .zfile-header-drive {
+        float: right;
+        margin-right: 20px;
+    }
+
+    .zfile-header-drive span {
+        margin-right: 10px;
     }
 </style>

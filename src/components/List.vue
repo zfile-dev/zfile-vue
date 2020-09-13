@@ -1,7 +1,6 @@
 <template>
     <div id="List">
         <el-table ref="fileTable" id="ListTable"
-                  class="transition-box"
                   :data="this.$store.getters.tableData"
                   @cell-mouse-enter="updateInfoHover"
                   @cell-mouse-leave="updateInfoLeave"

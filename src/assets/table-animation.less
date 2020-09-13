@@ -1,0 +1,21 @@
+.loop(@n) when (@n < 100) {
+  .el-table__body {
+    .el-table__row:nth-child(@{n}) {
+      opacity: 0;
+      animation: table-show 100ms @n * 5ms forwards linear;
+    }
+  }
+  .loop((@n + 1));
+}
+
+.loop(0);
+@keyframes table-show {
+  0% {
+    transform: translateY(10px);
+    opacity: .5;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

@@ -33,6 +33,7 @@ import InfiniteLoading from 'vue-infinite-loading';
 Vue.use(InfiniteLoading, { /* 配置 */ });
 
 import "@/assets/common.scss";
+import "@/assets/table-animation.less";
 
 // 允许跨域携带 cookie
 axios.defaults.withCredentials = true;
