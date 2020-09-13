@@ -3,7 +3,7 @@
         <div class="zfile-admin-top">
             <div class="zfile-admin-top-content">
                 <div class="zfile-admin-top-logo box animate__animated animate__fadeInLeft">
-                    <div>ZFile Admin</div>
+                    <div @click="openZFileAdmin">ZFile Admin</div>
                 </div>
                 <el-menu
                     mode="horizontal"
@@ -68,6 +68,9 @@
             },
             click() {
                 window.open('/', '_blank');
+            },
+            openZFileAdmin() {
+                window.open('https://github.com/zhaojun1998/zfile');
             }
         },
         mounted: function() {
@@ -89,6 +92,7 @@
     }
 
     .zfile-admin-top-logo {
+        cursor: pointer;
         height: 100%;
         line-height: 61px;
         color: #ffffff;
@@ -121,6 +125,7 @@
     .el-menu--horizontal > .el-menu-item.is-active {
         color: #1890ff !important;
     }
+
     .el-menu.el-menu--horizontal,
     .el-menu--horizontal > .el-menu-item{
         border: none;

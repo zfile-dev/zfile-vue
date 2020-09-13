@@ -3,7 +3,7 @@
         <div class="monitor-body">
             <h1>
                 <span>系统监控</span>
-                <el-button style="float: right" type="primary" @click="downloadLog" icon="el-icon-download" size="medium">诊断日志下载</el-button>
+                <el-button class="zfile-float-right" type="primary" @click="downloadLog" icon="el-icon-download" size="medium">诊断日志下载</el-button>
             </h1>
             <el-table
                     :data="tableData">
