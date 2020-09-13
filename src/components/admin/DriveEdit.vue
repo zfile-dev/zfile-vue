@@ -143,7 +143,7 @@
         </el-form>
         <div slot="footer" class="zfile-text-align-center">
             <el-button type="primary" :disabled="loading" @click="submitForm('form')">保 存</el-button>
-            <el-button @click="dialogVisible = false">取 消</el-button>
+            <el-button @click="close">取 消</el-button>
         </div>
     </div>
 </template>
@@ -154,6 +154,9 @@ import region from "@/region";
 export default {
     name: "DriveEdit",
     props: {
+        close: {
+            type: Function
+        },
         driveItem: {
             orderNum: null,
             name: '',
@@ -182,20 +185,15 @@ export default {
                 domain: ""
             },
         },
-        supportStrategy: null,
-        dialogVisible: null,
+        supportStrategy: null
     },
     watch: {
         'driveItem.type'(newVal) {
             if (newVal) {
-                this.$http.get('admin/strategy-form', {params: {storageType: newVal}}).then((response) => {
-                    this.storageStrategyForm = response.data.data;
-                })
+                this.loadStrategyForm(newVal);
+            } else {
+                this.storageStrategyForm = null;
             }
-            // else  {
-            //     alert("type null");
-            //     this.storageStrategyForm = null;
-            // }
         }
     },
     data() {
@@ -279,6 +277,11 @@ export default {
         }
     },
     methods: {
+        loadStrategyForm(val) {
+            this.$http.get('admin/strategy-form', {params: {storageType: val}}).then((response) => {
+                this.storageStrategyForm = response.data.data;
+            })
+        },
         change() {
             this.$forceUpdate();
         },
@@ -293,8 +296,7 @@ export default {
                             type: data.code === 0 ? 'success' : 'error',
                             duration: 1500,
                         });
-                        this.dialogVisible = false;
-                        this.init();
+                        this.close();
                         this.loading = false;
                     }).catch(()=>{
                         this.loading = false;
@@ -304,6 +306,11 @@ export default {
                 }
             });
         },
+    },
+    mounted() {
+        if (this.driveItem.type) {
+            this.loadStrategyForm(this.driveItem.type);
+        }
     }
 }
 </script>

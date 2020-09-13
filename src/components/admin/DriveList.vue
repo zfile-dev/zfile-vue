@@ -65,116 +65,17 @@
             </el-table>
 
         <el-dialog width="80%" title="驱动器设置" :modal-append-to-body="false" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
-            <drive-edit :drive-item="driveItem" :dialog-visible="driveEditDialogVisible" :support-strategy="supportStrategy"></drive-edit>
+            <drive-edit :drive-item="driveItem" :close="closeDriveEdit" :support-strategy="supportStrategy"></drive-edit>
         </el-dialog>
 
-        <el-dialog width="40%" title="过滤规则" :visible.sync="filterDialogVisible" top="10vh" :destroy-on-close="true">
-                <el-form id="filterForm" ref="filterForm" :model="filterForm" label-width="120px" style="margin-left: 60px">
-                    <div v-for="(item, index) in filterForm.filterList" :key="index">
-                        <el-row>
-                            <el-col :span="20">
-                                <el-form-item :prop="'filterList.' + index + '.expression'"
-                                              :rules="{required: true, message: '此项不能为空', trigger: 'blur'}"
-                                              :label="'表达式 ' + (index + 1)">
-                                    <el-input v-model="item.expression"></el-input>
-                                </el-form-item>
-                            </el-col>
+        <el-dialog width="40%" title="过滤规则" :modal-append-to-body="false" :visible.sync="filterDialogVisible" top="10vh" :destroy-on-close="true">
+            <filter-pattern :drive-id="currentCacheManageId" :close="closeFilterDialog"></filter-pattern>
+        </el-dialog>
 
-                            <el-col :span="4">
-                                <el-button type="danger" size="small"  @click="deleteFilterItem(index)"
-                                           icon="el-icon-delete">删除
-                                </el-button>
-                            </el-col>
-                        </el-row>
-                    </div>
-                    <el-form-item>
-                        <el-button type="primary" size="mini"
-                                   icon="el-icon-plus" @click="addFilterItem">添加更多
-                        </el-button>
-                    </el-form-item>
-                    <el-form-item>
-                        <span class="zfile-word-aux" style="margin-left: 0;">
-                            表达式规则:
-                            <br>
-                            *: 单级路径通配符，如表达式 /*.jpg，可以匹配根路径下所有的 jpg 后缀的文件
-                            <br>
-                            **: 多级路径通配符，如表达式 **.jpg，可以匹配所有路径下的 jpg 后缀的文件
-                            <br>
-                            注意：<b>/a.png</b> 表示根路径下的 a.png。 <b>/a/b/c.png</b>，表示 /a/b/ 路径下的 c.png。 <b>a.png</b>，什么都不表示，因为未标注路径。
-                        </span>
-                    </el-form-item>
-                </el-form>
+        <el-dialog width="70%" title="缓存管理" :modal-append-to-body="false" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true" @close="closeCacheManage">
+            <cache-manager :current-cache-manage-id="this.currentCacheManageId"></cache-manager>
+        </el-dialog>
 
-
-                <div slot="footer" class="dialog-footer" style="text-align: right; margin-top: 15px">
-                    <el-button type="primary" size="mini" icon="el-icon-check" @click="saveFilterForm">保存</el-button>
-                </div>
-            </el-dialog>
-
-        <el-dialog width="70%" title="缓存管理" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true" @close="closeCacheManage">
-
-                <el-row :gutter="20" style="margin-bottom: 20px">
-                    <el-col :span="8">
-                        <el-card shadow="always">
-                            <div slot="header" class="clearfix">
-                                <span class="card-title">缓存数</span>
-                                <el-button size="mini" round style="float: right" type="danger" @click="clearCache">清理缓存</el-button>
-                            </div>
-                            <div class="card-content" v-text="driveCacheInfo.cacheCount">
-                            </div>
-                        </el-card>
-                    </el-col>
-
-                    <el-col :span="8">
-                        <el-card shadow="always">
-                            <div slot="header" class="clearfix">
-                                <span class="card-title">命中数</span>
-                            </div>
-                            <div class="card-content" v-text="driveCacheInfo.hitCount">
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-card shadow="always">
-                            <div slot="header" class="clearfix">
-                                <span class="card-title">未命中数</span>
-                            </div>
-                            <div class="card-content" v-text="driveCacheInfo.missCount">
-                            </div>
-                        </el-card>
-                    </el-col>
-                </el-row>
-
-                <el-row :gutter="20">
-                    <el-col :span="20">
-                        <el-input placeholder="输入关键字搜索" v-model="cacheSearch"></el-input>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-button size="small" type="primary" style="float: right" @click="refreshCacheManageData">刷新统计信息</el-button>
-                    </el-col>
-                </el-row>
-
-                <el-table
-                        height="50vh"
-                        :data="driveCacheInfo.cacheKeys.filter(data => !cacheSearch || data.name.toLowerCase().includes(cacheSearch.toLowerCase()))"
-                        style="width: 100%; overflow-y: auto">
-                    <el-table-column
-                            prop="name"
-                            label="缓存 Key (文件夹名称)"
-                            min-width="75%">
-                    </el-table-column>
-                    <el-table-column min-width="25%"
-                                     label="操作">
-                        <template slot-scope="scope">
-                            <el-button
-                                    size="mini"
-                                    type="primary"
-                                    round
-                                    @click="refreshCache(scope.row)">刷新缓存</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </el-dialog>
     </el-card>
 </template>
 
@@ -182,10 +83,12 @@
     import Sortable from "sortablejs";
     import qs from 'qs';
     import DriveEdit from "@/components/admin/DriveEdit";
+    import CacheManager from "@/components/admin/CacheManager";
+    import FilterPattern from "@/components/admin/FilterPattern";
 
     export default {
         name: "DriveList",
-        components: {DriveEdit},
+        components: {FilterPattern, CacheManager, DriveEdit},
         data() {
             return {
                 loading: false,
@@ -219,21 +122,11 @@
                         domain: ""
                     },
                 },
-                driveCacheInfo: {
-                    cacheCount: 0,
-                    hitCount: 0,
-                    missCount: 0,
-                    cacheKeys: []
-                },
                 sortable: null,
-                filterForm: {
-                    filterList: []
-                },
                 driveEditDialogVisible: false,
                 filterDialogVisible: false,
                 cacheManageVisible: false,
-                currentCacheManageId: null,
-                cacheSearch: '',
+                currentCacheManageId: null
             }
         },
         methods: {
@@ -268,64 +161,13 @@
             closeCacheManage() {
                 this.cacheSearch = "";
             },
-            refreshCache(row) {
-                this.$http.post('admin/cache/' + this.currentCacheManageId +'/refresh', qs.stringify({key: row.name})).then(() => {
-                    this.$message({
-                        message: '刷新成功',
-                        type: 'success'
-                    });
-                });
-            },
-            saveFilterForm() {
-                this.$http.post(`admin/drive/${this.currentCacheManageId}/filters`, this.filterForm.filterList).then(() => {
-                    this.$message({
-                        message: '保存成功',
-                        type: 'success'
-                    });
-                    this.filterDialogVisible = false;
-                });
+            cacheManage(row) {
+                this.currentCacheManageId = row.id;
+                this.cacheManageVisible = true;
             },
             showFilterDialog(row) {
                 this.currentCacheManageId = row.id;
-                this.$http.get(`admin/drive/${this.currentCacheManageId}/filters`).then((response) => {
-                    this.filterForm.filterList = response.data.data;
-                    this.filterDialogVisible = true;
-                });
-            },
-            addFilterItem() {
-                this.filterForm.filterList.push({expression: '', driveId: this.currentCacheManageId});
-            },
-            deleteFilterItem(index) {
-                this.filterForm.filterList.splice(index, 1);
-            },
-            cacheManage(row) {
-                this.currentCacheManageId = row.id;
-                this.loadCacheManageData();
-            },
-            refreshCacheManageData() {
-                this.loadCacheManageData();
-                this.$message({
-                    message: '刷新成功',
-                    type: 'success'
-                });
-            },
-            loadCacheManageData() {
-                this.$http.get('admin/cache/' + this.currentCacheManageId + '/info').then((response) => {
-                    let data = response.data.data;
-
-                    let cacheKeys = data.cacheKeys;
-                    cacheKeys.sort(function (a, b) {
-                        return a.length - b.length;
-                    });
-                    let tempData = [];
-                    for (let i = 0; i < cacheKeys.length; i++) {
-                        tempData[i] = {"name": cacheKeys[i]};
-                    }
-                    data.cacheKeys = tempData;
-                    this.driveCacheInfo = data;
-
-                    this.cacheManageVisible = true;
-                });
+                this.filterDialogVisible = true;
             },
             switchEnableStatus(row) {
                 let action = row.enable ? 'enable' : 'disable';
@@ -378,6 +220,13 @@
                         }
                     }
                 });
+            },
+            closeDriveEdit() {
+                this.driveEditDialogVisible = false;
+                this.init();
+            },
+            closeFilterDialog() {
+                this.filterDialogVisible = false;
             },
             addDrive() {
                 Object.assign(this.driveItem, this.$options.data().driveItem);
