@@ -3,8 +3,6 @@
         <el-table ref="fileTable" id="ListTable"
                   class="transition-box"
                   :data="this.$store.getters.tableData"
-                  @cell-mouse-enter="updateInfoHover"
-                  @cell-mouse-leave="updateInfoLeave"
                   @row-click="openFolder"
                   :height="$store.getters.showDocument && $store.state.common.config.readme !== null ? '50vh' : '84vh'"
                   :size="$store.getters.tableSize"
@@ -96,17 +94,29 @@
         <v-contextmenu ref="contextmenu">
             <v-contextmenu-item @click="preview">
                 <i class="el-icon-view"></i>
-                <label v-html="hoverRow.type === 'FILE' ?  '预览' : '打开'"></label>
+                <label v-html="rightClickRow.type === 'FILE' ?  '预览' : '打开'"></label>
             </v-contextmenu-item>
-            <v-contextmenu-item @click="download" v-show="hoverRow.type === 'FILE'">
+            <v-contextmenu-item @click="download" v-show="rightClickRow.type === 'FILE'">
                 <i class="el-icon-download"></i>
                 <label>下载</label>
             </v-contextmenu-item>
-            <v-contextmenu-item @click="directlink" v-show="hoverRow.type === 'FILE'">
+            <!--如果是文件-->
+            <v-contextmenu-item @click="directlink(true)" v-if="rightClickRow.type === 'FILE'">
                 <i class="el-icon-copy-document"></i>
                 <label>复制直链</label>
             </v-contextmenu-item>
-            <v-contextmenu-item @click="shortLink" v-show="hoverRow.type === 'FILE'">
+            <!--如果是文件夹-->
+            <v-contextmenu-item @click="directlink()" v-else>
+                <i class="el-icon-copy-document"></i>
+                <label>复制直链</label>
+            </v-contextmenu-item>
+            <!--如果是文件-->
+            <v-contextmenu-item @click="shortLink(true)" v-if="rightClickRow.type === 'FILE'">
+                <i class="el-icon-copy-document"></i>
+                <label>复制短链</label>
+            </v-contextmenu-item>
+            <!--如果是文件夹-->
+            <v-contextmenu-item @click="shortLink()" v-else>
                 <i class="el-icon-copy-document"></i>
                 <label>复制短链</label>
             </v-contextmenu-item>
@@ -139,8 +149,8 @@
             return {
                 // 是否初始化加载完成
                 loading: false,
-                // 当前鼠标悬浮的行
-                hoverRow: {},
+                // 鼠标右键点击的行
+                rightClickRow: {},
                 state: null,
                 // 是否打开文本浏览器弹出
                 dialogTextVisible: false,
@@ -224,7 +234,9 @@
                     document.title = basepath + siteName;
                 }
             },
-            showMenu() {
+            showMenu(row) {
+                this.rightClickRow = row;
+                store.commit('rightClickRow', row);
                 event.preventDefault();
                 this.$refs.contextmenu.show({
                     top: event.clientY,
@@ -313,13 +325,6 @@
                 sessionStorage.setItem("zfile-pwd-" + this.searchParam.path, value);
                 this.searchParam.password = value;
             },
-            updateInfoHover: function (row) {
-                this.hoverRow = row;
-                store.commit('hoverRow', row);
-            },
-            updateInfoLeave: function () {
-                store.commit('hoverRow', null);
-            },
             loadingConfig() {
                 if (this.driveId) {
                     this.$http.get('api/config/' + this.driveId, {params: {path: this.searchParam.path}}).then((response) => {
@@ -403,15 +408,19 @@
                 this.$refs.textDialog.init();
             },
             preview() {
-                this.openFolder(this.hoverRow);
+                this.openFolder(this.rightClickRow);
             },
             download() {
-                window.location.href = this.hoverRow.url;
+                window.location.href = this.rightClickRow.url;
             },
-            shortLink() {
+            shortLink(x) {
                 let that = this;
-                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.hoverRow.path) + "/" + encodeURI(this.hoverRow.name));
-
+                let directlink;
+                if (x) {
+                    directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.rightClickRow.path) + "/" + encodeURI(this.rightClickRow.name));
+                } else {
+                    directlink = document.location.href + "/" + this.common.removeDuplicateSeparator(encodeURI(this.rightClickRow.name));
+                }
                 this.$http.get('https://v1.alapi.cn/api/url', {params: {url: directlink}, withCredentials: false}).then((response) => {
                     this.$copyText(response.data.data.short_url).then(function () {
                         that.$message.success('复制成功');
@@ -420,9 +429,15 @@
                     });
                 });
             },
-            directlink() {
+            directlink(x) {
                 let that = this;
-                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.hoverRow.path) + "/" + encodeURI(this.hoverRow.name));
+                let directlink;
+                if (x) {
+                    directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.rightClickRow.path) + "/" + encodeURI(this.rightClickRow.name));
+                } else {
+                    directlink = document.location.href + "/" + this.common.removeDuplicateSeparator(encodeURI(this.rightClickRow.name));
+                }
+                console.log(directlink)
                 this.$copyText(directlink).then(function () {
                     that.$message.success('复制成功');
                 }, function () {
