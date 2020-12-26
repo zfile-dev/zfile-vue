@@ -42,6 +42,10 @@
                         <i class="el-icon-s-home"/>
                         <span slot="title">前往首页</span>
                     </el-menu-item>
+                    <el-menu-item @click="logout">
+                        <i class="el-icon-switch-button"/>
+                        <span slot="title">注销</span>
+                    </el-menu-item>
                 </el-menu>
             </div>
         </div>
@@ -62,6 +66,11 @@
             }
         },
         methods: {
+            logout() {
+                this.$http.get('logout').then((response) => {
+                    this.$router.push('/login');
+                })
+            },
             rebuildTitle(index) {
                 // 根据指定的导航 Index, 获取标题
                 document.title = document.getElementById(index).innerText + ' | 后台管理';
