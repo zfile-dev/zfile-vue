@@ -2,8 +2,6 @@
     <div id="List">
         <el-table ref="fileTable" id="ListTable"
                   :data="this.$store.getters.tableData"
-                  @cell-mouse-enter="updateInfoHover"
-                  @cell-mouse-leave="updateInfoLeave"
                   @row-click="openFolder"
                   :height="$store.getters.showDocument && $store.state.common.config.readme !== null ? '50vh' : '84vh'"
                   :size="$store.getters.tableSize"
@@ -38,41 +36,11 @@
                     min-width="15%">
                 <template slot-scope="scope">
                     <div v-if="scope.row.type === 'FILE'">
-                        <i @click.stop="download" class="el-icon-download operator-btn"></i>
-                        <i @click.stop="directlink" class="el-icon-copy-document operator-btn hidden-sm-and-down"></i>
+                        <i @click.stop="download(scope.row)" class="el-icon-download operator-btn"></i>
+                        <i @click.stop="copyDirectLink(scope.row)" class="el-icon-copy-document operator-btn hidden-sm-and-down"></i>
                     </div>
                 </template>
             </el-table-column>
-
-            <slot></slot>
-            <template slot="append">
-                <!--
-                @infinite: 滚动事件回调函数,当滚动到距离滚动父元素底部特定距离的时候，会被调用
-                distance: 这是滚动的临界值。default: 100; 如果到滚动父元素的底部距离小于这个值，那么 loadMore 回调函数就会被调用。
-                spinner: 通过这个属性，你可以选择一个你最喜爱旋转器作为加载动画
-                      'default' | 'bubbles' | 'circles' | 'spiral' | 'waveDots'
-                direction: 如果你设置这个属性为top,那么这个组件将在你滚到顶部的时候，调用on-infinite函数
-                      'top' | 'bottom'
-                forceUseInfiniteWrapper: (boolean | string) 强制指定滚动容器，使用CSS 选择器
-                identifier: 识别号，改变时刷新
-                -->
-                <infinite-loading
-                        @infinite="infiniteHandler"
-                        ref="infiniteLoading"
-                        spinner="bubbles"
-                        force-use-infinite-wrapper=".el-table__body-wrapper">
-                    <!--   orce-use-infinite-wrapper 属性在存在多个 el-table 需要更详细的css选择器   -->
-                    <div class="no-more" slot="no-more">
-                        我~是有底线的 (～￣▽￣)～
-                    </div>
-                    <div class="no-more" slot="no-results">
-                        暂无结果 Ծ‸Ծ
-                    </div>
-                    <div class="no-more" slot="error">
-                        出错了 (╯‵□′)╯︵┻━┻
-                    </div>
-                </infinite-loading>
-            </template>
         </el-table>
 
         <el-dialog id="textDialog" :destroy-on-close="true"
@@ -93,19 +61,19 @@
         <audio-player :file-list="this.$store.getters.filterFileByType('audio')" :audio-index="currentClickTypeIndex('audio')"/>
 
         <v-contextmenu ref="contextmenu">
-            <v-contextmenu-item @click="preview">
+            <v-contextmenu-item @click="openFolder(rightClickRow)">
                 <i class="el-icon-view"></i>
-                <label v-html="hoverRow.type === 'FILE' ?  '预览' : '打开'"></label>
+                <label v-html="rightClickRow.type === 'FILE' ?  '预览' : '打开'"></label>
             </v-contextmenu-item>
-            <v-contextmenu-item @click="download" v-show="hoverRow.type === 'FILE'">
+            <v-contextmenu-item @click="download" v-show="rightClickRow.type === 'FILE'">
                 <i class="el-icon-download"></i>
                 <label>下载</label>
             </v-contextmenu-item>
-            <v-contextmenu-item @click="directlink" v-show="hoverRow.type === 'FILE'">
+            <v-contextmenu-item @click="copyDirectLink" v-show="rightClickRow.type === 'FILE'">
                 <i class="el-icon-copy-document"></i>
                 <label>复制直链</label>
             </v-contextmenu-item>
-            <v-contextmenu-item @click="shortLink" v-show="hoverRow.type === 'FILE'">
+            <v-contextmenu-item @click="copyShortLink" v-show="rightClickRow.type === 'FILE'">
                 <i class="el-icon-copy-document"></i>
                 <label>复制短链</label>
             </v-contextmenu-item>
@@ -130,17 +98,12 @@
             VideoPlayer, TextPreview, AudioPlayer
         },
         props: ['driveId'],
-        created() {
-            let p = this.$route.params.pathMatch;
-            this.searchParam.path = p ? p : '/';
-        },
         data() {
             return {
                 // 是否初始化加载完成
                 loading: false,
                 // 当前鼠标悬浮的行
-                hoverRow: {},
-                state: null,
+                rightClickRow: {},
                 // 是否打开文本浏览器弹出
                 dialogTextVisible: false,
                 // 是否打开视频播放器弹出
@@ -148,10 +111,8 @@
                 // 查询条件
                 searchParam: {
                     path: '',
-                    password: '',
-                    page: 1
+                    password: ''
                 },
-                totalPage: 1,
                 // 当前点击文件
                 currentClickRow: {},
                 contextMenuDataAxis: {
@@ -162,54 +123,22 @@
             }
         },
         watch: {
-            'file.searchParam.path': {
-                deep: true,
-                handler(newVal) {
-                    if (this.$store.state.file.searchParam && newVal === '/') {
-                        return;
-                    }
-                    this.updateTitle();
-                    this.searchParam.password = this.getPathPwd();
-                    this.searchParam.page = 1;
-                    this.loadingConfig();
-                    if (this.state) {
-                        store.commit('tableData', []);
-                        this.state.reset();
-                    }
-                }
-            },
             '$route.fullPath': function () {
-                this.searchParam.path = this.$route.params.pathMatch;
-                if (this.$store.state.file.searchParam && this.searchParam.path === '/') {
-                    return;
-                }
-                this.updateTitle();
-                this.searchParam.password = this.getPathPwd();
-                this.searchParam.page = 1;
-                this.loadingConfig();
-                if (this.state) {
-                    store.commit('tableData', []);
-                    this.state.reset();
-                }
-
-            },
-            '$store.state.file.searchParam': function () {
-                if (!this.$route.fullPath.startsWith("/main")) {
-                    this.$router.push('/main');
-                }
-                this.searchParam.page = 1;
-                this.searchParam.path = '/';
-
-                this.state.reset();
-                store.commit('tableData', []);
+                this.loadFile();
             }
         },
         mounted() {
-            this.loadingConfig();
+            this.loadFile();
         },
         methods: {
+            // 工具方法
+            getPwd() {
+                let p = this.$route.params.pathMatch;
+                this.searchParam.path = p ? p : '/';
+                return this.searchParam.path;
+            },
             updateTitle() {
-                let basepath = path.basename(this.searchParam.path);
+                let basePath = path.basename(this.searchParam.path);
 
                 let config = this.$store.state.common.config;
                 let siteName = '';
@@ -217,41 +146,28 @@
                     siteName = ' | ' + this.$store.state.common.config.siteName;
                 }
 
-                if (basepath === '/' || basepath === '') {
+                if (basePath === '/' || basePath === '') {
                     document.title = "首页" + siteName;
                 } else {
-                    document.title = basepath + siteName;
+                    document.title = basePath + siteName;
                 }
             },
-            showMenu() {
-                event.preventDefault();
-                this.$refs.contextmenu.show({
-                    top: event.clientY,
-                    left: event.clientX
-                });
-                this.$refs.contextmenu.$el.hidden = false;
-            },
-            infiniteHandler($state) {
-                if ($state) {
-                    this.state = $state;
-                }
-
+            // 数据加载
+            loadFile() {
+                // 未指定 driveId 时, 不执行任何操作.
                 if (!this.driveId) {
                     return;
                 }
-
-                let url, param;
-                if (this.$store.state.file.searchParam) {
-                    url = 'api/search';
-                    param = {name: this.$store.state.file.searchParam, page: this.searchParam.page};
-                } else {
-                    url = 'api/list/' + this.driveId;
-                    param = this.searchParam;
-                }
+                let url = 'api/list/' + this.driveId;
+                let param = {
+                    path: this.getPwd(),
+                    password: this.getPathPwd()
+                };
 
                 this.$http.get(url, {params: param}).then((response) => {
                     let data = response.data.data;
 
+                    // 如果需要密码或密码错误进行提示, 并弹出输入密码的框.
                     if (response.data.code === -2 || response.data.code === -3) {
                         if (response.data.code === -3) {
                             this.$message.error('密码错误, 请重新输入!',);
@@ -260,64 +176,25 @@
                         return;
                     }
 
+                    // 加载系统设置
+                    this.loadingConfig();
 
-                    this.totalPage = data.totalPage;
-
+                    // 如果不是根路径, 则构建 back 上级路径的数据.
                     let searchPath = this.searchParam.path;
 
-                    if (searchPath !== '' && searchPath !== '/' && this.searchParam.page === 1) {
+                    if (searchPath !== '' && searchPath !== '/') {
                         let fullPath = this.$route.params.pathMatch;
                         fullPath = fullPath ? fullPath : '/';
                         let parentPathName = path.basename(path.resolve(fullPath, "../"));
-                        data.fileList.unshift({
+                        data.unshift({
                             name: parentPathName ? parentPathName : '/',
                             path: path.resolve(searchPath, '../'),
                             type: 'BACK'
                         });
                     }
 
-                    store.commit('appendTableData', data.fileList);
-                    this.searchParam.page++;
-                    if ($state) {
-                        $state.loaded();
-                    }
-
-                    if (data.fileList.length === 0 || this.searchParam.page > this.totalPage) {
-                        $state.complete();
-                    }
+                    store.commit('tableData', data);
                 });
-            },
-            popPassword() {
-                this.$prompt('请输入密码', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    inputValidator(val) {
-                        return !!val
-                    },
-                    inputErrorMessage: '密码不能为空.'
-                }).then(({value}) => {
-                    if (value !== this.getPathPwd()) {
-                        this.putPathPwd(value);
-                    }
-                    this.state.reset();
-                }).catch(() => {
-                    this.$router.push("/" + this.driveId + prefixPath + path.resolve(this.searchParam.path, '../'));
-                });
-            },
-            getPathPwd: function() {
-                let pwd = sessionStorage.getItem("zfile-pwd-" + this.searchParam.path);
-                return pwd === null ? '' : pwd;
-            },
-            putPathPwd: function(value) {
-                sessionStorage.setItem("zfile-pwd-" + this.searchParam.path, value);
-                this.searchParam.password = value;
-            },
-            updateInfoHover: function (row) {
-                this.hoverRow = row;
-                store.commit('hoverRow', row);
-            },
-            updateInfoLeave: function () {
-                store.commit('hoverRow', null);
             },
             loadingConfig() {
                 if (this.driveId) {
@@ -327,6 +204,7 @@
                     });
                 }
             },
+            // 文件预览
             openFolder(row) {
                 this.currentClickRow = row;
                 if (row.type === 'FILE') {
@@ -401,32 +279,78 @@
             initTextDialog() {
                 this.$refs.textDialog.init();
             },
-            preview() {
-                this.openFolder(this.hoverRow);
-            },
-            download() {
-                window.location.href = this.hoverRow.url;
-            },
-            shortLink() {
-                let that = this;
-                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.hoverRow.path) + "/" + encodeURI(this.hoverRow.name));
-
-                this.$http.get('https://v1.alapi.cn/api/url', {params: {url: directlink}, withCredentials: false}).then((response) => {
-                    this.$copyText(response.data.data.short_url).then(function () {
-                        that.$message.success('复制成功');
-                    }, function () {
-                        that.$message.error('复制失败');
-                    });
+            // 右键菜单
+            showMenu(row, column, event) {
+                this.rightClickRow = row;
+                event.preventDefault();
+                this.$refs.contextmenu.show({
+                    top: event.clientY,
+                    left: event.clientX
                 });
+                this.$refs.contextmenu.$el.hidden = false;
             },
-            directlink() {
+            download(row) {
+                window.location.href = row.url;
+            },
+            copyShortLink() {
                 let that = this;
-                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.hoverRow.path) + "/" + encodeURI(this.hoverRow.name));
+                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.rightClickRow.path) + "/" + encodeURI(this.rightClickRow.name));
+
+                alert(1);
+                this.$http.get('https://sohu.gg/api?key=ApiKey&url=' + encodeURI(directlink), {withCredentials: false}).then((response) => {
+                    console.log(response)
+                    // this.$copyText(response.data.data.short_url).then(function () {
+                    //     that.$message.success('复制成功');
+                    // }, function () {
+                    //     that.$message.error('复制失败');
+                    // });
+                });
+
+                // this.$http.post('http://lf8.info/index.php?m=Index&a=create', {params: {url: directlink}, withCredentials: false}).then((response) => {
+                //     console.log(response)
+                //     // this.$copyText(response.data.data.short_url).then(function () {
+                //     //     that.$message.success('复制成功');
+                //     // }, function () {
+                //     //     that.$message.error('复制失败');
+                //     // });
+                // });
+            },
+            copyDirectLink(row) {
+                let that = this;
+                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/"
+                    + this.driveId + "/" + encodeURI(row.path) + "/" + encodeURI(row.name));
                 this.$copyText(directlink).then(function () {
                     that.$message.success('复制成功');
                 }, function () {
                     that.$message.error('复制失败');
                 });
+            },
+            // 文件夹密码
+            popPassword() {
+                // 如果输入了密码, 则写入到 sessionStorage 缓存中, 并重新调用加载文件.
+                this.$prompt('请输入密码', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValidator(val) {
+                        return !!val
+                    },
+                    inputErrorMessage: '密码不能为空.'
+                }).then(({value}) => {
+                    let cachePassword = this.getPathPwd();
+                    if (value !== cachePassword) {
+                        this.putPathPwd(value);
+                    }
+                    this.loadFile();
+                }).catch(() => {
+                    this.$router.push("/" + this.driveId + prefixPath + path.resolve(this.searchParam.path, '../'));
+                });
+            },
+            getPathPwd() {
+                let pwd = sessionStorage.getItem("zfile-pwd-" + this.searchParam.path);
+                return pwd === null ? '' : pwd;
+            },
+            putPathPwd(value) {
+                sessionStorage.setItem("zfile-pwd-" + this.searchParam.path, value);
             },
         },
         computed: {
