@@ -72,7 +72,7 @@
             <filter-pattern :drive-id="currentCacheManageId" :close="closeFilterDialog"></filter-pattern>
         </el-dialog>
 
-        <el-dialog width="70%" title="缓存管理" :modal-append-to-body="false" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true" @close="closeCacheManage">
+        <el-dialog id="cacheDialog" width="70%" title="缓存管理" :modal-append-to-body="false" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true" @close="closeCacheManage">
             <cache-manager :current-cache-manage-id="this.currentCacheManageId"></cache-manager>
         </el-dialog>
 
@@ -289,5 +289,9 @@
 
     #filterForm .el-row {
         padding: 0;
+    }
+
+    #cacheDialog >>> .el-dialog__body {
+        padding: 20px;
     }
 </style>
