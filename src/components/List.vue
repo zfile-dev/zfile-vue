@@ -1,6 +1,7 @@
 <template>
     <div id="List">
         <el-table ref="fileTable" id="ListTable"
+                  @sort-change="sortMethod"
                   :data="this.$store.getters.tableData"
                   @row-click="openFolder"
                   :height="$store.getters.showDocument && $store.state.common.config.readme !== null ? '50vh' : '84vh'"
@@ -9,6 +10,7 @@
             <el-table-column
                     prop="name"
                     label="文件名"
+                    sortable="custom"
                     label-class-name="table-header-left"
                     min-width="100%">
                 <template slot-scope="scope">
@@ -19,6 +21,7 @@
             <el-table-column
                     prop="time"
                     label="修改时间"
+                    sortable="custom"
                     class-name="hidden-xs-only"
                     min-width="20%">
             </el-table-column>
@@ -26,6 +29,7 @@
                     prop="size"
                     label="大小"
                     class-name="hidden-xs-only"
+                    sortable="custom"
                     :formatter="this.common.fileSizeFilter"
                     min-width="15%">
             </el-table-column>
@@ -111,7 +115,9 @@
                 // 查询条件
                 searchParam: {
                     path: '',
-                    password: ''
+                    password: '',
+                    orderBy: '',
+                    orderDirection: ''
                 },
                 // 当前点击文件
                 currentClickRow: {},
@@ -131,6 +137,12 @@
             this.loadFile();
         },
         methods: {
+            // 排序按钮
+            sortMethod({prop, order}) {
+                this.searchParam.orderBy = prop;
+                this.searchParam.orderDirection = order === "descending" ? "desc" : "asc";
+                this.loadFile();
+            },
             // 工具方法
             getPwd() {
                 let p = this.$route.params.pathMatch;
@@ -161,7 +173,9 @@
                 let url = 'api/list/' + this.driveId;
                 let param = {
                     path: this.getPwd(),
-                    password: this.getPathPwd()
+                    password: this.getPathPwd(),
+                    orderBy: this.searchParam.orderBy,
+                    orderDirection: this.searchParam.orderDirection,
                 };
 
                 this.$http.get(url, {params: param}).then((response) => {
