@@ -4,7 +4,7 @@
                  @keyup.enter.native="submitForm('form')"
                  :rules="rules"
                  :model="form" label-width="auto" :status-icon="true">
-            <el-form-item label="管理员账号" class="box animate__animated animate__fadeInUp">
+            <el-form-item label="管理员账号" prop="username" class="box animate__animated animate__fadeInUp">
                 <el-input v-model.trim="form.username"/>
             </el-form-item>
 
@@ -36,6 +36,9 @@
                     repassword: ''
                 },
                 rules: {
+                    username: [
+                        {required: true, message: '请输入管理员账号', trigger: 'blur'},
+                    ],
                     password: [
                         {required: true, message: '请输入密码', trigger: 'blur'},
                     ],

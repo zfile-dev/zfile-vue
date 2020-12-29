@@ -2,6 +2,7 @@
     <el-card>
         <div>
             <el-button type="primary" icon="el-icon-plus" size="mini" @click="addDrive">新增</el-button>
+            <span class="zfile-word-aux">拖拽行可以进行排序</span>
         </div>
 
         <el-table

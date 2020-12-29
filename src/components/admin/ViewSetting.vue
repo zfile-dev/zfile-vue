@@ -17,17 +17,32 @@
 
             <el-form-item label="显示操作按钮" class="box animate__animated animate__fadeInUp">
                 <el-switch v-model="form.showOperator"/>
-                <span class="zfile-word-aux">显示下载和复制按钮, 在移动端只显示下载</span>
+                <el-tooltip placement="right">
+                    <div slot="content">
+                        显示下载和复制按钮, 在移动端只显示下载
+                    </div>
+                    <i class="el-icon-info zfile-info-tooltip"></i>
+                </el-tooltip>
             </el-form-item>
 
             <el-form-item label="显示文档区" class="box animate__animated animate__fadeInUp">
                 <el-switch v-model="form.showDocument"/>
-                <span class="zfile-word-aux">在文件列表下，显示当前文件夹中 readme.md 的内容</span>
+                <el-tooltip placement="right">
+                    <div slot="content">
+                        在文件列表下，显示当前文件夹中 readme.md 的内容，支持 md 和 html 语法
+                    </div>
+                    <i class="el-icon-info zfile-info-tooltip"></i>
+                </el-tooltip>
             </el-form-item>
 
             <el-form-item label="显示公告" class="box animate__animated animate__fadeInUp">
                 <el-switch v-model="form.showAnnouncement"/>
-                <span class="zfile-word-aux">网站顶部，显示公告内容</span>
+                <el-tooltip placement="right">
+                    <div slot="content">
+                        网站顶部，显示公告内容，支持 HTML 语法
+                    </div>
+                    <i class="el-icon-info zfile-info-tooltip"></i>
+                </el-tooltip>
             </el-form-item>
 
             <el-form-item label="公告内容" class="box animate__animated animate__fadeInUp">

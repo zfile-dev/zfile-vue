@@ -20,12 +20,15 @@
                     </el-form-item>
 
                     <el-form-item label="开启缓存">
-                        <el-switch v-model="driveItem.enableCache"/>
+                        <el-switch v-model="driveItem.enableCache" @change="cacheChange"/>
                         <el-tooltip placement="right">
                             <div slot="content">
                                 开启缓存后，N 秒内重复请求相同文件夹，不会重复调用 API。
                                 <br>
                                 参数 N 在配置文件中设置 {zfile.cache.timeout}，默认为 1800 秒。
+                                <br>
+                                <br>
+                                注意：开启缓存后，可能会导致系统不稳定，如非必要或不了解缓存的，不建议开启此功能。
                             </div>
                             <i class="el-icon-info zfile-info-tooltip"></i>
                         </el-tooltip>
@@ -38,6 +41,9 @@
                                 每隔 N 秒检测到期的缓存, 对于过期缓存尝试调用 API, 重新写入缓存.
                                 <br>
                                 参数 N 在配置文件中设置 {zfile.cache.auto-refresh-interval}，默认为 5 秒。
+                                <br>
+                                <br>
+                                注意：如您的数据，并非
                             </div>
                             <i class="el-icon-info zfile-info-tooltip"></i>
                         </el-tooltip>
@@ -81,7 +87,12 @@
                             <!-- 私有空间 -->
                             <div v-else-if="item.key === 'isPrivate'">
                                 <el-switch v-model="driveItem.storageStrategyConfig.isPrivate" />
-                                <span class="zfile-word-aux">私有空间会生成带签名的下载链接</span>
+                                <el-tooltip placement="right">
+                                    <div slot="content">
+                                        私有空间会生成带签名的下载链接
+                                    </div>
+                                    <i class="el-icon-question zfile-info-tooltip"></i>
+                                </el-tooltip>
                             </div>
 
                             <el-input v-else placeholder="" @input="change($event)" v-model="driveItem.storageStrategyConfig[item.key]"/>
@@ -277,6 +288,11 @@ export default {
         }
     },
     methods: {
+        cacheChange(newVal) {
+            if (!newVal) {
+                this.driveItem.autoRefreshCache = false;
+            }
+        },
         loadStrategyForm(val) {
             this.$http.get('admin/strategy-form', {params: {storageType: val}}).then((response) => {
                 this.storageStrategyForm = response.data.data;
