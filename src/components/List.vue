@@ -69,7 +69,7 @@
                 <i class="el-icon-view"></i>
                 <label v-html="rightClickRow.type === 'FILE' ?  '预览' : '打开'"></label>
             </v-contextmenu-item>
-            <v-contextmenu-item @click="download" v-show="rightClickRow.type === 'FILE'">
+            <v-contextmenu-item @click="download(rightClickRow)" v-show="rightClickRow.type === 'FILE'">
                 <i class="el-icon-download"></i>
                 <label>下载</label>
             </v-contextmenu-item>
@@ -227,7 +227,7 @@
                             message: 'FTP 模式, 不支持预览功能, 已自动调用下载',
                             type: 'warning'
                         });
-                        this.download();
+                        this.download(row);
                         return;
                     }
 
@@ -247,7 +247,7 @@
                             this.openAudio();
                             break;
                         default:
-                            this.download();
+                            this.download(row);
                     }
                 } else {
                     let path;
