@@ -12,8 +12,12 @@
             highlight-current-row>
                 <el-table-column
                         prop="id"
-                        width="80"
+                        width="100"
                         label="驱动器ID">
+                    <template slot-scope="scope">
+                        <span style="margin-left: 10px">{{ scope.row.id }}</span>
+                        <i class="el-icon-edit-outline table-edit-icon" @click="editDriveId(scope.row.id)"></i>
+                    </template>
                 </el-table-column>
                 <el-table-column
                         prop="name"
@@ -99,6 +103,7 @@
                     orderNum: null,
                     name: '',
                     type: null,
+                    enable: true,
                     searchEnable: false,
                     searchIgnoreCase: false,
                     searchContainEncryptedFile: false,
@@ -131,6 +136,22 @@
             }
         },
         methods: {
+            editDriveId(id) {
+                this.$prompt('请输入要修改为的 ID，需为大于零的整数。', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputPattern: /^[1-9]\d{0,9}$/,
+                    inputErrorMessage: 'ID 只能为大于零的整数，最大支持 9 位数字。'
+                }).then(({value}) => {
+                    this.$http.post('admin/drive/updateId', qs.stringify({updateId: id, newId: value})).then(() => {
+                        this.$message({
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        this.init();
+                    });
+                });
+            },
             setSort() {
                 const tbody = document.querySelector('.el-table__body-wrapper tbody')
                 Sortable.create(tbody, {
