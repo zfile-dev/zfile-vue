@@ -135,9 +135,10 @@
                 const tbody = document.querySelector('.el-table__body-wrapper tbody')
                 Sortable.create(tbody, {
                     onEnd: e => {
-                        if (this.driveList.length < 2) {
+                        if (e.oldIndex === e.newIndex) {
                             return;
                         }
+
                         const currRow = this.driveList.splice(e.oldIndex, 1)[0];
                         this.driveList.splice(e.newIndex, 0, currRow)
 
@@ -294,5 +295,11 @@
 
     #cacheDialog >>> .el-dialog__body {
         padding: 20px;
+    }
+
+    .table-edit-icon {
+        margin-left: 5px;
+        color: #409EFF;
+        cursor: pointer;
     }
 </style>
