@@ -3,7 +3,24 @@
         <div class="zfile-admin-top">
             <div class="zfile-admin-top-content">
                 <div class="zfile-admin-top-logo box animate__animated animate__fadeInLeft">
-                    <div @click="openZFileAdmin">ZFile Admin</div>
+                    <el-popover
+                        placement="top-start"
+                        width="200"
+                        trigger="hover">
+                        <div v-if="latestInfo" class="zfile-admin-index-version-info">
+                            <div v-html="`最新版：v${latestInfo.tag_name}`"></div>
+                            <div v-html="`发布时间: ${common.dateFormat(latestInfo.published_at)}`"></div>
+                            <br>
+
+                            文档地址：<el-link href="http://docs.zhaojun.im/zfile" target="_blank" class="zfile-word-aux zfile-margin-left-unset">点击进入</el-link>
+                            <br>
+                            后端源码地址：<el-link href="https://github.com/zhaojun1998/zfile" target="_blank" class="zfile-word-aux zfile-margin-left-unset">点击进入</el-link>
+                            <br>
+                            前端源码地址：<el-link href="https://github.com/zhaojun1998/zfile-vue" target="_blank" class="zfile-word-aux zfile-margin-left-unset">点击进入</el-link>
+                        </div>
+
+                        <div slot="reference" @click="openZFileAdmin" v-html="`ZFile Admin v${common.version}`"></div>
+                    </el-popover>
                 </div>
                 <el-menu
                     mode="horizontal"
@@ -62,6 +79,7 @@
         name: "Index",
         data() {
             return {
+                latestInfo: {},
                 active: '/admin/site'
             }
         },
@@ -86,6 +104,9 @@
             // 获取当前选中的左侧导航的文字, 作为标题
             let currentIndex = document.getElementsByClassName('is-active')[0].getElementsByTagName('span')[0].id;
             this.rebuildTitle(currentIndex);
+            this.$http.get('https://api.github.com/repos/zhaojun1998/zfile/releases/latest', {withCredentials: false}).then((response) => {
+                this.latestInfo = response.data;
+            })
         },
     }
 </script>
@@ -106,6 +127,10 @@
         line-height: 61px;
         color: #ffffff;
         padding-right: 20px;
+    }
+
+    .zfile-admin-top-logo:hover {
+        color: #1890ff;
     }
 
     .zfile-admin-top-content {
@@ -138,5 +163,13 @@
     .el-menu.el-menu--horizontal,
     .el-menu--horizontal > .el-menu-item{
         border: none;
+    }
+
+    .zfile-admin-index-version-info {
+        font-size: 13px;
+    }
+
+    .zfile-admin-index-version-info >>> .el-link--inner{
+        font-size: 13px;
     }
 </style>

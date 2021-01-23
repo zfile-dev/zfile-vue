@@ -1,6 +1,6 @@
 const fileTypeMap = {
     image: ['gif', 'jpg', 'jpeg', 'png', 'bmp', 'webp'],
-    video: ['mp4', 'm3u8', 'rmvb', 'avi', 'swf', '3gp', 'mkv', 'flv'],
+    video: ['mp4', 'webm', 'm3u8', 'rmvb', 'avi', 'swf', '3gp', 'mkv', 'flv'],
     audio: ['mp3', 'wav', 'wma', 'ogg', 'aac', 'flac', 'm4a'],
     text: ['css', 'js', 'md', 'xml', 'txt', 'py', 'go', 'html', 'less', 'php', 'rb', 'rust', 'script', 'java', 'sh'],
     executable: ['exe', 'dll', 'com', 'vbs'],
@@ -8,9 +8,12 @@ const fileTypeMap = {
     document: ['doc', 'txt', 'docx', 'pages', 'epub', 'pdf', 'numbers', 'csv', 'xls', 'xlsx', 'keynote', 'ppt', 'pptx']
 };
 
+import config from '../package.json'
+
 const iconFileType = ['css', 'go', 'html', 'js', 'less', 'php', 'py', 'rb', 'rust', 'script', 'md', 'apk', 'deb', 'rpm', 'java'];
 
 let common = {
+    version: config.version,
     constant: {
         fileTypeMap,
         iconFileType
@@ -83,6 +86,16 @@ let common = {
     isMobile() {
         let flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
         return flag || window.innerWidth < 768;
+    },
+    dateFormat:function(time) {
+        let date = new Date(time);
+        let year = date.getFullYear();
+        let month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+        let day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+        let hours = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+        let minutes = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+        let seconds = date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+        return year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
     }
 };
 
