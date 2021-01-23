@@ -36,7 +36,7 @@
                         {required: true, message: '请输入站点名称', trigger: 'change'},
                     ],
                     domain: [
-                        {required: true, type: 'url', message: '请输入正确的域名, 需以 http:// 或 https:// 开头', trigger: 'change'},
+                        {required: true, type: 'url', message: '请输入正确的域名，需以 http:// 或 https:// 开头', trigger: 'change'},
                     ]
                 }
             };

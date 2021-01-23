@@ -223,7 +223,7 @@ export default {
                     {required: true, message: '请输入管理员密码', trigger: 'change'},
                 ],
                 domain: [
-                    {required: true, type: 'url', message: '请输入正确的域名, 需以 http:// 或 https:// 开头', trigger: 'change'},
+                    {required: true, type: 'url', message: '请输入正确的域名，需以 http:// 或 https:// 开头', trigger: 'change'},
                 ],
                 type: [
                     {required: true, message: '存储策略不能为空', trigger: 'change'},
@@ -243,7 +243,7 @@ export default {
                                 return;
                             }
                             if (!domainCheck.test(value)) {
-                                callback(new Error('请输入正确的域名, 需以 http:// 或 https:// 开头'));
+                                callback(new Error('请输入正确的域名，需以 http:// 或 https:// 开头'));
                             } else {
                                 callback();
                             }

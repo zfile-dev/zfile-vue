@@ -224,7 +224,7 @@
                 if (row.type === 'FILE') {
                     if (this.$store.getters.currentStorageStrategyType === 'ftp') {
                         this.$message({
-                            message: 'FTP 模式, 不支持预览功能, 已自动调用下载',
+                            message: 'FTP 模式，不支持预览功能，已自动调用下载',
                             type: 'warning'
                         });
                         this.download(row);
