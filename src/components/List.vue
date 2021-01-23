@@ -1,12 +1,18 @@
 <template>
     <div id="List">
-        <el-table ref="fileTable" id="ListTable"
-                  @sort-change="sortMethod"
-                  :data="this.$store.getters.tableData"
-                  @row-click="openFolder"
-                  :height="$store.getters.showDocument && $store.state.common.config.readme !== null ? '50vh' : '84vh'"
-                  :size="$store.getters.tableSize"
-                  @row-contextmenu="showMenu">
+        <el-table
+                v-loading="loading"
+                element-loading-text="拼命加载中"
+                element-loading-spinner="el-icon-loading"
+                element-loading-background="rgba(255,255,255,.5)"
+                ref="fileTable"
+                id="ListTable"
+                @sort-change="sortMethod"
+                :data="this.$store.getters.tableData"
+                @row-click="openFolder"
+                :height="$store.getters.showDocument && $store.state.common.config.readme !== null ? '50vh' : '84vh'"
+                :size="$store.getters.tableSize"
+                @row-contextmenu="showMenu">
             <el-table-column
                     prop="name"
                     label="文件名"
@@ -170,6 +176,8 @@
                 if (!this.driveId) {
                     return;
                 }
+                this.loading = true;
+
                 let url = 'api/list/' + this.driveId;
                 let param = {
                     path: this.getPwd(),
@@ -208,6 +216,7 @@
                     }
 
                     store.commit('tableData', data);
+                    this.loading = false;
                 });
             },
             loadingConfig() {
