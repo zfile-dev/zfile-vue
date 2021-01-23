@@ -88,6 +88,20 @@
                 <label>复制短链</label>
             </v-contextmenu-item>
         </v-contextmenu>
+
+        <template>
+            <el-backtop target=".el-table__body-wrapper" :bottom="80" :right="30">
+                <el-tooltip placement="top" content="回到顶部">
+                    <transition name="fade">
+                        <div class="back-to-ceiling">
+                            <svg class="Icon Icon--backToTopArrow" aria-hidden="true">
+                                <use xlink:href="#el-icon-my-to-top"></use>
+                            </svg>
+                        </div>
+                    </transition>
+                </el-tooltip>
+            </el-backtop>
+        </template>
     </div>
 </template>
 
@@ -475,4 +489,40 @@
         font-size: 16px
     }
 
+    .back-to-ceiling {
+        right: 50px;
+        bottom: 50px;
+        width: 40px;
+        height: 40px;
+        border-radius: 4px;
+        line-height: 45px;
+        background: #e7eaf1;
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+    }
+
+    .back-to-ceiling:hover {
+        background: #d5dbe7;
+    }
+
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity .5s;
+    }
+
+    .fade-enter,
+    .fade-leave-to {
+        opacity: 0
+    }
+
+    .back-to-ceiling .Icon {
+        fill: #9aaabf;
+        background: none;
+    }
+
+    .back-to-ceiling .Icon--backToTopArrow {
+        height: 16px;
+        width: 16px;
+    }
 </style>
