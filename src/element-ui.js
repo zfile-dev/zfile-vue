@@ -31,7 +31,11 @@ import {
     Loading,
     Message,
     MessageBox,
-    Notification
+    Notification,
+    Backtop,
+    Popconfirm,
+    Pagination,
+    DatePicker
 } from 'element-ui';
 
 // 按需加载 ElementUI
@@ -62,7 +66,12 @@ Vue.use(Popover);
 Vue.use(Loading);
 Vue.use(Badge);
 Vue.use(Link);
-Vue.use(Radio);
+Vue.use(Radio)
+Vue.use(Backtop);
+Vue.use(Popconfirm);
+Vue.use(Pagination);
+Vue.use(DatePicker);
+
 
 Vue.prototype.$msgbox = MessageBox;
 Vue.prototype.$alert = MessageBox.alert;
