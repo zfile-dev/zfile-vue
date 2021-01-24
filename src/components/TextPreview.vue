@@ -13,7 +13,7 @@
 <script>
     import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
     import marked from 'marked';
-    import * as hljs from 'highlight.js/lib/highlight';
+    import hljs from 'highlight.js/lib/core';
     import 'github-markdown-css';
 
     hljs.registerLanguage('markdown', require('highlight.js/lib/languages/markdown'));
