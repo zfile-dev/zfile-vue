@@ -95,6 +95,7 @@ axios.get('zfile.config.json').then((result) => {
                     let hash = window.location.hash;
                     if (!hash.includes("main")
                         && !hash.includes("#/admin")
+                        && !hash.includes("#/sharepoint-util")
                         && !hash.includes("#/login")) {
                         this.$router.push('/main');
                     }

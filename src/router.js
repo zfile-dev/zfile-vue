@@ -13,6 +13,7 @@ const UpdatePassword = () => import(/* webpackChunkName: "admin" */'./components
 const API = () => import(/* webpackChunkName: "admin" */'./components/admin/API');
 const Monitor = () => import(/* webpackChunkName: "admin" */'./components/admin/Monitor');
 const DriveList = () => import(/* webpackChunkName: "admin" */'./components/admin/DriveList');
+const SharePointSiteId = () => import(/* webpackChunkName: "admin" */'./components/SharePointSiteId');
 
 export default new Router({
     mode: 'hash', // 路由模式:默认为 hash,如果改为 history,则需要后端进行配合
@@ -30,6 +31,10 @@ export default new Router({
         {
             path: '/login',
             component: Login
+        },
+        {
+            path: '/sharepoint-util',
+            component: SharePointSiteId
         },
         {
             path: '/admin',
