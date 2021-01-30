@@ -28,7 +28,7 @@
                         prop="type"
                         :formatter="typeFormatter"
                         :show-overflow-tooltip="true"
-                        width="100"
+                        width="160"
                         label="所属策略">
                 </el-table-column>
                 <el-table-column
@@ -57,13 +57,26 @@
                 </el-table-column>
                 <el-table-column
                         label="操作"
-                        width="400">
+                        width="300">
                     <template slot-scope="scope">
                         <template>
-                            <el-button slot="reference" class="el-icon-edit" size="mini" type="primary" @click="editDrive(scope.row)">编辑</el-button>
-                            <el-button slot="reference" :disabled="!scope.row.enableCache" class="el-icon-s-operation" size="mini" type="primary" @click="cacheManage(scope.row)">缓存管理</el-button>
-                            <el-button class="el-icon-view" size="mini" type="primary" @click="showFilterDialog(scope.row)">文件过滤</el-button>
-                            <el-button @click="deleteDrive(scope.row)" class="el-icon-delete" size="mini" type="danger">删除</el-button>
+
+                            <el-tooltip class="item" effect="dark" content="编辑" placement="left">
+                                <el-button size="mini" class="el-icon-edit" type="primary" @click="editDrive(scope.row)"></el-button>
+                            </el-tooltip>
+
+                            <el-tooltip class="item" effect="dark" content="缓存管理" placement="top">
+                                <el-button size="mini" :disabled="!scope.row.enableCache" class="el-icon-s-operation" type="primary" @click="cacheManage(scope.row)"></el-button>
+                            </el-tooltip>
+
+                            <el-tooltip class="item" effect="dark" content="文件过滤" placement="bottom">
+                                <el-button class="el-icon-view" size="mini" type="primary" @click="showFilterDialog(scope.row)"></el-button>
+                            </el-tooltip>
+
+                            <el-tooltip class="item" effect="dark" content="删除" placement="right">
+                                <el-button @click="deleteDrive(scope.row)" class="el-icon-delete" size="mini" type="danger"></el-button>
+                            </el-tooltip>
+
                         </template>
                     </template>
                 </el-table-column>
