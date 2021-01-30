@@ -72,6 +72,15 @@ Vue.use(APlayer, {
 });
 
 
+Vue.filter('fileSizeFormat', (bytes) => {
+    debugger;
+    if (bytes === 0) return '0 B';
+    let k = 1024;
+    let sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    let i = Math.floor(Math.log(bytes) / Math.log(k));
+    return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+})
+
 axios.get('zfile.config.json').then((result) => {
     axios.defaults.baseURL = result.data.baseUrl;
     new Vue({
