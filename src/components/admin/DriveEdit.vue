@@ -95,6 +95,16 @@
                                 </el-tooltip>
                             </div>
 
+
+                            <div v-else-if="item.key === 'siteName' && (driveItem.type === 'sharepoint' || driveItem.type === 'sharepoint-china')">
+                                <el-input placeholder="请输入站点名称" v-model="driveItem.storageStrategyConfig.siteName" class="input-with-select">
+                                    <el-select style="width: 100px" v-model="driveItem.storageStrategyConfig.siteType" @input="change($event)" slot="prepend">
+                                        <el-option label="/sites/" value="/sites/"></el-option>
+                                        <el-option label="/teams/" value="/teams/"></el-option>
+                                    </el-select>
+                                </el-input>
+                            </div>
+
                             <el-input v-else placeholder="" @input="change($event)" v-model="driveItem.storageStrategyConfig[item.key]"/>
                         </el-col>
 
@@ -128,17 +138,40 @@
                                 <i class="el-icon-question zfile-info-tooltip"></i>
                             </el-tooltip>
                         </div>
+
+                        <div v-if="item.key === 'siteName' && (driveItem.type === 'sharepoint' || driveItem.type === 'sharepoint-china')">
+                            <el-tooltip placement="bottom">
+                                <div slot="content">
+                                    /sites/xxx 或 /teams/xxx ，xxx 为你的站点名称
+                                </div>
+                                <i class="el-icon-question zfile-info-tooltip"></i>
+                            </el-tooltip>
+                        </div>
+
+                        <div v-if="item.key === 'siteId' && (driveItem.type === 'sharepoint' || driveItem.type === 'sharepoint-china')">
+                            <el-tooltip placement="bottom">
+                                <div slot="content">
+                                    输入 "访问令牌" 和 "站点名称" 后，可以自动获取 SiteId。
+                                    <br>
+                                    如无法自动获取，请点击下方的 "前往获取 Site Id"。
+                                </div>
+                                <i class="el-icon-question zfile-info-tooltip"></i>
+                            </el-tooltip>
+                        </div>
                     </el-form-item>
 
                     <el-form-item v-if="driveItem.type === 'onedrive' || driveItem.type === 'sharepoint'">
-                        <el-link target="_blank" icon="el-icon-edit"
-                                 :href="$http.defaults.baseURL + '/onedrive/authorize'">前往获取授权</el-link>
+                        <el-link target="_blank" icon="el-icon-link" :href="$http.defaults.baseURL + '/onedrive/authorize'">前往获取令牌</el-link>
+                        <br>
+                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint'" icon="el-icon-link" :href="$http.defaults.baseURL + '/sharepoint/site-id'">前往获取 Site Id</el-link>
                     </el-form-item>
 
                     <el-form-item v-if="driveItem.type === 'onedrive-china' || driveItem.type === 'sharepoint-china'">
-                        <el-link target="_blank" icon="el-icon-edit"
-                                 :href="$http.defaults.baseURL + '/onedrive/china-authorize'">前往获取授权</el-link>
+                        <el-link target="_blank" icon="el-icon-link" :href="$http.defaults.baseURL + '/onedrive/china-authorize'">前往获取令牌</el-link>
+                        <br>
+                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint-china'" icon="el-icon-link" :href="$http.defaults.baseURL + '/sharepoint/site-id'">前往获取 Site Id</el-link>
                     </el-form-item>
+
 
                     <el-form-item v-if="driveItem.type === 'ftp'">
                         <div class="zfile-word-aux zfile-margin-left-unset">
@@ -193,7 +226,9 @@ export default {
                 username: null,
                 password: null,
                 basePath: "",
-                domain: ""
+                domain: "",
+                siteType: '/sites/',
+                siteId: ""
             },
         },
         supportStrategy: null
@@ -204,6 +239,22 @@ export default {
                 this.loadStrategyForm(newVal);
             } else {
                 this.storageStrategyForm = null;
+            }
+        },
+        'driveItem.storageStrategyConfig.siteName'() {
+            if (!!this.driveItem.storageStrategyConfig.siteName && !!this.driveItem.storageStrategyConfig.accessToken) {
+                let fromData = {
+                    type: this.driveItem.type === 'sharepoint' ? "Standard" : "China",
+                    accessToken: this.driveItem.storageStrategyConfig.accessToken,
+                    siteName: this.driveItem.storageStrategyConfig.siteType + this.driveItem.storageStrategyConfig.siteName
+                }
+                this.$http.post('/sharepoint/getSiteId', fromData).then((response) => {
+                    if (response.data.code === 0) {
+                        this.driveItem.storageStrategyConfig.siteId = response.data.data;
+                        this.$forceUpdate();
+                        this.$message.success('自动获取 SiteId 成功');
+                    }
+                })
             }
         }
     },
@@ -283,7 +334,8 @@ export default {
                 'storageStrategyConfig.port': [{required: true, message: "端口不能为空"}],
                 'storageStrategyConfig.accessToken': [{required: true, message: "访问令牌不能为空"}],
                 'storageStrategyConfig.refreshToken': [{required: true, message: "刷新令牌不能为空"}],
-                'storageStrategyConfig.secretId': [{required: true, message: "SecretId 不能为空"}]
+                'storageStrategyConfig.secretId': [{required: true, message: "SecretId 不能为空"}],
+                'storageStrategyConfig.siteId': [{required: true, message: 'SiteId 不能为空'}]
             }
         }
     },
@@ -296,6 +348,9 @@ export default {
         loadStrategyForm(val) {
             this.$http.get('admin/strategy-form', {params: {storageType: val}}).then((response) => {
                 this.storageStrategyForm = response.data.data;
+                if (val === 'sharepoint' || val === 'sharepoint-china') {
+                    this.driveItem.storageStrategyConfig.siteType = '/sites/';
+                }
             })
         },
         change() {
