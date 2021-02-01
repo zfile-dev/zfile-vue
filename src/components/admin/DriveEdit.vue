@@ -65,6 +65,7 @@
                         v-for="(item) in storageStrategyForm"
                         :label="item.title"
                         :key="item.title"
+                        v-if="item.key !== 'siteType'"
                         :prop="'storageStrategyConfig.' + item.key">
 
                         <el-col class="el-drive-form-col" :span="22">
