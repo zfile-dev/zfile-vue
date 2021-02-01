@@ -55,6 +55,10 @@
                         <i class="el-icon-monitor"/>
                         <span slot="title" id="/admin/monitor">系统监控</span>
                     </el-menu-item>
+                    <el-menu-item @click="logDownload">
+                        <i class="el-icon-download"/>
+                        <span slot="title">日志下载</span>
+                    </el-menu-item>
                     <el-menu-item @click="click">
                         <i class="el-icon-s-home"/>
                         <span slot="title">前往首页</span>
@@ -92,6 +96,9 @@
             rebuildTitle(index) {
                 // 根据指定的导航 Index, 获取标题
                 document.title = document.getElementById(index).innerText + ' | 后台管理';
+            },
+            logDownload() {
+                window.open(this.$http.defaults.baseURL + '/admin/log', '_blank');
             },
             click() {
                 window.open('/', '_blank');
