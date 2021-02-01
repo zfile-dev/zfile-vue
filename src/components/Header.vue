@@ -9,8 +9,12 @@
             </el-breadcrumb>
         </el-form-item>
         <div class="zfile-header-drive box animate__animated animate__fadeIn">
-            <span class="hidden-xs-only">驱动器</span>
-            <el-select v-model="currentDriveId" placeholder="请选择驱动器" @change="changeDrive">
+
+            <el-form-item label="图片模式" size="small">
+                <el-switch  @change="switchImgModel" v-model="imgModel"></el-switch>
+            </el-form-item>
+
+            <el-select size="small" v-model="currentDriveId" placeholder="请选择驱动器" @change="changeDrive">
                 <el-option v-for="item in driveList"
                            :key="item.id"
                            :label="item.name"
@@ -29,6 +33,7 @@
         props: ['driveId'],
         data() {
             return {
+                imgModel: false,
                 driveList: [],
                 currentDriveId: "",
                 search: '',
@@ -50,6 +55,10 @@
                     this.breadcrumbData.unshift({name, fullPath});
                     fullPath = path.resolve(fullPath, "../");
                 }
+            },
+            switchImgModel() {
+                debugger;
+                this.$store.commit('switchImgMode', this.imgModel);
             },
             changeDrive(driveId) {
                 this.$router.push('/' + driveId + '/main');
@@ -78,10 +87,10 @@
                     this.currentDriveId = this.driveList[0].id;
                     this.$router.push('/' + this.driveList[0].id + '/main');
                 } else if (this.driveList.length === 0) {
-                    this.$message.warning( '无可用驱动器，请先初始化驱动器。');
+                    this.$message.warning( '无可用驱动器，请先去管理员页初始化驱动器。');
                 }
 
-                let result = this.driveList.some((item) => {
+                this.driveList.some((item) => {
                     if (item.id === this.currentDriveId) {
                         this.$store.commit('updateCurrentStorageStrategy', item);
                     }
@@ -102,6 +111,7 @@
 
     .zfile-header .el-breadcrumb {
         line-height: 48px;
+        font-size: 13px;
     }
 
     .zfile-header .el-input {
@@ -122,5 +132,10 @@
 
     .zfile-header-drive span {
         margin-right: 10px;
+    }
+
+
+    .zfile-header-drive >>> .el-form-item__content {
+        vertical-align: unset;
     }
 </style>

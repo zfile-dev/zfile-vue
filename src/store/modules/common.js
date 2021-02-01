@@ -1,6 +1,7 @@
 const state = {
     config: {},
-    currentStorageStrategy: null
+    currentStorageStrategy: null,
+    imgMode: false
 }
 
 const mutations = {
@@ -21,10 +22,16 @@ const mutations = {
     },
     updateCurrentStorageStrategy(state, v) {
         state.currentStorageStrategy = v;
-    }
+    },
+    switchImgMode(state, v) {
+        state.imgMode = v;
+    },
 }
 
 const getters = {
+    imgMode: state => {
+        return state.imgMode;
+    },
     infoEnable: state => {
         return state.config && state.config.infoEnable;
     },

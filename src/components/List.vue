@@ -1,5 +1,6 @@
 <template>
     <div id="List">
+
         <el-table
                 v-loading="loading"
                 element-loading-text="拼命加载中"
@@ -10,48 +11,79 @@
                 @sort-change="sortMethod"
                 :data="this.$store.getters.tableData"
                 @row-click="openFolder"
-                :height="$store.getters.showDocument && $store.state.common.config.readme !== null ? '50vh' : '84vh'"
-                :size="$store.getters.tableSize"
+                :height="this.$store.getters.showDocument && this.$store.state.common.config.readme !== null ? '50vh' : '84vh'"
+                :size="this.$store.getters.tableSize"
                 @row-contextmenu="showMenu">
             <el-table-column
                     prop="name"
-                    label="文件名"
+                    icon="el-icon-notebook-1"
                     sortable="custom"
                     label-class-name="table-header-left"
                     min-width="100%">
+                <template slot="header" slot-scope="scope">
+                    <i class="el-icon-document" style="margin-right: 5px"></i>
+                    <span>文件名</span>
+                </template>
                 <template slot-scope="scope">
-                    <svg class="icon" aria-hidden="true"><use :xlink:href="'#' + scope.row.icon"/></svg>
-                    {{scope.row.name}}
+                    <template v-if="$store.getters.imgMode && scope.row.icon === 'el-icon-my-image'">
+                        <img class="img-mode-img" :src="scope.row.url"/>
+                    </template>
+                    <template v-else>
+                        <svg class="icon" aria-hidden="true"><use :xlink:href="'#' + scope.row.icon"/></svg>
+                        {{scope.row.name}}
+                    </template>
                 </template>
             </el-table-column>
             <el-table-column
                     prop="time"
                     label="修改时间"
                     sortable="custom"
+                    v-if="!$store.getters.imgMode"
                     class-name="hidden-xs-only"
                     min-width="20%">
+                <template slot="header" slot-scope="scope">
+                    <i class="el-icon-date" style="margin-right: 5px"></i>
+                    <span>修改时间</span>
+                </template>
             </el-table-column>
             <el-table-column
                     prop="size"
                     label="大小"
                     class-name="hidden-xs-only"
+                    v-if="!$store.getters.imgMode"
                     sortable="custom"
                     :formatter="this.common.fileSizeFilter"
                     min-width="15%">
+                <template slot="header" slot-scope="scope">
+                    <i class="el-icon-coin" style="margin-right: 5px"></i>
+                    <span>大小</span>
+                </template>
             </el-table-column>
 
             <el-table-column
-                    v-if="$store.getters.showOperator"
+                    v-if="$store.getters.showOperator && !$store.getters.imgMode"
                     label="操作"
                     min-width="15%">
+                <template slot="header" slot-scope="scope">
+                    <i class="el-icon-s-operation" style="margin-right: 5px"></i>
+                    <span style="margin-right: 13px">操作</span>
+                    <!--<el-tooltip class="item" effect="dark" content="批量生成直链" placement="top">-->
+                    <!--    <i @click.stop="copyShortLink(scope.row)" class="el-icon-copy-document operator-btn hidden-sm-and-down"></i>-->
+                    <!--</el-tooltip>-->
+                </template>
                 <template slot-scope="scope">
                     <div v-if="scope.row.type === 'FILE'">
-                        <i @click.stop="download(scope.row)" class="el-icon-download operator-btn"></i>
-                        <i @click.stop="copyDirectLink(scope.row)" class="el-icon-copy-document operator-btn hidden-sm-and-down"></i>
+                        <el-tooltip class="item" effect="dark" content="下载" placement="top">
+                            <i @click.stop="download(scope.row)" class="el-icon-download operator-btn"></i>
+                        </el-tooltip>
+                        <el-tooltip class="item" effect="dark" content="生成直链" placement="right">
+                            <i @click.stop="copyShortLink(scope.row)" class="el-icon-copy-document operator-btn hidden-sm-and-down"></i>
+                        </el-tooltip>
                     </div>
                 </template>
             </el-table-column>
         </el-table>
+
 
         <el-dialog id="textDialog" :destroy-on-close="true"
                    :title="currentClickRow.name"
@@ -68,6 +100,33 @@
             <video-player v-if="dialogVideoVisible" ref="videoPlayer" :data="currentClickRow"/>
         </el-dialog>
 
+
+        <el-dialog id="copyLinkDialog"
+                   title="生成直链结果"
+                   :destroy-on-close="true"
+                   width="700px"
+                   :visible.sync="dialogCopyLinkVisible">
+            <el-row v-if="currentCopyLinkRow.row">
+                <el-col :span="12" style="text-align: center">
+                    <img :src="currentCopyLinkRow.img">
+                </el-col>
+                <el-col :span="12">
+                    <el-input disabled prefix-icon="el-icon-document" v-model="currentCopyLinkRow.row.name" style="margin-bottom: 10px"></el-input>
+                    <el-input disabled prefix-icon="el-icon-date" v-model="currentCopyLinkRow.row.time" style="margin-bottom: 10px"></el-input>
+                    <el-input disabled prefix-icon="el-icon-coin" v-bind:value="currentCopyLinkRow.row.size | fileSizeFormat" style="margin-bottom: 10px"></el-input>
+                    <el-input prefix-icon="el-icon-link" type="small" v-model="currentCopyLinkRow.link">
+                        <el-tooltip slot="append" class="item" effect="dark" content="复制" placement="bottom">
+                            <el-button @click="copyText(currentCopyLinkRow.link)" type="small" style="font-size: 20px" icon="el-icon-copy-document"></el-button>
+                        </el-tooltip>
+                    </el-input>
+                    <div class="zfile-word-aux zfile-margin-left-unset" style="margin-top: 10px">直链域名取决与站点设置中的地址</div>
+                    <div class="zfile-word-aux zfile-margin-left-unset" style="margin-top: 10px">二维码可右键另存为图片</div>
+                </el-col>
+            </el-row>
+
+        </el-dialog>
+
+
         <audio-player :file-list="this.$store.getters.filterFileByType('audio')" :audio-index="currentClickTypeIndex('audio')"/>
 
         <v-contextmenu ref="contextmenu">
@@ -79,13 +138,9 @@
                 <i class="el-icon-download"></i>
                 <label>下载</label>
             </v-contextmenu-item>
-            <v-contextmenu-item @click="copyDirectLink" v-show="rightClickRow.type === 'FILE'">
+            <v-contextmenu-item @click="copyShortLink(rightClickRow)" v-show="rightClickRow.type === 'FILE'">
                 <i class="el-icon-copy-document"></i>
-                <label>复制直链</label>
-            </v-contextmenu-item>
-            <v-contextmenu-item @click="copyShortLink" v-show="rightClickRow.type === 'FILE'">
-                <i class="el-icon-copy-document"></i>
-                <label>复制短链</label>
+                <label>生成直链</label>
             </v-contextmenu-item>
         </v-contextmenu>
 
@@ -113,9 +168,10 @@
     const TextPreview = () => import(/* webpackChunkName: "front-text" */'./TextPreview');
     const AudioPlayer = () => import(/* webpackChunkName: "front-audio" */'./AudioPlayer');
 
-    import store from "@/store";
-
     let prefixPath = '/main';
+
+    const {qrcode, svg2url} = require('pure-svg-code');
+
 
     export default {
         components: {
@@ -132,6 +188,8 @@
                 dialogTextVisible: false,
                 // 是否打开视频播放器弹出
                 dialogVideoVisible: false,
+                // 是否打开生成直链页面
+                dialogCopyLinkVisible: false,
                 // 查询条件
                 searchParam: {
                     path: '',
@@ -145,7 +203,14 @@
                     x: null,
                     y: null
                 },
-                driveList: []
+                // 驱动器列表
+                driveList: [],
+                // 当前生成直链的行
+                currentCopyLinkRow: {
+                    row: null,
+                    img: '',
+                    link: ''
+                },
             }
         },
         watch: {
@@ -206,7 +271,7 @@
                     // 如果需要密码或密码错误进行提示, 并弹出输入密码的框.
                     if (response.data.code === -2 || response.data.code === -3) {
                         if (response.data.code === -3) {
-                            this.$message.error('密码错误, 请重新输入!',);
+                            this.$message.error('密码错误，请重新输入！',);
                         }
                         this.popPassword();
                         return;
@@ -229,14 +294,14 @@
                         });
                     }
 
-                    store.commit('tableData', data);
+                    this.$store.commit('tableData', data);
                     this.loading = false;
                 });
             },
             loadingConfig() {
                 if (this.driveId) {
                     this.$http.get('api/config/' + this.driveId, {params: {path: this.searchParam.path}}).then((response) => {
-                        store.commit('updateConfig', response.data.data);
+                        this.$store.commit('updateConfig', response.data.data);
                         this.updateTitle();
                     });
                 }
@@ -329,37 +394,22 @@
             download(row) {
                 window.location.href = row.url;
             },
-            copyShortLink() {
-                let that = this;
-                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.rightClickRow.path) + "/" + encodeURI(this.rightClickRow.name));
+            copyShortLink(row) {
+                let directlink = this.common.removeDuplicateSeparator("/" + encodeURI(row.path) + "/" + encodeURI(row.name));
 
-                alert(1);
-                this.$http.get('https://sohu.gg/api?key=ApiKey&url=' + encodeURI(directlink), {withCredentials: false}).then((response) => {
-                    console.log(response)
-                    // this.$copyText(response.data.data.short_url).then(function () {
-                    //     that.$message.success('复制成功');
-                    // }, function () {
-                    //     that.$message.error('复制失败');
-                    // });
+                this.$http.get('api/short-link', {params: {driveId: this.driveId, path: directlink}, withCredentials: false}).then((response) => {
+                    this.currentCopyLinkRow.row = row;
+                    this.currentCopyLinkRow.link = response.data.data;
+                    const svgString = qrcode(response.data.data);
+                    this.currentCopyLinkRow.img = svg2url(svgString);
+                    this.dialogCopyLinkVisible = true;
                 });
-
-                // this.$http.post('http://lf8.info/index.php?m=Index&a=create', {params: {url: directlink}, withCredentials: false}).then((response) => {
-                //     console.log(response)
-                //     // this.$copyText(response.data.data.short_url).then(function () {
-                //     //     that.$message.success('复制成功');
-                //     // }, function () {
-                //     //     that.$message.error('复制失败');
-                //     // });
-                // });
             },
-            copyDirectLink(row) {
-                let that = this;
-                let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/"
-                    + this.driveId + "/" + encodeURI(row.path) + "/" + encodeURI(row.name));
-                this.$copyText(directlink).then(function () {
-                    that.$message.success('复制成功');
-                }, function () {
-                    that.$message.error('复制失败');
+            copyText(text) {
+                this.$copyText(text).then(() => {
+                    this.$message.success('复制成功');
+                }, () => {
+                    this.$message.error('复制失败');
                 });
             },
             // 文件夹密码
@@ -417,6 +467,11 @@
 <style scoped>
     #List {
         overflow: hidden;
+    }
+
+    #List >>> .el-table__body-wrapper {
+        overflow-x: hidden;
+        overflow-y: auto;
     }
 
     .el-table {
@@ -526,4 +581,12 @@
         height: 16px;
         width: 16px;
     }
+
+
+    #List >>> .img-mode-img{
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
 </style>

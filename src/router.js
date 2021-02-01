@@ -11,8 +11,8 @@ const SiteSetting = () => import(/* webpackChunkName: "admin" */'./components/ad
 const ViewSetting = () => import(/* webpackChunkName: "admin" */'./components/admin/ViewSetting');
 const UpdatePassword = () => import(/* webpackChunkName: "admin" */'./components/admin/UpdatePassword');
 const API = () => import(/* webpackChunkName: "admin" */'./components/admin/API');
-const Monitor = () => import(/* webpackChunkName: "admin" */'./components/admin/Monitor');
 const DriveList = () => import(/* webpackChunkName: "admin" */'./components/admin/DriveList');
+const ShortLink = () => import(/* webpackChunkName: "admin" */'./components/admin/ShortLink');
 const SharePointSiteId = () => import(/* webpackChunkName: "admin" */'./components/SharePointSiteId');
 
 export default new Router({
@@ -66,14 +66,14 @@ export default new Router({
                     component: API
                 },
                 {
-                    path: 'monitor',
-                    name: 'Monitor',
-                    component: Monitor
-                },
-                {
                     path: 'drive-list',
                     name: 'DriveList',
                     component: DriveList
+                },
+                {
+                    path: 'short-link',
+                    name: 'ShortLink',
+                    component: ShortLink
                 }
             ]
         }
