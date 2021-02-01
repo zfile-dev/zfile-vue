@@ -47,13 +47,9 @@
                         <i class="el-icon-key"/>
                         <span slot="title" id="/admin/password">修改密码</span>
                     </el-menu-item>
-                    <el-menu-item index="/admin/api">
+                    <el-menu-item index="/admin/short-link">
                         <i class="el-icon-document"/>
-                        <span slot="title" id="/admin/api">API 文档</span>
-                    </el-menu-item>
-                    <el-menu-item index="/admin/monitor">
-                        <i class="el-icon-monitor"/>
-                        <span slot="title" id="/admin/monitor">系统监控</span>
+                        <span slot="title" id="/admin/short-link">短链管理</span>
                     </el-menu-item>
                     <el-menu-item @click="logDownload">
                         <i class="el-icon-download"/>
@@ -111,7 +107,7 @@
             // 获取当前选中的左侧导航的文字, 作为标题
             let currentIndex = document.getElementsByClassName('is-active')[0].getElementsByTagName('span')[0].id;
             this.rebuildTitle(currentIndex);
-            this.$http.get('https://api.github.com/repos/zhaojun1998/zfile/releases/latest', {withCredentials: false}).then((response) => {
+            this.$http.get('https://api.github.com/repos/zhaojun1998/zfile/releases/latest', {withCredentials: false, showMessage: false}).then((response) => {
                 this.latestInfo = response.data;
             })
         },
