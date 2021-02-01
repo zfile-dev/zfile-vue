@@ -16,7 +16,7 @@
     "element-ui": "^2.14.1",
     "flv.js": "^1.5.0",
     "github-markdown-css": "^3.0.1",
-    "gsap": "^3.0.5",
+    "gsap": "^3.6.0",
     "highlight.js": "^10.5.0",
     "hls.js": "^0.13.0",
     "marked": "^0.7.0",
