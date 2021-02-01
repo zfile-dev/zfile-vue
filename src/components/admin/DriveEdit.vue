@@ -163,13 +163,13 @@
                     <el-form-item v-if="driveItem.type === 'onedrive' || driveItem.type === 'sharepoint'">
                         <el-link target="_blank" icon="el-icon-link" :href="$http.defaults.baseURL + '/onedrive/authorize'">前往获取令牌</el-link>
                         <br>
-                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint'" icon="el-icon-link" :href="$http.defaults.baseURL + '/sharepoint/site-id'">前往获取 Site Id</el-link>
+                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint'" icon="el-icon-link" :href="$http.defaults.baseURL + '/#/sharepoint-util'">前往获取 Site Id</el-link>
                     </el-form-item>
 
                     <el-form-item v-if="driveItem.type === 'onedrive-china' || driveItem.type === 'sharepoint-china'">
                         <el-link target="_blank" icon="el-icon-link" :href="$http.defaults.baseURL + '/onedrive/china-authorize'">前往获取令牌</el-link>
                         <br>
-                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint-china'" icon="el-icon-link" :href="$http.defaults.baseURL + '/sharepoint/site-id'">前往获取 Site Id</el-link>
+                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint-china'" icon="el-icon-link" :href="$http.defaults.baseURL + '/#/sharepoint-util'">前往获取 Site Id</el-link>
                     </el-form-item>
 
 
