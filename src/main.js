@@ -105,17 +105,20 @@ axios.get('zfile.config.json').then((result) => {
             });
 
             //  REQUEST 请求异常拦截
-            axios.interceptors.response.use(config=> {
-                return config;
+            axios.interceptors.response.use(response=> {
+                return response;
             }, error=> {
                 let msg = error.response.data.msg;
                 if (msg === '未登录') {
                     this.$router.push('/login');
                 } else {
-                    this.$message({
-                        message: msg,
-                        type: 'error'
-                    });
+                    if (error.response.config.showMessage !== false) {
+                        this.$message({
+                            message: msg,
+                            type: 'error'
+                        });
+                    }
+
                 }
                 return Promise.resolve(error);
             });
