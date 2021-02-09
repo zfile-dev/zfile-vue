@@ -158,7 +158,7 @@ export default {
         },
         deleteLink(id) {
             this.$http.get(`admin/link/delete/${id}`).then((response) => {
-                if (response.data.code === 0) {
+                if (response.data.code === this.common.responseCode.SUCCESS) {
                     this.$message.success('删除成功');
                     this.init();
                 } else {

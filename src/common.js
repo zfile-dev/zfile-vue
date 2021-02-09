@@ -13,6 +13,12 @@ import config from '../package.json'
 const iconFileType = ['css', 'go', 'html', 'js', 'less', 'php', 'py', 'rb', 'rust', 'script', 'md', 'apk', 'deb', 'rpm', 'java'];
 
 let common = {
+    responseCode: {
+        SUCCESS: 0,
+        FAIL: -1,
+        REQUIRED_PASSWORD: -2,
+        INVALID_PASSWORD: -3
+    },
     version: config.version,
     constant: {
         fileTypeMap,

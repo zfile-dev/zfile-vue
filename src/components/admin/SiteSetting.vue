@@ -48,7 +48,7 @@
                         this.loading = true;
                         this.$http.post('admin/config', qs.stringify(this.form)).then((response) => {
                             this.loading = false;
-                            if (response.data.code === 0) {
+                            if (response.data.code === this.common.responseCode.SUCCESS) {
                                 this.$message({
                                     message: '保存成功',
                                     type: 'success'

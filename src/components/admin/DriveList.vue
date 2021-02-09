@@ -194,9 +194,6 @@
                     });
                 });
             },
-            closeCacheManage() {
-                this.cacheSearch = "";
-            },
             cacheManage(row) {
                 this.currentCacheManageId = row.id;
                 this.cacheManageVisible = true;

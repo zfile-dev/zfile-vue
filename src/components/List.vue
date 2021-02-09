@@ -271,10 +271,13 @@
                     let data = response.data.data;
 
                     // 如果需要密码或密码错误进行提示, 并弹出输入密码的框.
-                    if (response.data.code === -2 || response.data.code === -3) {
-                        if (response.data.code === -3) {
-                            this.$message.error('密码错误，请重新输入！',);
-                        }
+                    if (response.data.code === this.common.responseCode.INVALID_PASSWORD) {
+                        this.$message.error('密码错误，请重新输入！');
+                        this.popPassword();
+                        return;
+                    }
+                    if (response.data.code === this.common.responseCode.REQUIRED_PASSWORD) {
+                        this.$message.warning('此文件夹需要密码，请输入密码！');
                         this.popPassword();
                         return;
                     }
