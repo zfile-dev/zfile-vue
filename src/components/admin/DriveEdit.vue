@@ -297,6 +297,8 @@ export default {
                             }
                             if (!domainCheck.test(value)) {
                                 callback(new Error('请输入正确的域名，需以 http:// 或 https:// 开头'));
+                            } else if (value.lastIndexOf("/") === value.length - 1) {
+                                callback(new Error('请输入正确的域名，不能以 / 结尾'));
                             } else {
                                 callback();
                             }
