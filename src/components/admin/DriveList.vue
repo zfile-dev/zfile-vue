@@ -82,15 +82,15 @@
                 </el-table-column>
             </el-table>
 
-        <el-dialog width="80%" title="驱动器设置" :modal-append-to-body="false" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
+        <el-dialog width="80%" title="驱动器设置" :modal-append-to-body="false" v-if="driveEditDialogVisible" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
             <drive-edit :drive-item="driveItem" :close="closeDriveEdit" :support-strategy="supportStrategy"></drive-edit>
         </el-dialog>
 
-        <el-dialog width="40%" title="过滤规则" :modal-append-to-body="false" :visible.sync="filterDialogVisible" top="10vh" :destroy-on-close="true">
+        <el-dialog width="40%" title="过滤规则" :modal-append-to-body="false" v-if="filterDialogVisible" :visible.sync="filterDialogVisible" top="10vh" :destroy-on-close="true">
             <filter-pattern :drive-id="currentCacheManageId" :close="closeFilterDialog"></filter-pattern>
         </el-dialog>
 
-        <el-dialog id="cacheDialog" width="70%" title="缓存管理" :modal-append-to-body="false" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true" @close="closeCacheManage">
+        <el-dialog id="cacheDialog" width="70%" title="缓存管理" :modal-append-to-body="false" v-if="cacheManageVisible" :visible.sync="cacheManageVisible" top="10vh" :destroy-on-close="true">
             <cache-manager :current-cache-manage-id="this.currentCacheManageId"></cache-manager>
         </el-dialog>
 

@@ -88,6 +88,7 @@
         <el-dialog id="textDialog" :destroy-on-close="true"
                    :title="currentClickRow.name"
                    :visible.sync="dialogTextVisible"
+                   v-if="dialogTextVisible"
                    :top="'5vh'"
                    :width="'90%'"
                    @opened="initTextDialog">
@@ -96,6 +97,7 @@
 
         <el-dialog id="videoDialog" :destroy-on-close="true"
                    :title="currentClickRow.name"
+                   v-if="dialogVideoVisible"
                    :visible.sync="dialogVideoVisible">
             <video-player v-if="dialogVideoVisible" ref="videoPlayer" :data="currentClickRow"/>
         </el-dialog>
@@ -104,9 +106,9 @@
         <el-dialog id="copyLinkDialog"
                    title="生成直链结果"
                    :destroy-on-close="true"
-                   width="700px"
-                   :visible.sync="dialogCopyLinkVisible">
-            <el-row v-if="currentCopyLinkRow.row">
+                   :visible.sync="dialogCopyLinkVisible"
+                   v-if="dialogCopyLinkVisible">
+        <el-row v-if="currentCopyLinkRow.row">
                 <el-col :span="12" style="text-align: center">
                     <img :src="currentCopyLinkRow.img">
                 </el-col>
@@ -378,9 +380,6 @@
             openVideo() {
                 this.dialogVideoVisible = true;
             },
-            initTextDialog() {
-                this.$refs.textDialog.init();
-            },
             // 右键菜单
             showMenu(row, column, event) {
                 this.rightClickRow = row;
@@ -587,6 +586,6 @@
         display: block;
         max-width: 100%;
         height: auto;
+        margin: 0 auto;
     }
-
 </style>
