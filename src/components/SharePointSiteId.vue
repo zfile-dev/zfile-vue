@@ -17,18 +17,20 @@
                         <template slot="append">.sharepoint.{{ form.domainType }}</template>
                     </el-input>
                 </el-form-item>
-                <el-form-item label="站点名称" prop="domainPrefix" class="box animate__animated animate__fadeInUp">
+                <el-form-item label="站点名称" prop="siteName" class="box animate__animated animate__fadeInUp">
                     <template slot="label">
                         <span>站点名称</span>
                         <span class="zfile-word-aux">（网址上域名后面的 /sites/xxx 或/teams/xxx）</span>
                     </template>
-                    <el-input v-model="form.siteName" placeholder="请输入站点名称"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" size="small" @click="submitForm('form')">获取 SiteId</el-button>
+                    <el-input v-model="form.siteName" @input="submitForm('form')" placeholder="请输入站点名称" class="input-with-select">
+                        <el-select style="width: 100px" v-model="form.siteType" @input="change($event)" slot="prepend">
+                            <el-option label="/sites/" value="/sites/"></el-option>
+                            <el-option label="/teams/" value="/teams/"></el-option>
+                        </el-select>
+                    </el-input>
                 </el-form-item>
 
-                <el-form-item label="SiteID" v-if="siteId" class="box animate__animated animate__fadeInUp">
+                <el-form-item label="SiteID" class="box animate__animated animate__fadeInUp">
                     <el-input type="small" v-model="siteId">
                         <el-tooltip slot="append" class="item" effect="dark" content="复制" placement="bottom">
                             <el-button @click="copyText(siteId)" type="small" style="font-size: 20px" icon="el-icon-copy-document"></el-button>
@@ -49,7 +51,8 @@ export default {
                 type: 'Standard',
                 accessToken: '',
                 domainPrefix: '',
-                siteName: '/sites/xxx',
+                siteType: '/sites/',
+                siteName: '',
                 domainType: 'com'
             },
             siteId: '',
@@ -61,7 +64,7 @@ export default {
                     {required: true, message: 'SharePoint 域名不能为空', trigger: 'change'},
                 ],
                 siteName: [
-                    {required: true, message: '请输入管理员密码', trigger: 'change'},
+                    {required: true, message: '站点名称不能为空', trigger: 'change'},
                 ]
             },
             loading: false
@@ -82,7 +85,7 @@ export default {
     methods: {
         getDomainPrefix() {
             this.$http.post('/sharepoint/getDomainPrefix', this.form).then((response) => {
-                if (response.data.code === 0) {
+                if (response.data.code === this.common.responseCode.SUCCESS) {
                     this.form.domainPrefix = response.data.data;
                 }
             })
@@ -102,17 +105,19 @@ export default {
                 this.form.domainType = 'cn';
             }
         },
+        change() {
+            this.$forceUpdate();
+        },
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     this.loading = true;
                     this.$http.post('/sharepoint/getSiteId', this.form).then((response) => {
-                        if (response.data.code === 0) {
+                        if (response.data.code === this.common.responseCode.SUCCESS) {
                             this.siteId = response.data.data;
-                        } else {
-                            this.$message.error('获取失败');
+                            this.$forceUpdate();
+                            this.$message.success('自动获取 SiteId 成功');
                         }
-
                         this.loading = false;
                     })
                 } else {

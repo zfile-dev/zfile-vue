@@ -164,13 +164,13 @@
                     <el-form-item v-if="driveItem.type === 'onedrive' || driveItem.type === 'sharepoint'">
                         <el-link target="_blank" icon="el-icon-link" :href="$http.defaults.baseURL + '/onedrive/authorize'">前往获取令牌</el-link>
                         <br>
-                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint'" icon="el-icon-link" :href="$http.defaults.baseURL + '/#/sharepoint-util'">前往获取 Site Id</el-link>
+                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint'" icon="el-icon-link" :href="'/#/sharepoint-util'">前往获取 Site Id</el-link>
                     </el-form-item>
 
                     <el-form-item v-if="driveItem.type === 'onedrive-china' || driveItem.type === 'sharepoint-china'">
                         <el-link target="_blank" icon="el-icon-link" :href="$http.defaults.baseURL + '/onedrive/china-authorize'">前往获取令牌</el-link>
                         <br>
-                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint-china'" icon="el-icon-link" :href="$http.defaults.baseURL + '/#/sharepoint-util'">前往获取 Site Id</el-link>
+                        <el-link target="_blank" v-show="driveItem.type === 'sharepoint-china'" icon="el-icon-link" :href="'/#/sharepoint-util'">前往获取 Site Id</el-link>
                     </el-form-item>
 
 
@@ -247,10 +247,11 @@ export default {
                 let fromData = {
                     type: this.driveItem.type === 'sharepoint' ? "Standard" : "China",
                     accessToken: this.driveItem.storageStrategyConfig.accessToken,
-                    siteName: this.driveItem.storageStrategyConfig.siteType + this.driveItem.storageStrategyConfig.siteName
+                    siteType: this.driveItem.storageStrategyConfig.siteType,
+                    siteName: this.driveItem.storageStrategyConfig.siteName
                 }
                 this.$http.post('/sharepoint/getSiteId', fromData).then((response) => {
-                    if (response.data.code === 0) {
+                    if (response.data.code === this.common.responseCode.SUCCESS) {
                         this.driveItem.storageStrategyConfig.siteId = response.data.data;
                         this.$forceUpdate();
                         this.$message.success('自动获取 SiteId 成功');
