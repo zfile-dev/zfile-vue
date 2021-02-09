@@ -99,7 +99,6 @@ export default {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-top: -200px;
         width: 100%;
         height: 100%;
     }
