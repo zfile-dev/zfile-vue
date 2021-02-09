@@ -3,7 +3,7 @@
         <el-form v-loading="loading"
                  element-loading-text="保存并初始化中."
                  id="siteForm" ref="form" :model="driveItem" :rules="rules" label-width="auto" :status-icon="true">
-            <el-row :gutter="50">
+            <el-row :gutter="50" class="box animate__animated animate__fadeIn">
                 <el-col :span="12">
                     <el-form-item label="驱动器名称" prop="name">
                         <el-input v-model="driveItem.name"/>
