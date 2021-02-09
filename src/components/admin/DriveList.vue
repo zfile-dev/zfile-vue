@@ -243,7 +243,7 @@
                     callback: action => {
                         if (action === 'confirm') {
                             this.$http.delete('admin/drive/' + row.id).then((response) => {
-                                if (response.data.code === 0) {
+                                if (response.data.code === this.common.responseCode.SUCCESS) {
                                     this.$message.success('删除成功');
                                     this.init();
                                 } else {
