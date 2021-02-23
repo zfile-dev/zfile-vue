@@ -10,8 +10,12 @@
         </el-form-item>
         <div class="zfile-header-drive box animate__animated animate__fadeIn">
 
+          <el-form-item v-show="this.$store.getters.debugMode" label="已开启 DEBUG 模式，使用完请及时关闭" class="zfile-debug-tips" size="small">
+            <el-button @click="resetAdminPwd" size="small" type="danger">重置密码</el-button>
+          </el-form-item>
+
             <el-form-item label="图片模式" size="small">
-                <el-switch  @change="switchImgModel" v-model="imgModel"></el-switch>
+                <el-switch v-model="imgModel"></el-switch>
             </el-form-item>
 
             <el-select size="small" v-model="currentDriveId" placeholder="请选择驱动器" @change="changeDrive">
@@ -45,6 +49,24 @@
             this.buildBreadcrumbData();
         },
         methods: {
+            resetAdminPwd() {
+                this.$confirm('是否确认重置后台管理员密码？重置后用户名/密码将强制修改为 admin 123456', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning',
+                    callback: action => {
+                        if (action === 'confirm') {
+                            this.$http.get('debug/resetPwd').then((response) => {
+                                if (response.data.code === 0) {
+                                    this.$message.success("重置成功，请及时关闭 debug 功能，防止出现安全问题！");
+                                } else {
+                                    this.$message.error(response.data.msg)
+                                }
+                            });
+                        }
+                    }
+                });
+            },
             buildBreadcrumbData() {
                 this.breadcrumbData = [];
                 let fullPath = this.$route.params.pathMatch;
@@ -55,10 +77,6 @@
                     this.breadcrumbData.unshift({name, fullPath});
                     fullPath = path.resolve(fullPath, "../");
                 }
-            },
-            switchImgModel() {
-                debugger;
-                this.$store.commit('switchImgMode', this.imgModel);
             },
             changeDrive(driveId) {
                 this.$router.push('/' + driveId + '/main');

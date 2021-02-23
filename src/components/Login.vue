@@ -29,6 +29,17 @@
             </el-form-item>
 
             <el-form-item>
+                <el-tooltip class="item" effect="dark" placement="right">
+                    <div slot="content">
+                        将配置文件 application.properties 中 zfile.debug 修改为 true, 访问首页即可重置 <br>
+                        点击可前往文档查看操作方式
+                    </div>
+
+                    <el-link style="float: right" @click="openResetPwdDocs">忘记密码</el-link>
+                </el-tooltip>
+            </el-form-item>
+
+            <el-form-item>
                 <el-button type="primary" class="el-col-24"
                            @click="handleSubmit"
                            :loading="loading">登录
@@ -64,6 +75,9 @@ export default {
         document.title = '登录 | 后台管理';
     },
     methods: {
+        openResetPwdDocs() {
+            window.open('http://docs.zhaojun.im/zfile/#/question?id=reset-pwd')
+        },
         handleSubmit() {
             this.$refs.loginForm.validate((valid) => {
                 if (valid) {
@@ -93,7 +107,6 @@ export default {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        margin-top: -10%;
         width: 100%;
         height: 100%;
     }
