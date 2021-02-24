@@ -76,7 +76,7 @@
                 let siteDomain = this.form.domain;
 
                 if (serverDomain !== siteDomain) {
-                    this.$confirm(`检测到服务端地址为 ${serverDomain}，当前配置站点域名为 ${siteDomain}，是否自动进行修正？`, '提示', {
+                    this.$confirm(`检测到服务端地址为 ${serverDomain}，当前配置站点域名为 ${siteDomain}，是否自动进行修正（不修正可能会影响下载、文件夹加密和文档预览功能）？`, '提示', {
                         confirmButtonText: '确定',
                         cancelButtonText: '取消',
                         type: 'warning',
