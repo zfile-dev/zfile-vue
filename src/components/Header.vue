@@ -120,6 +120,9 @@
 
 <style scoped>
     .zfile-header {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
         height: 48px;
         line-height: 48px !important;
         background: #fafafa;
@@ -141,19 +144,25 @@
         .zfile-header >>> .el-breadcrumb__separator {
             display: none !important;
         }
+        .zfile-header >>> .el-form-item__label {
+            display: none !important;
+        }
+        .zfile-header >>> .el-select {
+            width: 120px;
+        }
     }
 
     .zfile-header-drive {
-        float: right;
         margin-right: 20px;
     }
-
-    .zfile-header-drive span {
-        margin-right: 10px;
-    }
-
 
     .zfile-header-drive >>> .el-form-item__content {
         vertical-align: unset;
     }
+
+    .zfile-debug-tips >>> .el-form-item__label {
+      font-weight: bold;
+      color: red !important;
+    }
+
 </style>
