@@ -51,6 +51,9 @@ const getters = {
     showDocument: state => {
         return state.config && state.config.showDocument;
     },
+    debugMode: state => {
+        return state.config && state.config.debugMode;
+    },
     domain: state => {
         return state.config && state.config.domain;
     },
