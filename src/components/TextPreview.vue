@@ -11,7 +11,6 @@
 </template>
 
 <script>
-    import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
     import marked from 'marked';
     import hljs from 'highlight.js/lib/core';
     import 'github-markdown-css';
@@ -32,6 +31,21 @@
         props: {
             file: Object
         },
+        mounted() {
+            let file = this.file;
+
+            this.$http.get(file.url, {withCredentials: false}).then((response) => {
+                this.loading = false;
+                this.text = response.data;
+                this.initMonaco();
+            }).catch(() => {
+                this.$http.get('common/content', {params: {url: file.url}}).then((response) => {
+                    this.loading = false;
+                    this.text = response.data.data;
+                    this.initMonaco();
+                });
+            })
+        },
         methods: {
             getFileSuffix(name) {
                 let suffix = name.substr(name.lastIndexOf('.') + 1).toLocaleLowerCase();
@@ -40,28 +54,16 @@
                 }
                 return suffix;
             },
-            init() {
-                let file = this.file;
-
-                this.$http.get(file.url, {withCredentials: false}).then((response) => {
-                    this.loading = false;
-                    this.text = response.data;
-                    this.initMonaco();
-                }).catch(() => {
-                    this.$http.get('common/content', {params: {url: file.url}}).then((response) => {
-                        this.loading = false;
-                        this.text = response.data.data;
-                        this.initMonaco();
-                    });
-                })
-            },
             initMonaco() {
                 if (this.getFileSuffix(this.file.name) !== 'md') {
-                    monaco.editor.create(document.getElementById('container'), {
-                        value: this.text,
-                        language: this.getFileSuffix(this.file.name),
-                        theme: 'vs',
-                    });
+                  import(/* webpackChunkName: "monaco-editor" */'monaco-editor/esm/vs/editor/editor.api')
+                      .then(({editor}) => {
+                        editor.create(document.getElementById('container'), {
+                          value: this.text,
+                          language: this.getFileSuffix(this.file.name),
+                          theme: 'vs',
+                        });
+                  })
                 }
             }
         },

@@ -90,8 +90,7 @@
                    :visible.sync="dialogTextVisible"
                    v-if="dialogTextVisible"
                    :top="'5vh'"
-                   :width="'90%'"
-                   @opened="initTextDialog">
+                   :width="'90%'">
             <TextPreview :file="currentClickRow" ref="textDialog"/>
         </el-dialog>
 
