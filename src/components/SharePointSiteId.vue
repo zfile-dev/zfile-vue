@@ -98,7 +98,6 @@ export default {
             });
         },
         changeType() {
-            debugger;
             if (this.form.type === 'Standard') {
                 this.form.domainType = 'com';
             } else if (this.form.type === 'China') {
