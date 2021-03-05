@@ -17,7 +17,7 @@
         },
         methods: {
             unloadHandler(){
-                localStorage.clear()
+                localStorage.removeItem("aplayer-setting")
             },
         }
     }

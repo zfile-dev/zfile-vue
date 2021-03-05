@@ -24,6 +24,7 @@ const mutations = {
         state.currentStorageStrategy = v;
     },
     switchImgMode(state, v) {
+        localStorage.imgMode = v;
         state.imgMode = v;
     },
 }
