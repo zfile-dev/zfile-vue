@@ -65,6 +65,13 @@ export default {
             }
         };
     },
+    mounted() {
+        this.$http.get('is-installed').then((response) => {
+            if (response.data.code !== 0) {
+                this.$router.push('/main');
+            }
+        });
+    },
     methods: {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
@@ -74,14 +81,25 @@ export default {
                     this.$http.post('install', qs.stringify(this.form)).then((response) => {
                         this.loading = false;
                         let data = response.data;
-                        this.$message({
-                            message: "初始化成功",
-                            type: data.code === 0 ? 'success' : 'error',
-                            duration: 1500,
-                            onClose() {
-                                that.$router.push('/main')
-                            }
-                        });
+                        if (data.code === 0) {
+                            this.$message({
+                                message: "初始化成功",
+                                type: data.code === 0 ? 'success' : 'error',
+                                duration: 1500,
+                                onClose() {
+                                    that.$router.push('/main')
+                                }
+                            });
+                        } else {
+                            this.$message({
+                                message: data.msg,
+                                type: 'error',
+                                duration: 3000,
+                                onClose() {
+                                    that.$router.push('/main')
+                                }
+                            });
+                        }
                     })
                 } else {
                     this.loading = false;

@@ -73,7 +73,6 @@ Vue.use(APlayer, {
 
 
 Vue.filter('fileSizeFormat', (bytes) => {
-    debugger;
     if (bytes === 0) return '0 B';
     let k = 1024;
     let sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
@@ -88,26 +87,10 @@ axios.get('zfile.config.json').then((result) => {
         router,
         store,
         beforeCreate: function () {
-            // 如果已经初始化, 则跳转后文件首页, 否则跳转后初始化页
-            this.$http.get('is-installed').then((response) => {
-                let data = response.data;
-                if (data.code !== 0) {
-                    let hash = window.location.hash;
-                    if (!hash.includes("main")
-                        && !hash.includes("#/admin")
-                        && !hash.includes("#/sharepoint-util")
-                        && !hash.includes("#/login")) {
-                        this.$router.push('/main');
-                    }
-                } else {
-                    this.$router.push('/install')
-                }
-            });
-
             //  REQUEST 请求异常拦截
-            axios.interceptors.response.use(response=> {
+            axios.interceptors.response.use(response => {
                 return response;
-            }, error=> {
+            }, error => {
                 let msg = error.response.data.msg;
                 if (msg === '未登录') {
                     this.$router.push('/login');
@@ -120,7 +103,7 @@ axios.get('zfile.config.json').then((result) => {
                     }
 
                 }
-                return Promise.resolve(error);
+                return Promise.reject(error);
             });
         }
     }).$mount('#app');
