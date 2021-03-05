@@ -1,5 +1,5 @@
 module.exports = {
-    comments: false,
+    // comments: false,
     presets: [
         '@vue/app',
     ],
