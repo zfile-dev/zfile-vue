@@ -1,8 +1,18 @@
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
-
 module.exports = {
+  configureWebpack: {
+    output: {
+      filename: 'js/app.js',
+      chunkFilename:'js/[name].min.js'
+    },
+  },
   productionSourceMap: false,
+  devServer: {
+    disableHostCheck: true,
+  },
   chainWebpack: config => {
+    config.plugins.delete('prefetch')
+
     config.plugin('monaco').use(MonacoWebpackPlugin, [
       {
         languages: ['java', 'php'],
