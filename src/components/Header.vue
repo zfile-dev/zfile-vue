@@ -83,6 +83,9 @@
             }
         },
         watch: {
+            'imgModel': function () {
+                this.$store.commit('switchImgMode', this.imgModel);
+            },
             '$route.fullPath': function () {
                 // 当 URL 变化, 则自动重新 build 面包屑
                 this.buildBreadcrumbData();
@@ -114,6 +117,7 @@
                     }
                 });
             });
+            this.imgModel = localStorage.imgMode === "true";
         }
     }
 </script>
