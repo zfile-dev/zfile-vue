@@ -4,7 +4,6 @@
 
 <script>
 
-    import 'dplayer/dist/DPlayer.min.css';
     import flvjs from 'flv.js';
     import Hls from 'hls.js';
     import DPlayer from 'dplayer';
