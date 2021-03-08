@@ -103,7 +103,7 @@
 
         <el-dialog id="copyLinkDialog"
                    title="生成直链结果"
-                   :destroy-on-close="true"
+                   :width="this.common.isMobile() ? '95%': '50%'"
                    :visible.sync="dialogCopyLinkVisible"
                    v-if="dialogCopyLinkVisible">
             <el-row v-if="currentCopyLinkRow.row">
@@ -120,17 +120,36 @@
                         </el-form-item>
                     </el-form>
                 </el-col>
-                <el-col :span="12">
-                    <el-input disabled prefix-icon="el-icon-document" v-model="currentCopyLinkRow.row.name" style="margin-bottom: 10px"></el-input>
-                    <el-input disabled prefix-icon="el-icon-date" v-model="currentCopyLinkRow.row.time" style="margin-bottom: 10px"></el-input>
-                    <el-input disabled prefix-icon="el-icon-coin" v-bind:value="currentCopyLinkRow.row.size | fileSizeFormat" style="margin-bottom: 10px"></el-input>
-                    <el-input prefix-icon="el-icon-link" type="small" v-model="currentCopyLinkRow.link">
-                        <el-tooltip slot="append" class="item" effect="dark" content="复制" placement="bottom">
-                            <el-button @click="copyText(currentCopyLinkRow.link)" type="small" style="font-size: 20px" icon="el-icon-copy-document"></el-button>
-                        </el-tooltip>
-                    </el-input>
-                    <div class="zfile-word-aux zfile-margin-left-unset" style="margin-top: 10px">直链域名取决与站点设置中的地址</div>
-                    <div class="zfile-word-aux zfile-margin-left-unset" style="margin-top: 10px">二维码可右键另存为图片</div>
+                <el-col :span="12" :xs="24" class="zfile-dialog-link-result-info">
+                    <el-form>
+                        <el-form-item>
+                            <el-input disabled prefix-icon="el-icon-document" v-model="currentCopyLinkRow.row.name"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input disabled prefix-icon="el-icon-date" v-model="currentCopyLinkRow.row.time"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input disabled prefix-icon="el-icon-coin" v-bind:value="currentCopyLinkRow.row.size | fileSizeFormat"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input prefix-icon="el-icon-link" type="small" v-model="currentCopyLinkRow.directlink">
+                                <el-tooltip slot="append" class="item" effect="dark" content="复制" placement="bottom">
+                                    <el-button @click="copyText(currentCopyLinkRow.directlink)" type="small" icon="el-icon-copy-document"></el-button>
+                                </el-tooltip>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input prefix-icon="el-icon-link" type="small" v-model="currentCopyLinkRow.link">
+                                <el-tooltip slot="append" class="item" effect="dark" content="复制" placement="bottom">
+                                    <el-button @click="copyText(currentCopyLinkRow.link)" type="small" icon="el-icon-copy-document"></el-button>
+                                </el-tooltip>
+                            </el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <div class="zfile-word-aux zfile-margin-left-unset">直链域名取决与站点设置中的地址</div>
+                            <div class="zfile-word-aux zfile-margin-left-unset">第一个链接为直链(带文件名)，第二个链接为短链接</div>
+                        </el-form-item>
+                    </el-form>
                 </el-col>
             </el-row>
         </el-dialog>
@@ -406,9 +425,11 @@
             copyShortLink(row) {
                 let directlink = this.common.removeDuplicateSeparator("/" + encodeURI(row.path) + "/" + encodeURI(row.name));
 
-                this.$http.get('api/short-link', {params: {driveId: this.driveId, path: directlink}, withCredentials: false}).then((response) => {
+                this.$http.get('api/short-link', {params: {driveId: this.driveId, path: directlink}}).then((response) => {
                     this.currentCopyLinkRow.row = row;
                     this.currentCopyLinkRow.link = response.data.data;
+                    let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(row.path) + "/" + encodeURI(row.name));
+                    this.currentCopyLinkRow.directlink = directlink;
                     const svgString = qrcode(response.data.data);
                     this.currentCopyLinkRow.img = svg2url(svgString);
                     this.dialogCopyLinkVisible = true;
