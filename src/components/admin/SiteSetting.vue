@@ -71,7 +71,6 @@
             this.$http.get('admin/config').then((response) => {
                 this.form = response.data.data;
 
-                console.log(this.$http.defaults.baseURL);
                 let serverDomain = this.$http.defaults.baseURL === "" ? window.location.origin : this.$http.defaults.baseURL;
                 let siteDomain = this.form.domain;
 
