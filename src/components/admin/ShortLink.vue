@@ -26,11 +26,18 @@
             </el-form-item>
         </el-form>
 
+        <el-button type="primary" size="small" icon="el-icon-plus" @click="openAddLinkItemDialog">新增直链</el-button>
+        <el-button type="danger" size="small" icon="el-icon-delete" @click="batchDeleteLinkItem">删除所选</el-button>
         <el-table
             :data="linkLog"
+            @row-click="handleRowClick"
             @sort-change="sortMethod"
             :default-sort = "{prop: 'createDate', order: 'descending'}"
-            ref="operatorTable">
+            ref="shortLinkTable">
+            <el-table-column
+                type='selection'
+                label="序号">
+            </el-table-column>
             <el-table-column
                 type='index'
                 label="序号">
@@ -42,6 +49,10 @@
                 sortable="custom"
                 :sort-orders="['ascending', 'descending']"
                 label="Key">
+                <template slot-scope="scope">
+                    <a target="_blank" :href="siteDomain + '/s/' + scope.row.key">{{scope.row.key}}</a>
+                    <i class="el-icon-edit-outline table-edit-icon" @click="editKey(scope.row.id)"></i>
+                </template>
             </el-table-column>
             <el-table-column
                 prop="url"
@@ -82,6 +93,31 @@
                        :page-size="searchParam.limit"
                        :total="searchParam.total">
         </el-pagination>
+
+        <el-dialog id="cacheDialog" width="50%" title="直链管理" :modal-append-to-body="false" v-if="addLinkVisible" :visible.sync="addLinkVisible">
+            <el-form :model="addLinkModel" label-width="150px">
+                <el-form-item label="驱动器 ID">
+                    <el-select v-model="addLinkModel.driveId" placeholder="请选择驱动器">
+                        <el-option v-for="item in driveList"
+                                   :key="item.id"
+                                   :label="item.name"
+                                   :value="item.id">
+                            <span style="float: left">{{ item.name }}</span>
+                            <span style="float: right; color: #8492a6; font-size: 13px">{{item.id}}</span>
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="路径">
+                    <el-input v-model="addLinkModel.path"  placeholder="请输入路径地址" class="input-with-select">
+                        <div slot="prepend">/directlink/{{addLinkModel.driveId}}</div>
+                    </el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" icon="el-icon-check" size="small" @click="addLinkItemAction">保存</el-button>
+                <el-button icon="el-icon-close" size="small" @click="addLinkVisible = false">关闭</el-button>
+            </div>
+        </el-dialog>
     </el-card>
 </template>
 
@@ -90,6 +126,11 @@ export default {
     name: "ShortLink",
     data() {
         return {
+            addLinkModel: {
+                driveId: null,
+                path: ''
+            },
+            addLinkVisible: false,
             linkUrl: '',
             linkLog: [],
             searchParam: {
@@ -128,10 +169,74 @@ export default {
                     }
                 }]
             },
-            date: ['', '']
+            date: ['', ''],
+            driveList: [],
+            siteDomain: ''
         }
     },
     methods: {
+        editKey(id) {
+            this.$prompt('请输入要修改为的 Key。', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消'
+            }).then(({value}) => {
+                this.$http.get('admin/api/short-link/key', {params: {id: id, newKey: value}}).then(() => {
+                    this.$message({
+                        message: '修改成功',
+                        type: 'success'
+                    });
+                    this.init();
+                });
+            });
+        },
+        //点击行触发，选中或不选中复选框
+        handleRowClick(row, column, event){
+            this.$refs.shortLinkTable.toggleRowSelection(row);
+        },
+        batchDeleteLinkItem() {
+            let selection = this.$refs.shortLinkTable.selection;
+
+            if (selection.length === 0) {
+                this.$message.warning('请至少选中一行数据');
+                return;
+            }
+
+            this.$confirm('删除后不可恢复, 是否确认删除', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+                callback: action => {
+                    if (action === 'confirm') {
+
+                        let arr = [];
+                        for (let index in selection) {
+                            arr[index] = selection[index].id;
+                        }
+
+                        this.$http.delete('admin/api/short-link', {params: {id: arr}}).then((response) => {
+                            if (response.data.code === 0) {
+                                this.$message.success('删除成功');
+                                this.init();
+                            } else {
+                                this.$message.error(response.data.msg);
+                            }
+                        });
+                    }
+                }
+            });
+        },
+        addLinkItemAction() {
+            alert(this.$store.getters.domain);
+            this.addLinkModel.path = this.common.removeDuplicateSeparator('/' + this.addLinkModel.path);
+            this.$http.get('api/short-link', {params: this.addLinkModel}).then((response) => {
+                $.$message.success('添加成功');
+                this.init();
+                this.addLinkVisible = false;
+            });
+        },
+        openAddLinkItemDialog() {
+            this.addLinkVisible = true;
+        },
         dateChange() {
             if (this.date) {
                 this.searchParam.dateFrom = this.date[0];
@@ -172,9 +277,21 @@ export default {
                 this.searchParam.limit = response.data.data.size;
             });
         },
+        loadDriveList() {
+            this.$http.get('api/drive/list').then((response) => {
+                this.driveList = response.data.data;
+            });
+        },
+        getDomainId() {
+            this.$http.get('admin/config').then((response) => {
+                this.siteDomain = response.data.data.domain;
+            });
+        },
     },
     mounted() {
         this.init();
+        this.loadDriveList();
+        this.getDomainId();
     }
 }
 </script>
