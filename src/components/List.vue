@@ -18,10 +18,11 @@
                     prop="name"
                     icon="el-icon-notebook-1"
                     sortable="custom"
+                    class-name="zfile-table-col-name"
                     label-class-name="table-header-left"
                     min-width="100%">
                 <template slot="header" slot-scope="scope">
-                    <i class="el-icon-document" style="margin-right: 5px"></i>
+                    <i class="el-icon-document"></i>
                     <span>文件名</span>
                 </template>
                 <template slot-scope="scope">
@@ -39,23 +40,23 @@
                     label="修改时间"
                     sortable="custom"
                     v-if="!$store.getters.imgMode"
-                    class-name="hidden-xs-only"
+                    class-name="zfile-table-col-time hidden-xs-only"
                     min-width="20%">
                 <template slot="header" slot-scope="scope">
-                    <i class="el-icon-date" style="margin-right: 5px"></i>
+                    <i class="el-icon-date"></i>
                     <span>修改时间</span>
                 </template>
             </el-table-column>
             <el-table-column
                     prop="size"
                     label="大小"
-                    class-name="hidden-xs-only"
+                    class-name="zfile-table-col-size hidden-xs-only"
                     v-if="!$store.getters.imgMode"
                     sortable="custom"
                     :formatter="this.common.fileSizeFilter"
                     min-width="15%">
                 <template slot="header" slot-scope="scope">
-                    <i class="el-icon-coin" style="margin-right: 5px"></i>
+                    <i class="el-icon-coin"></i>
                     <span>大小</span>
                 </template>
             </el-table-column>
@@ -63,20 +64,18 @@
             <el-table-column
                     v-if="$store.getters.showOperator && !$store.getters.imgMode"
                     label="操作"
+                    class-name="zfile-table-col-operator"
                     min-width="15%">
                 <template slot="header" slot-scope="scope">
-                    <i class="el-icon-s-operation" style="margin-right: 5px"></i>
-                    <span style="margin-right: 13px">操作</span>
-                    <!--<el-tooltip class="item" effect="dark" content="批量生成直链" placement="top">-->
-                    <!--    <i @click.stop="copyShortLink(scope.row)" class="el-icon-copy-document operator-btn hidden-sm-and-down"></i>-->
-                    <!--</el-tooltip>-->
+                    <i class="el-icon-s-operation"></i>
+                    <span>操作</span>
                 </template>
                 <template slot-scope="scope">
                     <div v-if="scope.row.type === 'FILE'">
                         <el-tooltip class="item" effect="dark" content="下载" placement="top">
                             <i @click.stop="download(scope.row)" class="el-icon-download operator-btn"></i>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="生成直链" placement="right">
+                        <el-tooltip class="item" effect="dark" content="生成直链" placement="top">
                             <i @click.stop="copyShortLink(scope.row)" class="el-icon-copy-document operator-btn hidden-sm-and-down"></i>
                         </el-tooltip>
                     </div>
@@ -107,9 +106,19 @@
                    :destroy-on-close="true"
                    :visible.sync="dialogCopyLinkVisible"
                    v-if="dialogCopyLinkVisible">
-        <el-row v-if="currentCopyLinkRow.row">
-                <el-col :span="12" style="text-align: center">
-                    <img :src="currentCopyLinkRow.img">
+            <el-row v-if="currentCopyLinkRow.row">
+                <el-col :span="12" :xs="24" class="zfile-dialog-link-result-qrcode">
+                    <el-form>
+                        <el-form-item>
+                            <img :src="currentCopyLinkRow.img" alt="右键可另存为图片">
+                        </el-form-item>
+                        <el-form-item class="hidden-sm-and-down">
+                            <div class="zfile-word-aux zfile-margin-left-unset">二维码可右键另存为图片</div>
+                        </el-form-item>
+                        <el-form-item class="hidden-sm-and-up">
+                            <div class="zfile-word-aux zfile-margin-left-unset">二维码可长按另存为图片</div>
+                        </el-form-item>
+                    </el-form>
                 </el-col>
                 <el-col :span="12">
                     <el-input disabled prefix-icon="el-icon-document" v-model="currentCopyLinkRow.row.name" style="margin-bottom: 10px"></el-input>
@@ -124,7 +133,6 @@
                     <div class="zfile-word-aux zfile-margin-left-unset" style="margin-top: 10px">二维码可右键另存为图片</div>
                 </el-col>
             </el-row>
-
         </el-dialog>
 
 
@@ -590,4 +598,17 @@
         height: auto;
         margin: 0 auto;
     }
+
+    #List >>> .el-table__header .cell i {
+        margin-right: 5px;
+    }
+
+    .zfile-dialog-link-result-qrcode {
+        text-align: center;
+    }
+
+    .zfile-dialog-link-result-info .el-form-item{
+        margin-bottom: 10px;
+    }
+
 </style>

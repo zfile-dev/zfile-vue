@@ -48,7 +48,7 @@
                         <span slot="title" id="/admin/password">修改密码</span>
                     </el-menu-item>
                     <el-menu-item index="/admin/short-link">
-                        <i class="el-icon-document"/>
+                        <i class="el-icon-link"/>
                         <span slot="title" id="/admin/short-link">短链管理</span>
                     </el-menu-item>
                     <el-menu-item @click="logDownload">

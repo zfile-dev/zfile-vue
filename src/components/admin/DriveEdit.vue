@@ -99,7 +99,7 @@
 
                             <div v-else-if="item.key === 'siteName' && (driveItem.type === 'sharepoint' || driveItem.type === 'sharepoint-china')">
                                 <el-input placeholder="请输入站点名称" v-model="driveItem.storageStrategyConfig.siteName" class="input-with-select">
-                                    <el-select style="width: 100px" v-model="driveItem.storageStrategyConfig.siteType" @input="change($event)" slot="prepend">
+                                    <el-select class="zfile-site-id-input-site-type-select" v-model="driveItem.storageStrategyConfig.siteType" @input="change($event)" slot="prepend">
                                         <el-option label="/sites/" value="/sites/"></el-option>
                                         <el-option label="/teams/" value="/teams/"></el-option>
                                     </el-select>
@@ -396,4 +396,7 @@ export default {
         padding-left: 0 !important;
     }
 
+    .zfile-site-id-input-site-type-select {
+        width: 100px;
+    }
 </style>

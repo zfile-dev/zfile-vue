@@ -12,10 +12,11 @@
             highlight-current-row>
                 <el-table-column
                         prop="id"
+                        align="center"
                         width="100"
                         label="驱动器ID">
                     <template slot-scope="scope">
-                        <span style="margin-left: 10px">{{ scope.row.id }}</span>
+                        <span>{{ scope.row.id }}</span>
                         <i class="el-icon-edit-outline table-edit-icon" @click="editDriveId(scope.row.id)"></i>
                     </template>
                 </el-table-column>

@@ -1,6 +1,6 @@
 <template>
-    <el-card>
-        <el-form :inline="true" style="text-align: left" :model="searchParam">
+    <el-card class="zfile-admin-short-card">
+        <el-form :inline="true"  class="zfile-admin-short-form" :model="searchParam">
             <el-form-item label="直链 Key">
                 <el-input size="small" v-model="searchParam.key"></el-input>
             </el-form-item>
@@ -74,7 +74,6 @@
             </el-table-column>
         </el-table>
         <el-pagination background
-                       style="margin-top: 15px"
                        @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
                        :current-page="searchParam.page"
@@ -181,11 +180,20 @@ export default {
 </script>
 
 <style scoped>
-    .el-form-item:first-child {
+    .zfile-admin-short-form >>> .el-form-item:first-child {
         margin-left: 10px;
     }
 
-    .el-form-item:not(:first-child) {
+    .zfile-admin-short-form >>> .el-form-item:not(:first-child) {
         margin-left: 20px;
+    }
+
+    .el-pagination {
+        margin-top: 15px;
+    }
+
+    .table-edit-icon {
+        margin-left: 10px;
+        cursor: pointer;
     }
 </style>

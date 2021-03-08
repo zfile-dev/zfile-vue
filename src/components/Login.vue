@@ -35,7 +35,7 @@
                         点击可前往文档查看操作方式
                     </div>
 
-                    <el-link style="float: right" @click="openResetPwdDocs">忘记密码</el-link>
+                    <el-link icon="el-icon-question" :underline="false" class="zfile-float-right" @click="openResetPwdDocs">忘记密码</el-link>
                 </el-tooltip>
             </el-form-item>
 

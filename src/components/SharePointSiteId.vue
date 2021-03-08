@@ -23,7 +23,7 @@
                         <span class="zfile-word-aux">（网址上域名后面的 /sites/xxx 或/teams/xxx）</span>
                     </template>
                     <el-input v-model="form.siteName" @input="submitForm('form')" placeholder="请输入站点名称" class="input-with-select">
-                        <el-select style="width: 100px" v-model="form.siteType" @input="change($event)" slot="prepend">
+                        <el-select v-model="form.siteType" @input="change($event)" slot="prepend">
                             <el-option label="/sites/" value="/sites/"></el-option>
                             <el-option label="/teams/" value="/teams/"></el-option>
                         </el-select>
@@ -33,7 +33,7 @@
                 <el-form-item label="SiteID" class="box animate__animated animate__fadeInUp">
                     <el-input type="small" v-model="siteId">
                         <el-tooltip slot="append" class="item" effect="dark" content="复制" placement="bottom">
-                            <el-button @click="copyText(siteId)" type="small" style="font-size: 20px" icon="el-icon-copy-document"></el-button>
+                            <el-button @click="copyText(siteId)" type="small" icon="el-icon-copy-document"></el-button>
                         </el-tooltip>
                     </el-input>
                 </el-form-item>
@@ -130,5 +130,7 @@ export default {
 </script>
 
 <style scoped>
-
+    .input-with-select .el-select {
+        width: 100px;
+    }
 </style>
