@@ -173,7 +173,7 @@
         </v-contextmenu>
 
         <template>
-            <el-backtop target=".el-table__body-wrapper" :bottom="80" :right="30">
+            <el-backtop target=".el-table__body-wrapper" :bottom="haveDocument() ?  280 : 80" :right="30">
                 <el-tooltip placement="top" content="回到顶部">
                     <transition name="fade">
                         <div class="back-to-ceiling">
@@ -467,6 +467,9 @@
             putPathPwd(value) {
                 sessionStorage.setItem("zfile-pwd-" + this.searchParam.path, value);
             },
+            haveDocument() {
+                return this.$store.getters.showDocument && this.$store.state.common.config.readme !== null;
+            }
         },
         computed: {
             // 当前点击类型的索引
