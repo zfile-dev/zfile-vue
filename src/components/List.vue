@@ -510,6 +510,13 @@
         overflow-y: hidden;
     }
 
+    @media screen and (max-device-width: 769px) {
+        .el-table {
+            margin: 0 0 0 0;
+            padding-right: 0;
+        }
+    }
+
     .el-table::before {
         height: 0;
     }
@@ -575,6 +582,16 @@
         font-size: 16px
     }
 
+    .fade-enter-active,
+    .fade-leave-active {
+        transition: opacity .5s;
+    }
+
+    .fade-enter,
+    .fade-leave-to {
+        opacity: 0
+    }
+
     .back-to-ceiling {
         right: 50px;
         bottom: 50px;
@@ -592,16 +609,6 @@
         background: #d5dbe7;
     }
 
-    .fade-enter-active,
-    .fade-leave-active {
-        transition: opacity .5s;
-    }
-
-    .fade-enter,
-    .fade-leave-to {
-        opacity: 0
-    }
-
     .back-to-ceiling .Icon {
         fill: #9aaabf;
         background: none;
@@ -615,7 +622,7 @@
 
     #List >>> .img-mode-img{
         display: block;
-        max-width: 100%;
+        width: 80%;
         height: auto;
         margin: 0 auto;
     }
