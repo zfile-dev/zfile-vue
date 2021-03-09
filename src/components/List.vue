@@ -200,7 +200,6 @@
 
     const {qrcode, svg2url} = require('pure-svg-code');
 
-
     export default {
         components: {
             VideoPlayer, TextPreview, AudioPlayer
@@ -208,6 +207,8 @@
         props: ['driveId'],
         data() {
             return {
+                // 是否首次初始化完成
+                initLoading: true,
                 // 是否初始化加载完成
                 loading: false,
                 // 当前鼠标悬浮的行
@@ -294,8 +295,6 @@
                 };
 
                 this.$http.get(url, {params: param}).then((response) => {
-                    let data = response.data.data;
-
                     // 如果需要密码或密码错误进行提示, 并弹出输入密码的框.
                     if (response.data.code === this.common.responseCode.INVALID_PASSWORD) {
                         this.$message.error('密码错误，请重新输入！');
@@ -332,6 +331,7 @@
 
                     this.$store.commit('tableData', data);
                     this.loading = false;
+                    this.initLoading = false;
                 });
             },
             // 文件预览
