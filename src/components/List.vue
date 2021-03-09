@@ -308,8 +308,13 @@
                         return;
                     }
 
-                    // 加载系统设置
-                    this.loadingConfig();
+                    this.$store.commit('updateConfig', response.data.data.config)
+                    if (this.driveId !== this.$store.getters.oldDriveId) {
+                        this.$store.commit('updateOldDriveId', this.driveId);
+                        this.$store.commit('updateNewImgMode', response.data.data.config.defaultSwitchToImgMode);
+                    }
+                    let data = response.data.data.files;
+                    this.updateTitle();
 
                     // 如果不是根路径, 则构建 back 上级路径的数据.
                     let searchPath = this.searchParam.path;

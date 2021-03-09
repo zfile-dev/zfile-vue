@@ -19,6 +19,16 @@
                         </el-tooltip>
                     </el-form-item>
 
+                    <el-form-item label="是否默认打开图片模式">
+                        <el-switch v-model="driveItem.defaultSwitchToImgMode"/>
+                        <el-tooltip placement="right">
+                            <div slot="content">
+                                启用后，每次切换到此存储器，是否默认打开图片模式
+                            </div>
+                            <i class="el-icon-info zfile-info-tooltip"></i>
+                        </el-tooltip>
+                    </el-form-item>
+
                     <el-form-item label="开启缓存">
                         <el-switch v-model="driveItem.enableCache" @change="cacheChange"/>
                         <el-tooltip placement="right">

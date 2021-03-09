@@ -18,7 +18,7 @@
                 <el-switch v-model="imgModel"></el-switch>
             </el-form-item>
 
-            <el-select size="small" v-model="currentDriveId" placeholder="请选择驱动器" @change="changeDrive">
+            <el-select size="small" v-model="currentDriveId" placeholder="请选择驱动器">
                 <el-option v-for="item in driveList"
                            :key="item.id"
                            :label="item.name"
@@ -77,12 +77,16 @@
                     this.breadcrumbData.unshift({name, fullPath});
                     fullPath = path.resolve(fullPath, "../");
                 }
-            },
-            changeDrive(driveId) {
-                this.$router.push('/' + driveId + '/main');
             }
         },
         watch: {
+            'currentDriveId': function (newVal, oldVal) {
+                this.$store.commit('updateOldDriveId', oldVal);
+                this.$router.push('/' + newVal + '/main');
+            },
+            '$store.getters.newImgMode': function (newVal) {
+                this.imgModel = newVal;
+            },
             'imgModel': function () {
                 this.$store.commit('switchImgMode', this.imgModel);
             },
@@ -117,7 +121,6 @@
                     }
                 });
             });
-            this.imgModel = localStorage.imgMode === "true";
         }
     }
 </script>

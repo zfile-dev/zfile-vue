@@ -1,10 +1,18 @@
 const state = {
     config: {},
     currentStorageStrategy: null,
-    imgMode: false
+    imgMode: false,
+    newImgMode: false,
+    oldDriveId: null
 }
 
 const mutations = {
+    updateOldDriveId(state, v) {
+        state.oldDriveId = v;
+    },
+    updateNewImgMode(state, v) {
+        state.newImgMode = v;
+    },
     updateConfig(state, v) {
         state.config = v;
     },
@@ -24,12 +32,20 @@ const mutations = {
         state.currentStorageStrategy = v;
     },
     switchImgMode(state, v) {
-        localStorage.imgMode = v;
         state.imgMode = v;
     },
 }
 
 const getters = {
+    oldDriveId: state => {
+        return state.oldDriveId;
+    },
+    newImgMode: state => {
+        return state.newImgMode === true;
+    },
+    defaultSwitchToImgMode: state => {
+        return state.config && state.config.defaultSwitchToImgMode;
+    },
     imgMode: state => {
         return state.imgMode;
     },

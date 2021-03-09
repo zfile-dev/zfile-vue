@@ -118,6 +118,7 @@
                     name: '',
                     type: null,
                     enable: true,
+                    defaultSwitchToImgMode: false,
                     searchEnable: false,
                     searchIgnoreCase: false,
                     searchContainEncryptedFile: false,
