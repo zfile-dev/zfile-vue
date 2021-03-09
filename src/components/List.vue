@@ -1,5 +1,5 @@
 <template>
-    <div id="List">
+    <div id="List" v-loading="initLoading">
 
         <el-table
                 v-loading="loading"
@@ -21,7 +21,7 @@
                     class-name="zfile-table-col-name"
                     label-class-name="table-header-left"
                     min-width="100%">
-                <template slot="header" slot-scope="scope">
+                <template slot="header">
                     <i class="el-icon-document"></i>
                     <span>文件名</span>
                 </template>
@@ -42,7 +42,7 @@
                     v-if="!$store.getters.imgMode"
                     class-name="zfile-table-col-time hidden-xs-only"
                     min-width="20%">
-                <template slot="header" slot-scope="scope">
+                <template slot="header">
                     <i class="el-icon-date"></i>
                     <span>修改时间</span>
                 </template>
@@ -55,7 +55,7 @@
                     sortable="custom"
                     :formatter="this.common.fileSizeFilter"
                     min-width="15%">
-                <template slot="header" slot-scope="scope">
+                <template slot="header">
                     <i class="el-icon-coin"></i>
                     <span>大小</span>
                 </template>
@@ -66,7 +66,7 @@
                     label="操作"
                     class-name="zfile-table-col-operator"
                     min-width="15%">
-                <template slot="header" slot-scope="scope">
+                <template slot="header">
                     <i class="el-icon-s-operation"></i>
                     <span>操作</span>
                 </template>
@@ -333,14 +333,6 @@
                     this.$store.commit('tableData', data);
                     this.loading = false;
                 });
-            },
-            loadingConfig() {
-                if (this.driveId) {
-                    this.$http.get('api/config/' + this.driveId, {params: {path: this.searchParam.path}}).then((response) => {
-                        this.$store.commit('updateConfig', response.data.data);
-                        this.updateTitle();
-                    });
-                }
             },
             // 文件预览
             openFolder(row) {

@@ -127,4 +127,8 @@
     ::-webkit-scrollbar-thumb:vertical:hover{background-color: #7f7f7f;}
     ::-webkit-scrollbar-thumb:vertical:active{background-color: rgba(0,0,0,.38);}
     /* ----- 滚动条样式 ----- */
+
+    .el-card__body {
+        padding-right: 10px;
+    }
 </style>

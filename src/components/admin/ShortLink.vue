@@ -190,7 +190,7 @@ export default {
             });
         },
         //点击行触发，选中或不选中复选框
-        handleRowClick(row, column, event){
+        handleRowClick(row){
             this.$refs.shortLinkTable.toggleRowSelection(row);
         },
         batchDeleteLinkItem() {
@@ -228,8 +228,8 @@ export default {
         addLinkItemAction() {
             alert(this.$store.getters.domain);
             this.addLinkModel.path = this.common.removeDuplicateSeparator('/' + this.addLinkModel.path);
-            this.$http.get('api/short-link', {params: this.addLinkModel}).then((response) => {
-                $.$message.success('添加成功');
+            this.$http.get('api/short-link', {params: this.addLinkModel}).then(() => {
+                this.$message.success('添加成功');
                 this.init();
                 this.addLinkVisible = false;
             });

@@ -85,7 +85,7 @@
         },
         methods: {
             logout() {
-                this.$http.get('logout').then((response) => {
+                this.$http.get('logout').then(() => {
                     this.$router.push('/login');
                 })
             },
