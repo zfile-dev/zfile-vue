@@ -22,7 +22,7 @@
                     label-class-name="table-header-left"
                     min-width="100%">
                 <template slot="header">
-                    <i class="el-icon-document"></i>
+                    <i class="el-icon-document hidden-xs-only"></i>
                     <span>文件名</span>
                 </template>
                 <template slot-scope="scope">
@@ -39,7 +39,7 @@
                     prop="time"
                     label="修改时间"
                     sortable="custom"
-                    v-if="!$store.getters.imgMode"
+                    v-if="!$store.getters.imgMode && !common.isMobile()"
                     class-name="zfile-table-col-time hidden-xs-only"
                     min-width="20%">
                 <template slot="header">
@@ -51,7 +51,7 @@
                     prop="size"
                     label="大小"
                     class-name="zfile-table-col-size hidden-xs-only"
-                    v-if="!$store.getters.imgMode"
+                    v-if="!$store.getters.imgMode && !common.isMobile()"
                     sortable="custom"
                     :formatter="this.common.fileSizeFilter"
                     min-width="15%">
@@ -65,9 +65,9 @@
                     v-if="$store.getters.showOperator && !$store.getters.imgMode"
                     label="操作"
                     class-name="zfile-table-col-operator"
-                    min-width="15%">
+                    :min-width="common.isMobile() ? '35%' : '15%'">
                 <template slot="header">
-                    <i class="el-icon-s-operation"></i>
+                    <i class="el-icon-s-operation hidden-xs-only"></i>
                     <span>操作</span>
                     <el-tooltip class="item" effect="dark" content="批量生成直链" placement="top">
                         <i @click.stop="openBatchCopyLinkDialog" class="el-icon-copy-document operator-btn hidden-xs-only zfile-margin-left-5"></i>
