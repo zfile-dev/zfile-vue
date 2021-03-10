@@ -69,6 +69,9 @@
                 <template slot="header">
                     <i class="el-icon-s-operation"></i>
                     <span>操作</span>
+                    <el-tooltip class="item" effect="dark" content="批量生成直链" placement="top">
+                        <i @click.stop="openBatchCopyLinkDialog" class="el-icon-copy-document operator-btn hidden-xs-only zfile-margin-left-5"></i>
+                    </el-tooltip>
                 </template>
                 <template slot-scope="scope">
                     <div v-if="scope.row.type === 'FILE'">
@@ -76,7 +79,7 @@
                             <i @click.stop="download(scope.row)" class="el-icon-download operator-btn"></i>
                         </el-tooltip>
                         <el-tooltip class="item" effect="dark" content="生成直链" placement="top">
-                            <i @click.stop="copyShortLink(scope.row)" class="el-icon-copy-document operator-btn hidden-sm-and-down"></i>
+                            <i @click.stop="copyShortLink(scope.row)" class="el-icon-copy-document operator-btn"></i>
                         </el-tooltip>
                     </div>
                 </template>
@@ -154,6 +157,39 @@
             </el-row>
         </el-dialog>
 
+        <el-dialog id="batchCopyLinkDialog"
+                   title="批量生成直链"
+                   width="80%"
+                   :top="'80px'"
+                   :visible.sync="dialogBatchCopyLinkVisible"
+                   v-if="dialogBatchCopyLinkVisible">
+            <el-table :data="batchCopyLinkList" max-height="400">
+                <el-table-column label="文件名称" prop="name">
+                    <template slot="header">
+                        <span>文件名称</span>
+                        <el-tooltip class="item" effect="dark" content="批量复制" placement="top">
+                            <i @click.stop="batchCopyLinkField('name')" class="el-icon-copy-document operator-btn zfile-margin-left-5"></i>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column label="短链" width="250px" prop="link1">
+                    <template slot="header">
+                        <span>短链</span>
+                        <el-tooltip class="item" effect="dark" content="批量复制" placement="top">
+                            <i @click.stop="batchCopyLinkField('link1')" class="el-icon-copy-document operator-btn zfile-margin-left-5"></i>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+                <el-table-column label="直链" width="350px" show-overflow-tooltip prop="link2">
+                    <template slot="header">
+                        <span>直链</span>
+                        <el-tooltip class="item" effect="dark" content="批量复制" placement="top">
+                            <i @click.stop="batchCopyLinkField('link2')" class="el-icon-copy-document operator-btn zfile-margin-left-5"></i>
+                        </el-tooltip>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-dialog>
 
         <audio-player :file-list="this.$store.getters.filterFileByType('audio')" :audio-index="currentClickTypeIndex('audio')"/>
 
@@ -240,6 +276,8 @@
                     img: '',
                     link: ''
                 },
+                dialogBatchCopyLinkVisible: false,
+                batchCopyLinkList: []
             }
         },
         watch: {
@@ -251,6 +289,44 @@
             this.loadFile();
         },
         methods: {
+            // 批量复制直链字段
+            batchCopyLinkField(field) {
+                let copyVal = ''
+                this.batchCopyLinkList.forEach((item, index) => {
+                    copyVal += (item[field] + '\n')
+                });
+
+                this.$copyText(copyVal).then(() => {
+                    this.$message.success('复制成功');
+                }, () => {
+                    this.$message.error('复制失败');
+                });
+            },
+            // 打开批量复制弹窗
+            openBatchCopyLinkDialog() {
+                this.batchCopyLinkList = [];
+                this.$store.getters.tableData.forEach((item) => {
+                    if (item.type === 'FILE') {
+                        let directlink = this.common.removeDuplicateSeparator("/" + encodeURI(item.path) + "/" + encodeURI(item.name));
+
+                        this.$http.get('api/short-link', {params: {driveId: this.driveId, path: directlink}}).then((response) => {
+                            let link1 = response.data.data;
+                            let link2 = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(item.path) + "/" + encodeURI(item.name));
+                            const svgString = qrcode(response.data.data);
+                            let img = svg2url(svgString);
+
+                            this.batchCopyLinkList.push({
+                                name: item.name,
+                                link1: link1,
+                                link2: link2,
+                                img: img
+                            });
+                        });
+                    }
+                })
+
+                this.dialogBatchCopyLinkVisible = true;
+            },
             // 排序按钮
             sortMethod({prop, order}) {
                 this.searchParam.orderBy = prop;
@@ -639,4 +715,7 @@
         margin-bottom: 10px;
     }
 
+    #batchCopyLinkDialog >>> thead {
+        cursor: pointer;
+    }
 </style>
