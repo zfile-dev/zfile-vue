@@ -88,7 +88,7 @@
                        @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
                        :current-page="searchParam.page"
-                       :page-sizes="[10, 50, 100, 200]"
+                       :page-sizes="[10, 50, 100, 200, 999999]"
                        layout="total, sizes, prev, pager, next, jumper"
                        :page-size="searchParam.limit"
                        :total="searchParam.total">
