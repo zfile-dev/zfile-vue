@@ -119,7 +119,7 @@
                         <div v-if="item.key === 'basePath'">
                             <el-tooltip placement="bottom">
                                 <div slot="content">
-                                    基路径表示从哪个路径开始文件, 不填写表示从根开始
+                                    基路径表示仅读取的文件夹, 不填写表示允许读取所有。如： '/', '/文件夹1'
                                 </div>
                                 <i class="el-icon-question zfile-info-tooltip"></i>
                             </el-tooltip>
@@ -141,7 +141,7 @@
                         <div v-if="item.key === 'domain' && driveItem.type === 'ftp'">
                             <el-tooltip placement="bottom">
                                 <div slot="content">
-                                    此域名表示 http 访问域名，如有端口，也需要写明。
+                                    如次 ftp 目录同时也有 http 访问权限，则这里填写 http 访问域名，这样就会用 http 协议下载。防止 ftp 协议导致的密码泄露
                                 </div>
                                 <i class="el-icon-question zfile-info-tooltip"></i>
                             </el-tooltip>
