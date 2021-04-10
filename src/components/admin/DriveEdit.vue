@@ -51,9 +51,6 @@
                                 每隔 N 秒检测到期的缓存, 对于过期缓存尝试调用 API, 重新写入缓存.
                                 <br>
                                 参数 N 在配置文件中设置 {zfile.cache.auto-refresh-interval}，默认为 5 秒。
-                                <br>
-                                <br>
-                                注意：如您的数据，并非
                             </div>
                             <i class="el-icon-info zfile-info-tooltip"></i>
                         </el-tooltip>
