@@ -77,11 +77,19 @@
                     this.breadcrumbData.unshift({name, fullPath});
                     fullPath = path.resolve(fullPath, "../");
                 }
-            }
+            },
+	        refreshCurrentStorageStrategy() {
+		        this.driveList.some((item) => {
+			        if (item.id === this.currentDriveId) {
+				        this.$store.commit('updateCurrentStorageStrategy', item);
+			        }
+		        });
+	        }
         },
         watch: {
             'currentDriveId': function (newVal, oldVal) {
                 this.$store.commit('updateOldDriveId', oldVal);
+                this.refreshCurrentStorageStrategy();
                 if (oldVal !== "") {
                     this.$router.push('/' + newVal + '/main');
                 }
@@ -117,11 +125,7 @@
                     this.$message.warning( '无可用驱动器，请先去管理员页初始化驱动器。');
                 }
 
-                this.driveList.some((item) => {
-                    if (item.id === this.currentDriveId) {
-                        this.$store.commit('updateCurrentStorageStrategy', item);
-                    }
-                });
+	            this.refreshCurrentStorageStrategy();
             });
         }
     }
