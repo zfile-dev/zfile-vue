@@ -82,7 +82,9 @@
         watch: {
             'currentDriveId': function (newVal, oldVal) {
                 this.$store.commit('updateOldDriveId', oldVal);
-                this.$router.push('/' + newVal + '/main');
+                if (oldVal !== "") {
+                    this.$router.push('/' + newVal + '/main');
+                }
             },
             '$store.getters.newImgMode': function (newVal) {
                 this.imgModel = newVal;
