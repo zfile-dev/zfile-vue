@@ -138,6 +138,15 @@
                             </el-tooltip>
                         </div>
 
+	                    <div v-if="item.key === 'proxyDomain'">
+		                    <el-tooltip placement="bottom">
+			                    <div slot="content" style="cursor: pointer" @click="openUrl('http://docs.zhaojun.im/zfile/#/advanced?id=onedrive-cf')">
+				                    配置&使用文档（点击进入）
+			                    </div>
+			                    <i class="el-icon-question zfile-info-tooltip"></i>
+		                    </el-tooltip>
+	                    </div>
+
                         <div v-if="item.key === 'domain' && driveItem.type === 'ftp'">
                             <el-tooltip placement="bottom">
                                 <div slot="content">
@@ -236,7 +245,8 @@ export default {
                 basePath: "",
                 domain: "",
                 siteType: '/sites/',
-                siteId: ""
+                siteId: "",
+	            proxyDomain: ''
             },
         },
         supportStrategy: null
@@ -273,6 +283,9 @@ export default {
             loading: false,
             storageStrategyForm: [],
             rules: {
+	            'storageStrategyConfig.proxyDomain': [
+		            {required: true, type: 'url', message: '请输入正确的域名，需以 http:// 或 https:// 开头', trigger: 'change'},
+	            ],
                 siteName: [
                     {required: true, message: '请输入站点名称', trigger: 'change'},
                 ],
@@ -351,6 +364,9 @@ export default {
         }
     },
     methods: {
+    	openUrl(url) {
+		    window.open(url);
+	    },
         cacheChange(newVal) {
             if (!newVal) {
                 this.driveItem.autoRefreshCache = false;
