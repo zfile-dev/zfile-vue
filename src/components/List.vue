@@ -480,6 +480,7 @@
                 this.dialogTextVisible = true;
             },
             openVideo() {
+                this.currentClickRow.url = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.currentClickRow.path) + "/" + encodeURI(this.currentClickRow.name));
                 this.dialogVideoVisible = true;
             },
             // 右键菜单
