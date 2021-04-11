@@ -26,7 +26,7 @@ export default new Router({
     routes: [
         {
             path: '/',
-            redirect: 'main',
+            redirect: 'install',
         },
         {
             path: '/install',
