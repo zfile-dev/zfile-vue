@@ -394,7 +394,12 @@
                         return;
                     }
 
-                    this.$store.commit('updateConfig', response.data.data.config)
+	                if (response.data.code !== 0) {
+		                this.$message.warning(response.data.msg);
+		                return;
+	                }
+
+	                this.$store.commit('updateConfig', response.data.data.config)
                     if (this.driveId !== this.$store.getters.oldDriveId) {
                         this.$store.commit('updateOldDriveId', this.driveId);
                         this.$store.commit('updateNewImgMode', response.data.data.config.defaultSwitchToImgMode);
