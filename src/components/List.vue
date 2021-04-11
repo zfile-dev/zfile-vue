@@ -163,7 +163,8 @@
                    :top="'80px'"
                    :visible.sync="dialogBatchCopyLinkVisible"
                    v-if="dialogBatchCopyLinkVisible">
-            <el-table :data="batchCopyLinkList" max-height="400">
+            <el-table v-loading="batchCopyLinkLoading"
+                      element-loading-text="生成直链中..." :data="batchCopyLinkList" max-height="400">
                 <el-table-column label="文件名称" prop="name">
                     <template slot="header">
                         <span>文件名称</span>
@@ -277,7 +278,8 @@
                     link: ''
                 },
                 dialogBatchCopyLinkVisible: false,
-                batchCopyLinkList: []
+                batchCopyLinkList: [],
+	            batchCopyLinkLoading: false
             }
         },
         watch: {
@@ -305,27 +307,36 @@
             // 打开批量复制弹窗
             openBatchCopyLinkDialog() {
                 this.batchCopyLinkList = [];
-                this.$store.getters.tableData.forEach((item) => {
-                    if (item.type === 'FILE') {
-                        let directlink = this.common.removeDuplicateSeparator("/" + encodeURI(item.path) + "/" + encodeURI(item.name));
-
-                        this.$http.get('api/short-link', {params: {driveId: this.driveId, path: directlink}}).then((response) => {
-                            let link1 = response.data.data;
-                            let link2 = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(item.path) + "/" + encodeURI(item.name));
-                            const svgString = qrcode(response.data.data);
-                            let img = svg2url(svgString);
-
-                            this.batchCopyLinkList.push({
-                                name: item.name,
-                                link1: link1,
-                                link2: link2,
-                                img: img
-                            });
-                        });
-                    }
-                })
-
+                this.batchCopyLinkLoading = true;
+                this.loadLinkData(this.$store.getters.tableData[0], 0, this.$store.getters.tableData);
                 this.dialogBatchCopyLinkVisible = true;
+            },
+            loadLinkData(item, index, list) {
+            	if (item === null || index >= list.length) {
+		            this.batchCopyLinkLoading = false;
+		            return;
+	            }
+                index++;
+                if (item.type === 'FILE') {
+                    let directlink = this.common.removeDuplicateSeparator("/" + encodeURI(item.path) + "/" + encodeURI(item.name));
+
+                    this.$http.get('api/short-link', {params: {driveId: this.driveId, path: directlink}}).then((response) => {
+                        let link1 = response.data.data;
+                        let link2 = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(item.path) + "/" + encodeURI(item.name));
+                        const svgString = qrcode(response.data.data);
+                        let img = svg2url(svgString);
+
+                        this.batchCopyLinkList.push({
+                            name: item.name,
+                            link1: link1,
+                            link2: link2,
+                            img: img
+                        });
+                        this.loadLinkData(list[index], index, list);
+                    });
+                } else {
+                    this.loadLinkData(list[index], index, list);
+                }
             },
             // 排序按钮
             sortMethod({prop, order}) {
