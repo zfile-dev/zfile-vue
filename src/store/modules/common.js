@@ -52,6 +52,15 @@ const getters = {
     infoEnable: state => {
         return state.config && state.config.infoEnable;
     },
+    showLinkBtn: state => {
+        return state.config && state.config.showLinkBtn;
+    },
+    showShortLink: state => {
+        return state.config && state.config.showShortLink;
+    },
+    showPathLink: state => {
+        return state.config && state.config.showPathLink;
+    },
     tableSize: state => {
         return state.config && state.config.tableSize;
     },

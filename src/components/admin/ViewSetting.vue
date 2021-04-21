@@ -25,6 +25,36 @@
                 </el-tooltip>
             </el-form-item>
 
+	        <el-form-item label="生成直链功能" v-show="form.showOperator === true" class="box animate__animated animate__fadeInUp">
+		        <el-switch v-model="form.showLinkBtn"/>
+		        <el-tooltip placement="right">
+			        <div slot="content">
+				        控制是否显示生成直链按钮
+			        </div>
+			        <i class="el-icon-info zfile-info-tooltip"></i>
+		        </el-tooltip>
+	        </el-form-item>
+
+	        <el-form-item label="是否显示短链" v-show="form.showLinkBtn === true" class="box animate__animated animate__fadeInUp">
+		        <el-switch v-model="form.showShortLink"/>
+		        <el-tooltip placement="right">
+			        <div slot="content">
+				        控制是否生成直链后显示短链
+			        </div>
+			        <i class="el-icon-info zfile-info-tooltip"></i>
+		        </el-tooltip>
+	        </el-form-item>
+
+	        <el-form-item label="是否显示直链（路径）" v-show="form.showLinkBtn === true" class="box animate__animated animate__fadeInUp">
+		        <el-switch v-model="form.showPathLink"/>
+		        <el-tooltip placement="right">
+			        <div slot="content">
+				        控制是否生成直链后显示直链
+			        </div>
+			        <i class="el-icon-info zfile-info-tooltip"></i>
+		        </el-tooltip>
+	        </el-form-item>
+
             <el-form-item label="显示文档区" class="box animate__animated animate__fadeInUp">
                 <el-switch v-model="form.showDocument"/>
                 <el-tooltip placement="right">
@@ -90,6 +120,9 @@
                     layout: '',
                     tableSize: '',
                     showOperator: false,
+	                showLinkBtn: false,
+	                showShortLink: false,
+	                showPathLink: false,
                     showDocument: false,
                     showAnnouncement: false,
                     announcement: '',

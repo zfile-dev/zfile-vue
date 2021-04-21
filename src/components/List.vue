@@ -66,7 +66,7 @@
                     label="操作"
                     class-name="zfile-table-col-operator"
                     :min-width="common.isMobile() ? '35%' : '15%'">
-                <template slot="header">
+                <template slot="header" v-if="$store.getters.showLinkBtn">
                     <i class="el-icon-s-operation hidden-xs-only"></i>
                     <span>操作</span>
                     <el-tooltip class="item" effect="dark" content="批量生成直链" placement="top">
@@ -78,7 +78,7 @@
                         <el-tooltip class="item" effect="dark" content="下载" placement="top">
                             <i @click.stop="download(scope.row)" class="el-icon-download operator-btn"></i>
                         </el-tooltip>
-                        <el-tooltip class="item" effect="dark" content="生成直链" placement="top">
+                        <el-tooltip v-if="$store.getters.showLinkBtn" class="item" effect="dark" content="生成直链" placement="top">
                             <i @click.stop="copyShortLink(scope.row)" class="el-icon-copy-document operator-btn"></i>
                         </el-tooltip>
                     </div>
@@ -134,14 +134,14 @@
                         <el-form-item>
                             <el-input disabled prefix-icon="el-icon-coin" v-bind:value="currentCopyLinkRow.row.size | fileSizeFormat"></el-input>
                         </el-form-item>
-                        <el-form-item>
+                        <el-form-item v-if="$store.getters.showLinkBtn && $store.getters.showPathLink">
                             <el-input prefix-icon="el-icon-link" type="small" v-model="currentCopyLinkRow.directlink">
                                 <el-tooltip slot="append" class="item" effect="dark" content="复制" placement="bottom">
                                     <el-button @click="copyText(currentCopyLinkRow.directlink)" type="small" icon="el-icon-copy-document"></el-button>
                                 </el-tooltip>
                             </el-input>
                         </el-form-item>
-                        <el-form-item>
+                        <el-form-item v-if="$store.getters.showLinkBtn && $store.getters.showShortLink">
                             <el-input prefix-icon="el-icon-link" type="small" v-model="currentCopyLinkRow.link">
                                 <el-tooltip slot="append" class="item" effect="dark" content="复制" placement="bottom">
                                     <el-button @click="copyText(currentCopyLinkRow.link)" type="small" icon="el-icon-copy-document"></el-button>
@@ -173,7 +173,7 @@
                         </el-tooltip>
                     </template>
                 </el-table-column>
-                <el-table-column label="短链" width="250px" prop="link1">
+                <el-table-column v-if="$store.getters.showLinkBtn && $store.getters.showShortLink" label="短链" width="250px" prop="link1">
                     <template slot="header">
                         <span>短链</span>
                         <el-tooltip class="item" effect="dark" content="批量复制" placement="top">
@@ -181,7 +181,7 @@
                         </el-tooltip>
                     </template>
                 </el-table-column>
-                <el-table-column label="直链" width="350px" show-overflow-tooltip prop="link2">
+                <el-table-column v-if="$store.getters.showLinkBtn && $store.getters.showPathLink" label="直链" width="350px" show-overflow-tooltip prop="link2">
                     <template slot="header">
                         <span>直链</span>
                         <el-tooltip class="item" effect="dark" content="批量复制" placement="top">
