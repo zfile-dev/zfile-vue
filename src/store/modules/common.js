@@ -37,6 +37,9 @@ const mutations = {
 }
 
 const getters = {
+    directLinkPrefix: state => {
+        return state.config && state.config.directLinkPrefix;
+    },
     oldDriveId: state => {
         return state.oldDriveId;
     },

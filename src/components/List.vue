@@ -322,7 +322,7 @@
 
                     this.$http.get('api/short-link', {params: {driveId: this.driveId, path: directlink}}).then((response) => {
                         let link1 = response.data.data;
-                        let link2 = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(item.path) + "/" + encodeURI(item.name));
+                        let link2 = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/" + this.$store.getters.directLinkPrefix + "/" + this.driveId + "/" + encodeURI(item.path) + "/" + encodeURI(item.name));
                         const svgString = qrcode(response.data.data);
                         let img = svg2url(svgString);
 
@@ -496,7 +496,7 @@
                 this.dialogTextVisible = true;
             },
             openVideo() {
-                this.currentClickRow.url = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(this.currentClickRow.path) + "/" + encodeURI(this.currentClickRow.name));
+	            this.currentClickRow.url = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/" + this.$store.getters.directLinkPrefix +"/" + this.driveId + "/" + encodeURI(this.currentClickRow.path) + "/" + encodeURI(this.currentClickRow.name));
                 this.dialogVideoVisible = true;
             },
             // 右键菜单
@@ -518,7 +518,7 @@
                 this.$http.get('api/short-link', {params: {driveId: this.driveId, path: directlink}}).then((response) => {
                     this.currentCopyLinkRow.row = row;
                     this.currentCopyLinkRow.link = response.data.data;
-                    let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/directlink/" + this.driveId + "/" + encodeURI(row.path) + "/" + encodeURI(row.name));
+                    let directlink = this.common.removeDuplicateSeparator(this.$store.getters.domain + "/" + this.$store.getters.directLinkPrefix + "/" + this.driveId + "/" + encodeURI(row.path) + "/" + encodeURI(row.name));
                     this.currentCopyLinkRow.directlink = directlink;
                     const svgString = qrcode(response.data.data);
                     this.currentCopyLinkRow.img = svg2url(svgString);
