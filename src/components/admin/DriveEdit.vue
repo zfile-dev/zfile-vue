@@ -286,6 +286,9 @@ export default {
 	            'storageStrategyConfig.proxyDomain': [
 		            {required: false, type: 'url', message: '请输入正确的域名，需以 http:// 或 https:// 开头', trigger: 'change'},
 	            ],
+	            name: [
+		            {required: true, message: '请输入驱动器名称', trigger: 'change'},
+	            ],
                 siteName: [
                     {required: true, message: '请输入站点名称', trigger: 'change'},
                 ],
