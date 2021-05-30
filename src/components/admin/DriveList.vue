@@ -83,7 +83,7 @@
                 </el-table-column>
             </el-table>
 
-        <el-dialog width="80%" title="驱动器设置" :modal-append-to-body="false" v-if="driveEditDialogVisible" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
+        <el-dialog width="80%" title="驱动器设置" :before-close="handleClose" :modal-append-to-body="false" v-if="driveEditDialogVisible" :visible.sync="driveEditDialogVisible" top="10vh" :destroy-on-close="true">
             <drive-edit :drive-item="driveItem" :close="closeDriveEdit" :support-strategy="supportStrategy"></drive-edit>
         </el-dialog>
 
@@ -151,6 +151,15 @@
             }
         },
         methods: {
+	        handleClose(done) {
+		        this.$confirm('是否确认关闭？关闭后填写的数据不会保留。', {
+			        type: 'warning',
+		        })
+			        .then(_ => {
+				        done();
+			        })
+			        .catch(_ => {});
+	        },
             editDriveId(id) {
                 this.$prompt('请输入要修改为的 ID，需为大于零的整数。', '提示', {
                     confirmButtonText: '确定',
