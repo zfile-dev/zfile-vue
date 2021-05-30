@@ -127,7 +127,16 @@
                     this.currentDriveId = this.driveList[0].id;
                     this.$router.push('/' + this.driveList[0].id + '/main');
                 } else if (this.driveList.length === 0) {
-                    this.$message.warning( '无可用驱动器，请先去管理员页初始化驱动器。');
+	                this.$confirm('当前无可用驱动器，是否跳转至管理员页面添加驱动器？', '提示', {
+		                confirmButtonText: '确定',
+		                cancelButtonText: '取消',
+		                type: 'info',
+		                callback: action => {
+			                if (action === 'confirm') {
+				                this.$router.push('/login');
+			                }
+		                }
+	                });
                 }
 
 	            this.refreshCurrentStorageStrategy();
