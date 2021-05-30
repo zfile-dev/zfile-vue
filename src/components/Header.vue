@@ -113,7 +113,12 @@
         },
         async mounted() {
             await this.$http.get('api/drive/list').then((response) => {
-                this.driveList = response.data.data;
+            	if (!response.data.data.isInstall) {
+		            this.$router.push('/install');
+            		return;
+	            }
+
+                this.driveList = response.data.data.driveList;
                 // 如果当前 URL 参数中有驱动器 ID, 则直接用当前的.
                 if (this.driveId) {
                     this.currentDriveId = Number(this.driveId);
