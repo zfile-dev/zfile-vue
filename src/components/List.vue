@@ -381,7 +381,13 @@
                     orderDirection: this.searchParam.orderDirection,
                 };
 
+	            let requestDriveId = this.driveId;
                 this.$http.get(url, {params: param}).then((response) => {
+                	let currentDriveId = this.driveId;
+                	if (requestDriveId !== currentDriveId) {
+                		return;
+	                }
+
                     // 如果需要密码或密码错误进行提示, 并弹出输入密码的框.
                     if (response.data.code === this.common.responseCode.INVALID_PASSWORD) {
                         this.$message.error('密码错误，请重新输入！');
