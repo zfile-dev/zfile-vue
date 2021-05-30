@@ -1,5 +1,5 @@
 const fileTypeMap = {
-    image: ['gif', 'jpg', 'jpeg', 'png', 'bmp', 'webp'],
+    image: ['gif', 'jpg', 'jpeg', 'png', 'bmp', 'webp', 'ico'],
     video: ['mp4', 'webm', 'm3u8', 'rmvb', 'avi', 'swf', '3gp', 'mkv', 'flv'],
     audio: ['mp3', 'wav', 'wma', 'ogg', 'aac', 'flac', 'm4a'],
     text: ['css', 'js', 'md', 'xml', 'txt', 'py', 'go', 'html', 'less', 'php', 'rb', 'rust', 'script', 'java', 'sh'],
