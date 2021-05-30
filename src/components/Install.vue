@@ -1,5 +1,5 @@
 <template>
-    <div class="zfile-install">
+    <div v-loading="fullLoading" class="zfile-install">
         <el-form ref="form" :rules="rules" :model="form"
                  label-width="auto"
                  :status-icon="true"
@@ -42,11 +42,12 @@ export default {
     name: "Install",
     data() {
         return {
+        	fullLoading: false,
             form: {
                 siteName: '',
                 username: '',
                 password: '',
-                domain: window.location.protocol + "//" + window.location.host
+                domain: ''
             },
             loading: false,
             rules: {
@@ -66,10 +67,14 @@ export default {
         };
     },
     mounted() {
+	    this.form.domain = this.$http.defaults.baseURL === "" ? window.location.origin : this.$http.defaults.baseURL;
+
+	    this.fullLoading = true;
         this.$http.get('is-installed').then((response) => {
             if (response.data.code !== 0) {
                 this.$router.push('/main');
             }
+            this.fullLoading = false;
         });
     },
     methods: {
