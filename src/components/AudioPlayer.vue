@@ -1,5 +1,5 @@
 <template>
-    <aplayer v-show="fileList.length > 0 && audioIndex !== -1" ref="aplayer" id="aplyer" fixed
+    <aplayer v-show="fileList.length > 0 && audioIndex !== -1" ref="aplayer" id="aplyer" fixed preload="none"
              :audio="fileList" @listSwitch="updateCover"/>
 </template>
 

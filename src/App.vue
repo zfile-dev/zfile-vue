@@ -9,7 +9,10 @@
         name: 'app',
         components: {
         },
-        mounted() {
+	    created() {
+			this.unloadHandler();
+	    },
+	    mounted() {
             window.addEventListener('unload', e => this.unloadHandler(e))
         },
         destroyed() {
