@@ -80,7 +80,7 @@ Vue.filter('fileSizeFormat', (bytes) => {
     return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
 })
 
-axios.get('zfile.config.json').then((result) => {
+axios.get('/zfile.config.json').then((result) => {
     axios.defaults.baseURL = result.data.baseUrl;
     new Vue({
         render: h => h(App),
