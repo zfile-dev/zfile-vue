@@ -563,7 +563,7 @@
             },
             getPathPwd() {
                 let pwd = sessionStorage.getItem("zfile-pwd-" + this.searchParam.path);
-                return pwd === null ? '' : pwd;
+                return pwd === null ? '' : encodeURI(pwd);
             },
             putPathPwd(value) {
                 sessionStorage.setItem("zfile-pwd-" + this.searchParam.path, value);
