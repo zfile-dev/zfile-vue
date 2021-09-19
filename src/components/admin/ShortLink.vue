@@ -279,7 +279,7 @@ export default {
         },
         loadDriveList() {
             this.$http.get('api/drive/list').then((response) => {
-                this.driveList = response.data.data;
+                this.driveList = response.data.data.driveList;
             });
         },
         getDomainId() {
