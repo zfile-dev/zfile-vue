@@ -97,6 +97,8 @@
         </el-dialog>
 
         <el-dialog id="videoDialog" :destroy-on-close="true"
+                   top="5vh"
+                   width="80%"
                    :title="currentClickRow.name"
                    v-if="dialogVideoVisible"
                    :visible.sync="dialogVideoVisible">
