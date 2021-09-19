@@ -22,6 +22,50 @@
                     },
                     subtitle: null,
                     autoplay: false,
+	                contextmenu: [
+		                {
+			                text: '下载',
+			                click: (player) => {
+				                window.open(player.video.src)
+			                },
+		                },
+		                {
+			                text: '使用 PotPlayer 打开',
+			                click: (player) => {
+				                window.location = 'potplayer://' +player.video.src
+			                },
+		                },
+		                {
+			                text: '使用 IINA 打开',
+			                click: (player) => {
+				                window.location = 'iina://weblink?url=' +player.video.src
+			                },
+		                },
+		                {
+			                text: '使用 VLC 打开',
+			                click: (player) => {
+				                window.location = 'vlc://' +player.video.src
+			                },
+		                },
+		                {
+			                text: '使用 nPlayer 打开',
+			                click: (player) => {
+				                window.location = 'nplayer-' +player.video.src
+			                },
+		                },
+		                {
+			                text: '使用 MXPlayer(Free) 打开',
+			                click: (player) => {
+				                window.location = 'intent:' +player.video.src + '#Intent;package=com.mxtech.videoplayer.ad;S.title=video;end'
+			                },
+		                },
+		                {
+			                text: '使用 MXPlayer(Pro) 打开',
+			                click: (player) => {
+				                window.location = 'intent:' +player.video.src + '#Intent;package=com.mxtech.videoplayer.pro;S.title=video;end'
+			                },
+		                },
+	                ]
                 },
                 player: null,
             }
@@ -88,5 +132,9 @@
             margin: 0 auto;
             height: 35vh;
         }
+    }
+
+    .dplayer-menu.dplayer-menu-show {
+	    width: 180px;
     }
 </style>
