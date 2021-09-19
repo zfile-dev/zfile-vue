@@ -6,9 +6,14 @@ let region = {
         {name: '华北 2（北京）', val: 'oss-cn-beijing.aliyuncs.com'},
         {name: '华北 3（张家口）', val: 'oss-cn-zhangjiakou.aliyuncs.com'},
         {name: '华北 5（呼和浩特）', val: 'oss-cn-huhehaote.aliyuncs.com'},
+        {name: '华北 6（乌兰察布）', val: 'oss-cn-wulanchabu.aliyuncs.com'},
         {name: '华南 1（深圳）', val: 'oss-cn-shenzhen.aliyuncs.com'},
+        {name: '华南 2（河源）', val: 'oss-cn-heyuan.aliyuncs.com'},
+        {name: '华南 3（广州）', val: 'oss-cn-guangzhou.aliyuncs.com'},
         {name: '西南 1（成都）', val: 'oss-cn-chengdu.aliyuncs.com'},
         {name: '中国（香港）', val: 'oss-cn-hongkong.aliyuncs.com'},
+        {name: '新加坡', val: 'oss-ap-southeast-1.aliyuncs.com'},
+        {name: '日本（东京）', val: 'oss-ap-northeast-1.aliyuncs.com'},
         {name: '美国西部 1 （硅谷）', val: 'oss-us-west-1.aliyuncs.com'},
         {name: '美国东部 1 （弗吉尼亚）', val: 'oss-us-east-1.aliyuncs.com'},
         {name: '亚太东南 1 （新加坡）', val: 'oss-ap-southeast-1.aliyuncs.com'},
@@ -22,6 +27,7 @@ let region = {
         {name: '中东东部 1 （迪拜）', val: 'oss-me-east-1.aliyuncs.com'}
     ],
     tencent: [
+        {name: '北京一区', val: 'cos.ap-beijing-1.myqcloud.com'},
         {name: '北京', val: 'cos.ap-beijing.myqcloud.com'},
         {name: '上海', val: 'cos.ap-shanghai.myqcloud.com'},
         {name: '广州', val: 'cos.ap-guangzhou.myqcloud.com'},
@@ -33,11 +39,12 @@ let region = {
         {name: '中国香港', val: 'cos.ap-hongkong.myqcloud.com'},
         {name: '新加坡', val: 'cos.ap-singapore.myqcloud.com'},
         {name: '孟买', val: 'cos.ap-mumbai.myqcloud.com'},
+        {name: '雅达加', val: 'cos.ap-jakarta.myqcloud.com'},
         {name: '首尔', val: 'cos.ap-seoul.myqcloud.com'},
         {name: '曼谷', val: 'cos.ap-bangkok.myqcloud.com'},
         {name: '东京', val: 'cos.ap-tokyo.myqcloud.com'},
-        {name: '硅谷', val: 'cos.na-siliconvalley.myqcloud.com'},
-        {name: '弗吉尼亚', val: 'cos.na-ashburn.myqcloud.com'},
+        {name: '硅谷（美西）', val: 'cos.na-siliconvalley.myqcloud.com'},
+        {name: '弗吉尼亚（美东）', val: 'cos.na-ashburn.myqcloud.com'},
         {name: '多伦多', val: 'cos.na-toronto.myqcloud.com'},
         {name: '法兰克福', val: 'cos.eu-frankfurt.myqcloud.com'},
         {name: '莫斯科', val: 'cos.eu-moscow'}
@@ -51,7 +58,7 @@ let region = {
         {name: '华南-广州', val: 'obs.cn-south-1.myhuaweicloud.com'},
         {name: '西南-贵阳一', val: 'obs.cn-southwest-2.myhuaweicloud.com'},
         {name: '亚太-曼谷', val: 'obs.ap-southeast-2.myhuaweicloud.com'},
-        {name: '亚太-香港', val: 'obs.ap-southeast-1.myhuaweicloud.com'},
+        {name: '中国-香港', val: 'obs.ap-southeast-1.myhuaweicloud.com'},
         {name: '亚太-新加坡', val: 'obs.ap-southeast-3.myhuaweicloud.com'}
     ],
     qiniu: [
@@ -59,7 +66,8 @@ let region = {
         {name: '华北', val: 's3-cn-north-1.qiniucs.com'},
         {name: '华南', val: 's3-cn-south-1.qiniucs.com'},
         {name: '北美', val: 's3-us-north-1.qiniucs.com'},
-        {name: '东南亚', val: 's3-ap-southeast-1.qiniucs.com'}
+        {name: '东南亚', val: 's3-ap-southeast-1.qiniucs.com'},
+        {name: '华东-浙江2', val: 's3-cn-east-2.qiniucs.com'}
     ]
 };
 
