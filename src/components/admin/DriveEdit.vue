@@ -146,6 +146,12 @@
                                     Windows 支持 C:/ 类的盘符开头.
                                     <br>
                                     结尾不需要加 <b>/</b>.
+	                                <br>
+	                                <br>
+	                                Docker 部署需提前映射宿主机路径！
+	                                <span slot="content" style="cursor: pointer; color: #4d9ff8" @click="openUrl('https://docs.docker.com/engine/reference/run/#volume-shared-filesystems')">
+		                                (配置文档)
+	                                </span>
                                 </div>
                                 <i class="el-icon-question zfile-info-tooltip"></i>
                             </el-tooltip>
