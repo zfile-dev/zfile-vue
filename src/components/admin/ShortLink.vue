@@ -180,7 +180,7 @@ export default {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消'
             }).then(({value}) => {
-                this.$http.get('admin/api/short-link/key', {params: {id: id, newKey: value}}).then(() => {
+                this.$http.get('/admin/api/short-link/key', {params: {id: id, newKey: value}}).then(() => {
                     this.$message({
                         message: '修改成功',
                         type: 'success'
@@ -213,7 +213,7 @@ export default {
                             arr[index] = selection[index].id;
                         }
 
-                        this.$http.delete('admin/api/short-link', {params: {id: arr}}).then((response) => {
+                        this.$http.delete('/admin/api/short-link', {params: {id: arr}}).then((response) => {
                             if (response.data.code === 0) {
                                 this.$message.success('删除成功');
                                 this.init();
@@ -228,7 +228,7 @@ export default {
         addLinkItemAction() {
             alert(this.$store.getters.domain);
             this.addLinkModel.path = this.common.removeDuplicateSeparator('/' + this.addLinkModel.path);
-            this.$http.get('api/short-link', {params: this.addLinkModel}).then(() => {
+            this.$http.get('/api/short-link', {params: this.addLinkModel}).then(() => {
                 this.$message.success('添加成功');
                 this.init();
                 this.addLinkVisible = false;
@@ -261,7 +261,7 @@ export default {
             this.init();
         },
         deleteLink(id) {
-            this.$http.get(`admin/link/delete/${id}`).then((response) => {
+            this.$http.get(`/admin/link/delete/${id}`).then((response) => {
                 if (response.data.code === this.common.responseCode.SUCCESS) {
                     this.$message.success('删除成功');
                     this.init();
@@ -271,19 +271,19 @@ export default {
             });
         },
         init() {
-            this.$http.get('admin/link/list', {params: this.searchParam}).then((response) => {
+            this.$http.get('/admin/link/list', {params: this.searchParam}).then((response) => {
                 this.linkLog = response.data.data.content;
                 this.searchParam.total = response.data.data.totalElements;
                 this.searchParam.limit = response.data.data.size;
             });
         },
         loadDriveList() {
-            this.$http.get('api/drive/list').then((response) => {
+            this.$http.get('/api/drive/list').then((response) => {
                 this.driveList = response.data.data.driveList;
             });
         },
         getDomainId() {
-            this.$http.get('admin/config').then((response) => {
+            this.$http.get('/admin/config').then((response) => {
                 this.siteDomain = response.data.data.domain;
             });
         },

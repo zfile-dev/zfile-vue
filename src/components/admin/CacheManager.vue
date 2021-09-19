@@ -84,7 +84,7 @@
         },
         methods: {
             refreshCache(row) {
-                this.$http.post(`admin/cache/${this.currentCacheManageId}/refresh`, qs.stringify({key: row.name})).then(() => {
+                this.$http.post(`/admin/cache/${this.currentCacheManageId}/refresh`, qs.stringify({key: row.name})).then(() => {
                     this.$message({
                         message: '刷新成功',
                         type: 'success'
@@ -99,7 +99,7 @@
                 });
             },
             loadCacheManageData() {
-                this.$http.get(`admin/cache/${this.currentCacheManageId}/info`).then((response) => {
+                this.$http.get(`/admin/cache/${this.currentCacheManageId}/info`).then((response) => {
                     let data = response.data.data;
 
                     let cacheKeys = data.cacheKeys;
@@ -116,7 +116,7 @@
                 });
             },
             clearCache() {
-                this.$http.post(`admin/cache/${this.currentCacheManageId}/clear`).then(() => {
+                this.$http.post(`/admin/cache/${this.currentCacheManageId}/clear`).then(() => {
                     this.loadCacheManageData();
                     this.$message({
                         message: '清理成功',

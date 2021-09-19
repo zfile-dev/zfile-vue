@@ -58,7 +58,7 @@ export default {
     },
     methods: {
         loadFilterData() {
-            this.$http.get(`admin/drive/${this.driveId}/filters`).then((response) => {
+            this.$http.get(`/admin/drive/${this.driveId}/filters`).then((response) => {
                 this.filterForm.filterList = response.data.data;
             });
         },
@@ -69,7 +69,7 @@ export default {
             this.filterForm.filterList.splice(index, 1);
         },
         saveFilterForm() {
-            this.$http.post(`admin/drive/${this.driveId}/filters`, this.filterForm.filterList).then(() => {
+            this.$http.post(`/admin/drive/${this.driveId}/filters`, this.filterForm.filterList).then(() => {
                 this.$message({
                     message: '保存成功',
                     type: 'success'

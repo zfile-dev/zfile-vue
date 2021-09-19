@@ -39,7 +39,7 @@
                 this.text = response.data;
                 this.initMonaco();
             }).catch(() => {
-                this.$http.get('common/content', {params: {url: file.url}}).then((response) => {
+                this.$http.get('/common/content', {params: {url: file.url}}).then((response) => {
                     this.loading = false;
                     this.text = response.data.data;
                     this.initMonaco();

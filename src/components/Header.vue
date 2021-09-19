@@ -56,7 +56,7 @@
                     type: 'warning',
                     callback: action => {
                         if (action === 'confirm') {
-                            this.$http.get('debug/resetPwd').then((response) => {
+                            this.$http.get('/debug/resetPwd').then((response) => {
                                 if (response.data.code === 0) {
                                     this.$message.success("重置成功，请及时关闭 debug 功能，防止出现安全问题！");
                                 } else {
@@ -112,7 +112,7 @@
             }
         },
         async mounted() {
-            await this.$http.get('api/drive/list').then((response) => {
+            await this.$http.get('/api/drive/list').then((response) => {
             	if (!response.data.data.isInstall) {
 		            this.$router.push('/install');
             		return;

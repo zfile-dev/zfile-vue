@@ -137,7 +137,7 @@
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.loading = true;
-                        this.$http.post('admin/config', qs.stringify(this.form)).then((response) => {
+                        this.$http.post('/admin/config', qs.stringify(this.form)).then((response) => {
                             this.loading = false;
                             if (response.data.code === this.common.responseCode.SUCCESS) {
                                 this.$message({
@@ -153,7 +153,7 @@
             }
         },
         mounted() {
-            this.$http.get('admin/config').then((response) => {
+            this.$http.get('/admin/config').then((response) => {
                 this.form = response.data.data;
             });
         }

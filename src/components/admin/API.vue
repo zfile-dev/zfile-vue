@@ -26,7 +26,7 @@
                 this.loading = false;
                 this.md = response.data;
             }).catch(() => {
-                this.$http.get('common/content', {params: {url: docUrl}}).then((response) => {
+                this.$http.get('/common/content', {params: {url: docUrl}}).then((response) => {
                     this.loading = false;
                     this.md = response.data.data;
                 });

@@ -70,7 +70,7 @@ export default {
 	    this.form.domain = this.$http.defaults.baseURL === "" ? window.location.origin : this.$http.defaults.baseURL;
 
 	    this.fullLoading = true;
-        this.$http.get('is-installed').then((response) => {
+        this.$http.get('/is-installed').then((response) => {
             if (response.data.code !== 0) {
                 this.$router.push('/main');
             }
@@ -83,7 +83,7 @@ export default {
                 if (valid) {
                     this.loading = true;
                     let that = this;
-                    this.$http.post('install', qs.stringify(this.form)).then((response) => {
+                    this.$http.post('/install', qs.stringify(this.form)).then((response) => {
                         this.loading = false;
                         let data = response.data;
                         if (data.code === 0) {

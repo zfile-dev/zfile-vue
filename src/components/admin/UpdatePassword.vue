@@ -62,7 +62,7 @@
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.$http.post('admin/update-pwd', qs.stringify(this.form)).then((response) => {
+                        this.$http.post('/admin/update-pwd', qs.stringify(this.form)).then((response) => {
                             if (response.data.code === this.common.responseCode.SUCCESS) {
                                 this.$message({
                                     message: '保存成功',
@@ -77,7 +77,7 @@
             }
         },
         mounted() {
-            this.$http.get('admin/config').then((response) => {
+            this.$http.get('/admin/config').then((response) => {
                 this.form = response.data.data;
             })
         }

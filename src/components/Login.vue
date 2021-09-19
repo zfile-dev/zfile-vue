@@ -66,7 +66,7 @@ export default {
         }
     },
     mounted() {
-        this.$http.get('is-installed').then((response) => {
+        this.$http.get('/is-installed').then((response) => {
             let data = response.data;
             if (data.code === 0) {
                 this.$router.push('/install')
@@ -81,7 +81,7 @@ export default {
         handleSubmit() {
             this.$refs.loginForm.validate((valid) => {
                 if (valid) {
-                    this.$http.post('login', qs.stringify(this.loginForm)).then((response) => {
+                    this.$http.post('/login', qs.stringify(this.loginForm)).then((response) => {
                         this.$message({
                             message: response.data.msg,
                             type: 'success',

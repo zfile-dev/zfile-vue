@@ -167,7 +167,7 @@
                     inputPattern: /^[1-9]\d{0,9}$/,
                     inputErrorMessage: 'ID 只能为大于零的整数，最大支持 9 位数字。'
                 }).then(({value}) => {
-                    this.$http.post('admin/drive/updateId', qs.stringify({updateId: id, newId: value})).then(() => {
+                    this.$http.post('/admin/drive/updateId', qs.stringify({updateId: id, newId: value})).then(() => {
                         this.$message({
                             message: '修改成功',
                             type: 'success'
@@ -187,7 +187,7 @@
                         const currRow = this.driveList.splice(e.oldIndex, 1)[0];
                         this.driveList.splice(e.newIndex, 0, currRow)
 
-                        this.$http.post('admin/drive/drag', this.driveList).then(() => {
+                        this.$http.post('/admin/drive/drag', this.driveList).then(() => {
                             this.$message({
                                 message: '调整排序成功',
                                 type: 'success'
@@ -197,7 +197,7 @@
                 })
             },
             clearCache() {
-                this.$http.post(`admin/cache/${this.currentCacheManageId}/clear`).then(() => {
+                this.$http.post(`/admin/cache/${this.currentCacheManageId}/clear`).then(() => {
                     this.loadCacheManageData();
                     this.$message({
                         message: '清理成功',
@@ -215,19 +215,19 @@
             },
             switchEnableStatus(row) {
                 let action = row.enable ? 'enable' : 'disable';
-                this.$http.post('admin/drive/' + row.id + "/" + action).then(() => {
+                this.$http.post('/admin/drive/' + row.id + "/" + action).then(() => {
                     this.$message.success('修改成功');
                 })
             },
             switchCacheEnableStatus(row) {
                 let action = row.enableCache ? 'enable' : 'disable';
-                this.$http.post('admin/cache/' + row.id + "/" + action).then(() => {
+                this.$http.post('/admin/cache/' + row.id + "/" + action).then(() => {
                     this.$message.success('修改成功');
                 })
             },
             switchAutoRefreshStatus(row) {
                 let action = row.autoRefreshCache ? 'start' : 'stop';
-                this.$http.post('admin/cache/' + row.id + "/auto-refresh/" + action).then(() => {
+                this.$http.post('/admin/cache/' + row.id + "/auto-refresh/" + action).then(() => {
                     this.$message.success('修改成功');
                 })
             },
@@ -239,7 +239,7 @@
                 }
             },
             editDrive(row) {
-                this.$http.get('admin/drive/' + row.id).then((response) => {
+                this.$http.get('/admin/drive/' + row.id).then((response) => {
                     let data = response.data.data;
                     data.type = data.type.key;
                     this.driveItem = data;
@@ -253,7 +253,7 @@
                     type: 'warning',
                     callback: action => {
                         if (action === 'confirm') {
-                            this.$http.delete('admin/drive/' + row.id).then((response) => {
+                            this.$http.delete('/admin/drive/' + row.id).then((response) => {
                                 if (response.data.code === this.common.responseCode.SUCCESS) {
                                     this.$message.success('删除成功');
                                     this.init();
@@ -279,11 +279,11 @@
                 console.log(this.supportStrategy)
             },
             init() {
-                this.$http.get('admin/support-strategy').then((response) => {
+                this.$http.get('/admin/support-strategy').then((response) => {
                     this.supportStrategy = response.data.data;
                 });
 
-                this.$http.get('admin/drives').then((response) => {
+                this.$http.get('/admin/drives').then((response) => {
                     let data = response.data.data;
 
                     for (let index in data) {

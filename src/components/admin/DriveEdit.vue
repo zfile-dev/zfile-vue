@@ -376,7 +376,7 @@ export default {
             }
         },
         loadStrategyForm(val) {
-            this.$http.get('admin/strategy-form', {params: {storageType: val}}).then((response) => {
+            this.$http.get('/admin/strategy-form', {params: {storageType: val}}).then((response) => {
                 this.storageStrategyForm = response.data.data;
                 if (val === 'sharepoint' || val === 'sharepoint-china') {
                     this.driveItem.storageStrategyConfig.siteType = '/sites/';
@@ -390,7 +390,7 @@ export default {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
                     this.loading = true;
-                    this.$http.post('admin/drive', this.driveItem).then((response) => {
+                    this.$http.post('/admin/drive', this.driveItem).then((response) => {
                         let data =  response.data;
                         this.$message({
                             message: data.msg,
