@@ -319,7 +319,8 @@ export default {
                 ],
                 'storageStrategyConfig.domain': [
                     {
-                        validator: (rule, value, callback) => {
+	                    required: false,
+	                    validator: (rule, value, callback) => {
                             let domainCheck = /(http|https):\/\/([\w.]+\/?)\S*/
 
                             if ((value === undefined || value === '') && this.driveItem.type === 'ftp') {
@@ -394,6 +395,10 @@ export default {
                 if (val === 'sharepoint' || val === 'sharepoint-china') {
                     this.driveItem.storageStrategyConfig.siteType = '/sites/';
                 }
+
+	            if (val !== 'ftp') {
+		            this.rules["storageStrategyConfig.domain"][0].required = true;
+	            }
             })
         },
         change() {
