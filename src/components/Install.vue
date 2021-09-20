@@ -83,7 +83,7 @@ export default {
                 if (valid) {
                     this.loading = true;
                     let that = this;
-                    this.$http.post('/install', qs.stringify(this.form)).then((response) => {
+                    this.$http.post('/doInstall', qs.stringify(this.form)).then((response) => {
                         this.loading = false;
                         let data = response.data;
                         if (data.code === 0) {

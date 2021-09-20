@@ -81,7 +81,7 @@ export default {
         handleSubmit() {
             this.$refs.loginForm.validate((valid) => {
                 if (valid) {
-                    this.$http.post('/login', qs.stringify(this.loginForm)).then((response) => {
+                    this.$http.post('/doLogin', qs.stringify(this.loginForm)).then((response) => {
                         this.$message({
                             message: response.data.msg,
                             type: 'success',
