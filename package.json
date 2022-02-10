@@ -44,7 +44,7 @@
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
     "monaco-editor-webpack-plugin": "^1.9.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "sass-loader": "^10.0.2",
     "serialize-javascript": "3.1.0",
     "vue-resource": "^1.5.1",
