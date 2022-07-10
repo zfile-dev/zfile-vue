@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// 分割线
+.divider {
+  	@apply block h-[1px] w-full my-1 border-t
+}
+
+// 链接
+.link {
+  @apply text-blue-500 hover:text-blue-600
+}

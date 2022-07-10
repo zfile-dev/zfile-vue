@@ -1,28 +1,42 @@
+// 文件分类
 const fileTypeMap = {
     image: ['gif', 'jpg', 'jpeg', 'png', 'bmp', 'webp', 'ico'],
     video: ['mp4', 'webm', 'm3u8', 'rmvb', 'avi', 'swf', '3gp', 'mkv', 'flv'],
     audio: ['mp3', 'wav', 'wma', 'ogg', 'aac', 'flac', 'm4a'],
-    text: ['css', 'js', 'md', 'xml', 'txt', 'py', 'go', 'html', 'less', 'php', 'rb', 'rust', 'script', 'java', 'sh'],
+    text: ['scss', 'sass', 'kt', 'gitignore', 'bat', 'properties', 'yml', 'css', 'js', 'md', 'xml', 'txt', 'py', 'go', 'html', 'less', 'php', 'rb', 'rust', 'script', 'java', 'sh', 'sql'],
     executable: ['exe', 'dll', 'com', 'vbs'],
     archive: ['7z', 'zip', 'rar', 'tar', 'gz'],
-    document: ['doc', 'txt', 'docx', 'pages', 'epub', 'pdf', 'numbers', 'csv', 'xls', 'xlsx', 'keynote', 'ppt', 'pptx']
+    office: ['doc', 'docx', 'pdf', 'csv', 'xls', 'xlsx', "ppt", 'pptx'],
+    document: ['txt', 'pages', 'epub', 'numbers', 'keynote']
 };
 
-import config from '../package.json'
+// 可预览的文件类型
+const previewFileType = ['image', 'video', 'audio', 'text', 'office'];
 
-const iconFileType = ['css', 'go', 'html', 'js', 'less', 'php', 'py', 'rb', 'rust', 'script', 'md', 'apk', 'deb', 'rpm', 'java'];
+import config from '/package.json'
+
+// 自动对 /src/assets/icons 目录下的文件图标进行显示
+const iconFileType = [];
+import ids from 'virtual:svg-icons-names'
+ids.forEach(id => {
+    iconFileType.push(id.replace(/^icon-file-type-/, ''));
+});
 
 let common = {
     responseCode: {
         SUCCESS: 0,
         FAIL: -1,
-        REQUIRED_PASSWORD: -2,
-        INVALID_PASSWORD: -3
+        REQUIRED_PASSWORD: 405,
+        INVALID_PASSWORD: 406
     },
     version: config.version,
     constant: {
         fileTypeMap,
-        iconFileType
+        iconFileType,
+        previewFileType
+    },
+    openPage: (url) => {
+        window.open(url);
     },
     fileSizeFormat: (bytes) => {
         if (bytes === 0) return '0 B';
@@ -41,20 +55,19 @@ let common = {
         return common.fileSizeFormat(bytes);
     },
     getFileIconName(file) {
-        let ICON_PREFIX = 'el-icon-my-';
         let iconName;
-        if (file.type === 'BACK' || file.type === 'FOLDER') {
-            return ICON_PREFIX + file.type.toLowerCase();
+        if (file.type === 'BACK' || file.type === 'FOLDER' || file.type === 'ROOT') {
+            return file.type.toLowerCase();
         } else {
             let fileSuffix = this.getFileSuffix(file.name);
             let fileType = this.getFileType(file.name);
 
             if (iconFileType.indexOf(fileSuffix) !== -1) {
-                iconName = ICON_PREFIX + fileSuffix;
+                iconName = fileSuffix;
             } else if (fileType) {
-                iconName = ICON_PREFIX + fileType;
+                iconName = fileType;
             } else {
-                iconName = ICON_PREFIX + 'file';
+                iconName = 'file';
             }
         }
         return iconName;
@@ -101,6 +114,9 @@ let common = {
         return flag || window.innerWidth < 768;
     },
     dateFormat:function(time) {
+        if (!time) {
+            return time;
+        }
         let date = new Date(time);
         let year = date.getFullYear();
         let month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;

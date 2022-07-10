@@ -2,7 +2,7 @@
   .el-table__body {
     .el-table__row:nth-child(@{n}) {
       opacity: 0;
-      animation: table-show 100ms @n * 5ms forwards linear;
+      animation: table-show 150ms @n * 10ms forwards linear;
     }
   }
   .loop((@n + 1));

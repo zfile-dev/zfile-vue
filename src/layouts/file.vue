@@ -1,0 +1,116 @@
+<template>
+	<el-container v-if="loadedConfig">
+		<el-header>
+			<Suspense>
+				<template #default>
+					<Header></Header>
+				</template>
+			</Suspense>
+		</el-header>
+		<el-main>
+			<router-view />
+		</el-main>
+		<el-footer>
+			<Footer></Footer>
+		</el-footer>
+	</el-container>
+</template>
+
+<script setup>
+import Header from "~/components/layout/Header.vue";
+import Footer from "~/components/layout/Footer.vue";
+import { loadGlobalSiteConfigReq } from "~/api/home";
+
+import useStorageConfigStore from "~/stores/storage-config";
+import common from "~/common";
+let storageConfigStore = useStorageConfigStore();
+
+// 初始化时，加载全局设置
+onBeforeMount(() => {
+	loadGlobalSiteSetting()
+})
+
+let router = useRouter();
+
+let loadedConfig = ref(false);
+
+const loadGlobalSiteSetting = () => {
+	loadGlobalSiteConfigReq().then((res) => {
+		// 如果未安装, 则跳转到安装页
+		if (!res.data.installed) {
+			router.push('/install');
+			return;
+		}
+		storageConfigStore.updateConfig(res.data);
+
+		if (res.data.customAudioSuffix) {
+			common.constant.fileTypeMap.audio = res.data.customAudioSuffix.split(',');
+		}
+		if (res.data.customImageSuffix) {
+			common.constant.fileTypeMap.image = res.data.customImageSuffix.split(',');
+		}
+		if (res.data.customTextSuffix) {
+			common.constant.fileTypeMap.text = res.data.customTextSuffix.split(',');
+		}
+		if (res.data.customVideoSuffix) {
+			common.constant.fileTypeMap.video = res.data.customVideoSuffix.split(',');
+		}
+		loadedConfig.value = true;
+	}).catch((err) => {
+		if (err.message === 'Network Error') {
+			ElMessage.error('加载失败，无法连接到服务端，请联系管理员.');
+		}
+	})
+}
+
+
+// mac command 按钮
+const mateState = useKeyModifier('Meta');
+const controlState = useKeyModifier('Control');
+
+let isMultiSelectState = computed(() => {
+	return mateState.value || controlState.value;
+});
+
+
+import { useMagicKeys } from '@vueuse/core'
+const { a } = useMagicKeys();
+
+
+</script>
+
+<style lang="scss" scoped>
+.el-container {
+	height: 100%;
+	width: 100%;
+
+	.el-header,
+	.el-footer {
+		color: var(--el-text-color-primary);
+		padding: 0;
+		text-align: center;
+	}
+
+	.el-header {
+		--el-header-height: unset;
+		height: 48px;
+		line-height: 48px !important;
+	}
+
+	// 去除文件区 padding
+	.el-main {
+		height: 100%;
+		width: 100%;
+		padding: 0;
+		overflow-x: hidden;
+	}
+
+	// 定义脚部高度，边框
+	.el-footer {
+		border-top: var(--zfile-header-footer-border-top);
+		height: 40px;
+		line-height: 40px;
+		font-size: 14px;
+	}
+}
+</style>
