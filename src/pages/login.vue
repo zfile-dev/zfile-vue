@@ -100,7 +100,7 @@ const submitForm = () => {
 			loginReq(formData.value).then((response) => {
 				window.localStorage.setItem("zfile-token", response.data);
 				ElMessage({
-					message: "登陆成功",
+					message: "登录成功",
 					type: 'success',
 					duration: 1000,
 					onClose() {

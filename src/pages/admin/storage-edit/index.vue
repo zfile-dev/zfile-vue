@@ -62,7 +62,7 @@
 		<z-form-item label="允许匿名文件操作" v-show="storageItem.enableFileOperator">
 			<el-switch v-model="storageItem.enableFileAnnoOperator"/>
 			<template #tips>
-				开启后所有人都可进行文件操作，反之仅管理员登陆后可操作
+				开启后所有人都可进行文件操作，反之仅管理员登录后可操作
 			</template>
 		</z-form-item>
 

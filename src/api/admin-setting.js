@@ -47,7 +47,7 @@ export const updateViewSettingReq = (data) => {
     })
 }
 
-// 修改登陆安全设置
+// 修改登录安全设置
 export const updateSecuritySettingReq = (data) => {
     return axios({
         url: "/admin/config/security",

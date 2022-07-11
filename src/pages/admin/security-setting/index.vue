@@ -9,15 +9,15 @@
 			此处设置可保护您的站点安全
 		</template>
 
-		<z-form-item label="是否显示登陆入口">
+		<z-form-item label="是否显示登录入口">
 			<el-switch v-model="data.showLogin"></el-switch>
 			<template #tips>
-				启用后，会在门户显示后台登陆入口，请根据自身情况选择是否启用
+				启用后，会在门户显示后台登录入口，请根据自身情况选择是否启用
 			</template>
 		</z-form-item>
 
-		<z-form-item label="登陆验证方式">
-			<el-radio v-model="data.loginVerifyMode" label="off">不启用登陆验证</el-radio>
+		<z-form-item label="登录验证方式">
+			<el-radio v-model="data.loginVerifyMode" label="off">不启用登录验证</el-radio>
 			<el-radio v-model="data.loginVerifyMode" label="image">启用图片验证码</el-radio>
 			<el-radio v-model="data.loginVerifyMode" label="2fa">启用双因素认证</el-radio>
 
@@ -25,7 +25,7 @@
 				图片验证码也可能会被识别，不能完全抵挡暴力破解。
 			</template>
 			<template #tips v-if="data.loginVerifyMode === '2fa'">
-				双因素认证可完美保护登陆认证，可使用任意支持 2FA 认证的软件，如 <b>Google 身份验证器</b>、<b>Microsoft Authenticator</b> 等软件.
+				双因素认证可完美保护登录认证，可使用任意支持 2FA 认证的软件，如 <b>Google 身份验证器</b>、<b>Microsoft Authenticator</b> 等软件.
 				<br>
 			</template>
 		</z-form-item>

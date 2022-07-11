@@ -1,6 +1,6 @@
 import axios from "~/http/request"
 
-// 登陆
+// 登录
 export const loginReq = (data) => {
     return axios({
         url: "/admin/login",
@@ -9,7 +9,7 @@ export const loginReq = (data) => {
     })
 }
 
-// 获取登陆验证方式
+// 获取登录验证方式
 export const loginVerifyModeReq = () => {
     return axios({
         url: "/admin/login/verify-mode",
@@ -17,7 +17,7 @@ export const loginVerifyModeReq = () => {
     })
 }
 
-// 获取登陆图片验证码
+// 获取登录图片验证码
 export const loginVerifyImgReq = () => {
     return axios({
         url: "/admin/login/captcha",
@@ -33,7 +33,7 @@ export const logoutReq = () => {
     })
 }
 
-// 检查是否已登陆
+// 检查是否已登录
 export const checkLoginReq = () => {
     return axios({
         url: "/admin/login/check",
