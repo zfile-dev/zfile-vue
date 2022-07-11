@@ -165,7 +165,6 @@ const init = () => {
 	}
 	getDownloadLogList(searchParam).then(res => {
 		pageData.value = res.data;
-		console.log(res);
 		searchParam.total = res.dataCount;
 	});
 }

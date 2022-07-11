@@ -46,7 +46,6 @@ let fields = ref([]);
 
 let formRules = computed(() => {
 	const descriptor = {}
-	console.log(fields.value);
 	fields.value.forEach(({prop, required, label}) => {
 		if (required) {
 			descriptor[prop] = [{required: true, message: `${label}不能为空`}]
