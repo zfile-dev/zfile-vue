@@ -14,7 +14,9 @@
 						{{ scope.row.row.name }}
 					</template>
 				</el-table-column>
-				<el-table-column show-overflow-tooltip>
+				<el-table-column
+					v-if="storageConfigStore.config.showLinkBtn && storageConfigStore.config.showPathLink"
+					show-overflow-tooltip>
 					<template #header="scope">
 						直链
 						<el-tooltip
@@ -30,7 +32,9 @@
 						{{ scope.row.directlink }}
 					</template>
 				</el-table-column>
-				<el-table-column show-overflow-tooltip width="250">
+				<el-table-column
+					v-if="storageConfigStore.config.showLinkBtn && storageConfigStore.config.showShortLink"
+					show-overflow-tooltip width="250">
 					<template #header="scope">
 						短链
 						<el-tooltip
@@ -207,8 +211,6 @@ const exportExcel = () => {
 
 	wb.Sheets.Sheet1["!cols"] = colsWidth;
 
-	console.log(colsWidth);
-
 	/* get binary string as output */
 	let wbout = write(wb, {
 		bookType: 'xlsx',
@@ -223,7 +225,6 @@ const exportExcel = () => {
 		)
 	} catch (e) {
 		if (typeof console !== 'undefined') {
-			// console.log(e, wbout)
 			ElMessage.error(e + wbout);
 		}
 	}
