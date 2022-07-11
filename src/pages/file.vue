@@ -212,22 +212,29 @@
 					<label>打开</label>
 				</ContextmenuItem>
 			</div>
+			<ContextmenuItem v-show="selectStatistics.isSingleSelect && selectStatistics.isAllFile"
+			                 @click="openRow(selectRow)">
+				<el-icon class="contextmenu-icon">
+					<i-custom-preview/>
+				</el-icon>
+				<label>预览</label>
+			</ContextmenuItem>
+			<ContextmenuItem v-show="selectStatistics.isAllFile"
+			                 @click="batchDownloadFile">
+				<el-icon class="contextmenu-icon">
+					<i-custom-download/>
+				</el-icon>
+				<label>下载</label>
+			</ContextmenuItem>
+			<ContextmenuItem v-show="selectStatistics.isAllFile &&
+(storageConfigStore.config.showLinkBtn && (storageConfigStore.config.showShortLink || storageConfigStore.config.showPathLink))"
+			                 @click="openLinkDialog">
+				<el-icon class="contextmenu-icon">
+					<svg-icon class="inline" name="link"></svg-icon>
+				</el-icon>
+				<label>生成直链</label>
+			</ContextmenuItem>
 			<div v-show="storageConfig.enableFileOperator !== false">
-				<ContextmenuItem v-show="selectStatistics.isSingleSelect && selectStatistics.isAllFile"
-				                 @click="openRow(selectRow)">
-					<el-icon class="contextmenu-icon">
-						<i-custom-preview/>
-					</el-icon>
-					<label>预览</label>
-				</ContextmenuItem>
-				<ContextmenuItem v-show="selectStatistics.isAllFile"
-				                 @click="batchDownloadFile">
-					<el-icon class="contextmenu-icon">
-						<i-custom-download/>
-					</el-icon>
-					<label>下载</label>
-				</ContextmenuItem>
-
 				<ContextmenuDivider></ContextmenuDivider>
 
 				<ContextmenuItem v-show="selectStatistics.isSingleSelect"
@@ -255,14 +262,6 @@
 						<svg-icon class="inline" name="delete"></svg-icon>
 					</el-icon>
 					<label>删除 {{selectRows.length > 0 ? ('(' + selectRows.length + ')') : ''}}</label>
-				</ContextmenuItem>
-				<ContextmenuItem v-show="selectStatistics.isAllFile &&
-(storageConfigStore.config.showLinkBtn && (storageConfigStore.config.showShortLink || storageConfigStore.config.showPathLink))"
-				                 @click="openLinkDialog">
-					<el-icon class="contextmenu-icon">
-						<svg-icon class="inline" name="link"></svg-icon>
-					</el-icon>
-					<label>生成直链</label>
 				</ContextmenuItem>
 
 				<ContextmenuDivider></ContextmenuDivider>
