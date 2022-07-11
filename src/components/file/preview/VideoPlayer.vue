@@ -83,6 +83,7 @@
 
 <script setup>
 import Artplayer from "artplayer";
+let common = useCommon();
 
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
@@ -193,13 +194,11 @@ const getSubtitles = (currentName) => {
 	return subtitleList;
 }
 
-let downloadIcon = '<i class="art-icon art-icon-download"><svg t="1650462678552" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2149" width="22" height="22"><path d="M209.91781197 877.42249572c-61.57565812 0-111.66851282-50.09394872-111.66851282-111.66960683V596.06536752c0-15.71774359 12.78796582-28.50570941 28.49914529-28.5057094s28.50023931 12.78905983 28.50023932 28.5057094v162.87070086c0 40.90092308 20.5565812 61.48594872 61.45312821 61.48594872h590.55699145c40.9020171 0 61.48704274-20.58502564 61.48704273-61.48594872V596.06536752c0-15.71774359 12.78249572-28.4991453 28.49914531-28.49914529s28.4991453 12.78140171 28.49914529 28.49914529v169.34618804c0 61.76054701-50.24382906 112.00547008-112.00437606 112.00547008H209.92z" fill="#fff" p-id="2150"></path><path d="M512 646.4a28.53305983 28.53305983 0 0 1-28.4991453-28.50023931V127.43111111a28.53305983 28.53305983 0 0 1 28.4991453-28.49914529 28.53305983 28.53305983 0 0 1 28.4991453 28.49914529v490.47302564A28.52758974 28.52758974 0 0 1 512 646.39890598z" fill="#fff" p-id="2151"></path><path d="M509.5745641 661.74687179a28.31535043 28.31535043 0 0 1-20.1539829-8.34625641L286.36553846 450.33025641a28.31535043 28.31535043 0 0 1-8.34625641-20.1539829c0-7.61217094 2.96916239-14.77032479 8.35172649-20.15398292s12.54181197-8.34625641 20.15398292-8.34625641 14.77032479 2.96369231 20.1539829 8.35172651l182.90652992 182.91309401 187.75849572-187.76396581a28.27596582 28.27596582 0 0 1 19.95705983-8.16574359c7.69641026 0 14.91145299 3.01948718 20.31042735 8.50270085 10.86140171 11.02878633 10.86140171 28.97504274 0 40.01039316L529.73948718 653.3951453a28.34270085 28.34270085 0 0 1-20.16492308 8.35172649z" fill="#fff" p-id="2152"></path></svg></i>';
 let videoListIcon = '<i class="art-icon art-icon-video-list"><svg t="1650551038453" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12028" width="20" height="20"><path d="M111.395066 179.64038l801.208844 0 0 87.866187-801.208844 0 0-87.866187Z" p-id="12029"></path><path d="M111.395066 468.067418l801.208844 0 0 87.866187-801.208844 0 0-87.866187Z" p-id="12030"></path><path d="M111.395066 756.493433l801.208844 0 0 87.866187-801.208844 0 0-87.866187Z" p-id="12031"></path></svg></i>';
 let subtitleIcon = '<i class="art-icon art-icon-subtitle"><svg xmlns="http://www.w3.org/2000/svg" height="22" width="22" viewBox="0 0 48 48">\n' +
 	'    <path d="M0 0h48v48H0z" fill="none"></path>\n' +
 	'    <path d="M40 8H8c-2.21 0-4 1.79-4 4v24c0 2.21 1.79 4 4 4h32c2.21 0 4-1.79 4-4V12c0-2.21-1.79-4-4-4zM8 24h8v4H8v-4zm20 12H8v-4h20v4zm12 0h-8v-4h8v4zm0-8H20v-4h20v4z"></path>\n' +
 	'</svg></i>';
-let externalIcon = '<i class="art-icon art-icon-external"><svg t="1641907329198" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7627" xmlns:xlink="http://www.w3.org/1999/xlink" width="18" height="18"><defs><style type="text/css"></style></defs><path d="M843.648 981.333333H89.6A46.08 46.08 0 0 1 42.666667 934.485333V183.253333a46.08 46.08 0 0 1 46.933333-46.890666H512c26.581333 0 46.933333 20.309333 46.933333 46.890666A46.08 46.08 0 0 1 512 230.101333H136.533333v657.493334h660.181334v-373.248a46.08 46.08 0 0 1 46.933333-46.848c26.624 0 46.933333 20.309333 46.933333 46.848v418.56c0 26.581333-20.309333 48.426667-46.933333 48.426666zM934.4 420.650667a46.08 46.08 0 0 1-46.933333-46.890667V136.362667h-237.781334a46.08 46.08 0 0 1-46.933333-46.848A46.08 46.08 0 0 1 649.685333 42.666667H934.4c26.581333 0 46.933333 20.309333 46.933333 46.848V373.76c0 25.002667-21.888 46.890667-46.933333 46.890667z" p-id="7628"></path><path d="M374.314667 695.509333c-12.501333 0-23.466667-4.693333-32.853334-14.08-18.773333-18.730667-18.773333-48.384 0-65.578666L879.658667 78.592c18.773333-18.773333 48.469333-18.773333 65.706666 0 18.773333 18.773333 18.773333 48.426667 0 65.578667L407.168 681.472c-9.386667 9.386667-20.309333 14.08-32.853333 14.08z" p-id="7629"></path></svg></i>'
 
 let nextVideoIcon = '<i class="art-icon art-icon-next-video"><svg height="25" width="25"  viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path></svg></i>';
 let prevVideoIcon = '<i class="art-icon art-icon-prev-video" v-cloak style="transform: scale(-1,1);"><svg height="25" width="25"  viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path></svg></i>';
@@ -239,13 +238,21 @@ const initArtPlayer = (name, url) => {
 		playbackRate: true,
 		flip: true,
 		fullscreen: true,
+		fastForward: true,
+		autoOrientation: true,
 		aspectRatio: true,
 		fullscreenWeb: true,
 		theme: '#23ade5',
+		lock: true,
 		subtitleOffset: true,
 		miniProgressBar: true,
 		autoplay: autoPlayVideo.value,
+		whitelist: ['*'],
 		moreVideoAttr: {
+			'x5-video-player-type': 'h5',
+			'x5-video-player-fullscreen': false,
+			'x5-video-orientation': 'portraint',
+			preload: "metadata",
 			crossOrigin: 'anonymous',
 		},
 		customType: {
@@ -364,39 +371,39 @@ const initArtPlayer = (name, url) => {
 	// 	}
 	// });
 
-
 	art.on('destory', () => {
 		debugger;
 	})
 
-	art.on('ready', () => {
-		let prevAndNextVideo = getPrevAndNextVideo(art.option.title);
-		if (prevAndNextVideo.prev) {
-			art.controls.add({
-				name: 'prev-video',
-				position: 'left',
-				index: 5,
-				tooltip: '播放上一个',
-				html: prevVideoIcon,
-				click: () => {
-					initArtPlayer(prevAndNextVideo.prev.name, prevAndNextVideo.prev.url);
-				}
-			})
-		}
-		if (prevAndNextVideo.next) {
-			art.controls.add({
-				name: 'next-video',
-				position: 'left',
-				index: 15,
-				tooltip: '播放下一个',
-				html: nextVideoIcon,
-				click: () => {
-					initArtPlayer(prevAndNextVideo.next.name, prevAndNextVideo.next.url);
-				}
-			})
-		}
-	})
-
+	if (!common.isMobile) {
+		art.on('ready', () => {
+			let prevAndNextVideo = getPrevAndNextVideo(art.option.title);
+			if (prevAndNextVideo.prev) {
+				art.controls.add({
+					name: 'prev-video',
+					position: 'left',
+					index: 5,
+					tooltip: '播放上一个',
+					html: prevVideoIcon,
+					click: () => {
+						initArtPlayer(prevAndNextVideo.prev.name, prevAndNextVideo.prev.url);
+					}
+				})
+			}
+			if (prevAndNextVideo.next) {
+				art.controls.add({
+					name: 'next-video',
+					position: 'left',
+					index: 15,
+					tooltip: '播放下一个',
+					html: nextVideoIcon,
+					click: () => {
+						initArtPlayer(prevAndNextVideo.next.name, prevAndNextVideo.next.url);
+					}
+				})
+			}
+		})
+	}
 	art.on('video:ended', () => {
 		if (autoPlayNextVideo.value) {
 			const nextVideo = getPrevAndNextVideo(art.option.title).next;
