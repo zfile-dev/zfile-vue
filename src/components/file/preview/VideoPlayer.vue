@@ -84,10 +84,6 @@
 <script setup>
 import Artplayer from "artplayer";
 
-import { Download } from '@element-plus/icons-vue'
-import IconTarget from '~icons/custom/target';
-
-
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
 
@@ -226,10 +222,19 @@ const initArtPlayer = (name, url) => {
 		art.destroy();
 	}
 
+	let videoType = 'mp4';
+
+	if (name.toLowerCase().endsWith('flv')) {
+		videoType = 'flv';
+	} else if (name.toLowerCase().endsWith('m3u8')) {
+		videoType = 'hls';
+	}
+
 	let options = {
 		container: '.artplayer-app',
 		title: name,
 		url: url,
+		type: videoType,
 		setting: true,
 		playbackRate: true,
 		flip: true,
@@ -245,12 +250,17 @@ const initArtPlayer = (name, url) => {
 		},
 		customType: {
 			flv: function (video, url) {
-				const flvPlayer = flvjs.createPlayer({
-					type: 'flv',
-					url: url,
-				});
-				flvPlayer.attachMediaElement(video);
-				flvPlayer.load();
+				alert(1);
+				if (flvjs.isSupported()) {
+					const flvPlayer = flvjs.createPlayer({
+						type: 'flv',
+						url: url,
+					});
+					flvPlayer.attachMediaElement(video);
+					flvPlayer.load();
+				} else {
+					art.notice.show = '不支持播放格式：flv';
+				}
 			},
 			m3u8: function (video, url) {
 				let hls = new Hls();
