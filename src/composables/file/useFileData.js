@@ -177,6 +177,9 @@ export default function useFileData(router, route) {
 
     // 点击文件时，判断是文件夹则进入文件夹，是文件则进行预览
     const openRow = (row) => {
+        if (!row.name) {
+            return;
+        }
         fileDataStore.updateCurrentClickRow(row);
         // 如果是文件且格式支持预览, 则进行预览, 格式不支持预览, 则直接进行下载 (ftp 模式不支持预览, 全部是下载)
         if (row.type === 'FILE') {
@@ -191,7 +194,7 @@ export default function useFileData(router, route) {
                 case 'text': openText(); break;
                 case 'audio': openAudio(row); break;
                 // case 'office': openOffice(row); break;
-                default: batchDownloadFile();
+                default: batchDownloadFile(row);
             }
 
             clearSelection();

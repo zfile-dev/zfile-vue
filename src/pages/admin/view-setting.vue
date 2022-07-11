@@ -11,6 +11,7 @@
 			此页面显示网站前台的显示相关的信息
 		</template>
 
+
 		<z-form-item label="页面布局">
 			<el-radio v-model="data.layout" label="full">全屏</el-radio>
 			<el-radio v-model="data.layout" label="center">居中</el-radio>
@@ -26,6 +27,14 @@
 			<el-switch v-model="data.rootShowStorage"/>
 			<template #tips>
 				根目录是否显示所有存储源, 如果为 true, 则根目录显示所有存储源列表, 如果为 false, 则会自动跳转到第一个存储源.
+			</template>
+		</z-form-item>
+
+		<z-form-item label="文件操作习惯">
+			<el-radio v-model="data.fileClickMode" label="click">单击进入</el-radio>
+			<el-radio v-model="data.fileClickMode" label="dbclick">双击进入</el-radio>
+			<template #tips>
+				控制文件和文件夹的点击习惯, 单击/双击打开文件夹或预览文件
 			</template>
 		</z-form-item>
 

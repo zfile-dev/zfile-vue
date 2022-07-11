@@ -19,16 +19,42 @@ export default function useFileOperator(router, route) {
             selectRows, selectRow, selectFolders, selectFiles } = useFileData(router, route);
 
     // 批量下载已选择的所有文件
-    const batchDownloadFile = () => {
+    const batchDownloadFile = (row) => {
         if (!selectRows.value && selectRows.value.length === 0) {
             ElMessage.warning("请至少选择一个文件");
             return;
         }
-        selectRows.value.forEach((item) => {
-            if (item.type === 'FILE') {
-                downloadFileFromUrl(item.url);
+        let confirmMsg;
+
+        if (row.name) {
+            confirmMsg = `是否确认下载文件 ${row.name}？`;
+        } else if (selectRows.value.length === 1) {
+            debugger;
+            confirmMsg = `是否确认下载文件 ${selectRows.value[0].name}？`;
+        } else if (selectRows.value.length > 1) {
+            confirmMsg = `是否确认批量下载 ${selectRows.value.length} 个文件？`;
+        }
+
+        ElMessageBox.confirm(confirmMsg, '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'info',
+            callback: action => {
+                if (action === 'confirm') {
+                    if (row.name) {
+                        downloadFileFromUrl(row.url)
+                    } else {
+                        selectRows.value.forEach((item) => {
+                            if (item.type === 'FILE') {
+                                downloadFileFromUrl(item.url);
+                            }
+                        })
+                    }
+                }
             }
-        })
+        });
+
+
     }
 
     // 根据 URL 下载

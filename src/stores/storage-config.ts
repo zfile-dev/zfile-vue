@@ -15,6 +15,7 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
         showPathLink: false,
         tableSize: 'small',
         rootShowStorage: true,
+        fileClickMode: 'dbclick',
         showDocument: false,
         debugMode: false,
         domain: '',
