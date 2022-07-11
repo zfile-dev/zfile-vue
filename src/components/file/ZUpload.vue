@@ -36,7 +36,7 @@
 							<span class="text-green-500" v-if="item.status === 'finished'">
 								完成
 							</span>
-							<span v-else class="text-blue-400">{{ item.speed }}</span>
+							<span v-else class="text-blue-400">{{ item.speed }} / 秒</span>
 						</div>
 					</div>
 					<div v-show="item.status === 'uploading'" class="absolute left-0 border-b-2 border-b-blue-300 h-full"
