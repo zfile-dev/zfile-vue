@@ -28,7 +28,7 @@
 
 				<el-tooltip placement="bottom">
 					<template #content>
-						登录后台
+						后台管理
 					</template>
 					<div @click="toLoginView" v-if="storageConfigStore.config.showLogin">
 						<svg-icon class="text-2xl text-gray-500 hover:text-blue-500" name="login"></svg-icon>
