@@ -102,15 +102,15 @@
 
 				<el-config-provider :locale="zhCn">
 					<el-pagination class="mt-3"
-						:page-size="searchParam.limit"
-						:background="true"
-						layout="total, sizes, prev, pager, next"
-						@current-change="handleCurrentChange"
-						@size-change="handleSizeChange"
-						v-model:current-page="searchParam.page"
-						:default-current-page="10"
-						:page-sizes="[10, 50, 100, 200]"
-						:total="searchParam.total"/>
+					               :page-size="searchParam.limit"
+					               background
+					               layout="total, sizes, prev, pager, next, jumper"
+					               @current-change="handleCurrentChange"
+					               @size-change="handleSizeChange"
+					               v-model:current-page="searchParam.page"
+					               :default-current-page="10"
+					               :page-sizes="[10, 50, 100, 200, 1000, 99999999]"
+					               :total="searchParam.total"/>
 				</el-config-provider>
 			</div>
 		</el-card>
