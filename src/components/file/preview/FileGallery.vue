@@ -1,37 +1,35 @@
 <template>
 	<!-- 画廊模式 -->
 	<div class="zfile-gallery-body">
-		<div v-if="fileDataStore.imgMode">
-			<div v-if="fileDataStore.filterFileByType('image').length > 0">
-				<div class="zfile-gallery-item"
+		<div class="zfile-img-body" v-if="transferResult.length > 0">
+			<div class="zfile-img-row" v-for="(rowItem, index) in transferResult" :key="index">
+				<div class="zfile-img-col"
+				     @click="openImage(colItem)"
 				     :style="{ display: globalConfigStore.zfileConfig.gallery.showInfoMode === 'hover' ? 'flex' : 'block'}"
-				     v-for="(item) in fileDataStore.filterFileByType('image')"
-				     :key="item.name">
+				     v-for="colItem in rowItem">
 					<el-image class="zfile-gallery-img"
 					          :class="globalConfigStore.zfileConfig.gallery.roundedBorder ? 'zfile-gallery-img-rounded' : ''"
-					          :src="item.url"
-					          :alt="item.name"
+					          :src="colItem?.url"
+					          :alt="colItem?.name"
 					          loading="lazy"
 					          lazy
-					          scroll-container=".zfile-gallery-body"
-					          @error="onImageLoad"
-					          @load="onImageLoad">
+					          @load="onImageLoad"
+					          scroll-container=".zfile-gallery-body">
 					</el-image>
 					<div v-if="globalConfigStore.zfileConfig.gallery.showInfo &&
-					    globalConfigStore.zfileConfig.gallery.showInfoMode === 'hover'" class="zfile-gallery-img-hover-info">
-						<span class="zfile-gallery-img-text">{{item.name}}</span>
-						<span class="zfile-gallery-img-text">{{common.fileSizeFormat(item.size)}}</span>
+					    globalConfigStore.zfileConfig.gallery.showInfoMode === 'hover'"
+					     :class="globalConfigStore.zfileConfig.gallery.roundedBorder ? 'zfile-gallery-img-rounded' : ''"
+					     class="zfile-gallery-img-hover-info">
+						<span class="zfile-gallery-img-text">{{colItem?.name}}</span>
+						<span class="zfile-gallery-img-text">{{common.fileSizeFormat(colItem?.size)}}</span>
 					</div>
 					<div
-						v-show="loadedList.includes(item.name)"
+						v-show="loadedList.includes(colItem?.name)"
 						v-if="globalConfigStore.zfileConfig.gallery.showInfo &&
 						globalConfigStore.zfileConfig.gallery.showInfoMode === 'bottom'">
-						<span class="zfile-gallery-img-text"> {{ item.name }} </span>
+						<span class="zfile-gallery-img-text"> {{ colItem?.name }} </span>
 					</div>
 				</div>
-			</div>
-			<div v-else>
-				<el-empty description="当前文件夹无图片"></el-empty>
 			</div>
 		</div>
 	</div>
@@ -39,125 +37,101 @@
 
 <script setup>
 // 是否已初始化图片
-import {computed, reactive, ref, watch} from "vue";
+import {computed, reactive, ref} from "vue";
 import common from "~/common";
-import Masonry from "masonry-layout";
-import NProgress from "nprogress";
 import 'nprogress/nprogress.css'
 
 import useGlobalConfigStore from "~/stores/global-config";
+import useFileDataStore from "~/stores/file-data";
+
 let globalConfigStore = useGlobalConfigStore();
 
-import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
 
-const useImageModel = () => {
-	// 是否已初始化图片
-	let isInitImage = ref(false);
 
-	// 已加载完的图片列表, 已加载完才悬浮显示标题
-	let loadedList = reactive([]);
+const transferResult = computed(() => {
+	// 获取图片列表
+	let imgList = fileDataStore.filterFileByType('image');
+
+	// 图片二维数组, 表示每行每列的图片
+	let imgArray = ref([]);
 
 	// 图片列数
 	let galleryColumn = globalConfigStore.zfileConfig.gallery.column;
 
-	// 图片列间距 px
-	let galleryColumnSpacingPx = computed(() => {
-		return globalConfigStore.zfileConfig.gallery.columnSpacing + 'px';
-	});
+	// 当前行数
+	let currRow = 0;
 
-	// 图片行间距 px
-	let galleryRowSpacingPx = computed(() => {
-		return globalConfigStore.zfileConfig.gallery.rowSpacing + 'px';
-	});
-
-	// 图片百分比宽度
-	let galleryWidth = computed(() => {
-		let galleryColumnSpacing = globalConfigStore.zfileConfig.gallery.columnSpacing;
-		return `calc(${100 / galleryColumn}% - ${((galleryColumn - 1) * galleryColumnSpacing / galleryColumn)}px)`
+	imgList.forEach((item, index) => {
+		if (index % galleryColumn === 0) {
+			if (index !== 0) {
+				currRow++;
+			}
+			imgArray.value[currRow] = [];
+		}
+		imgArray.value[currRow].push(item);
 	})
 
-
-
-	// 图片布局器实例
-	let masonryInstance;
-
-	// 当前页总数, 初始化时图片布局器实例时获取
-	let totalSize;
-
-	// 获取实例
-	const getMasonryInstance = () => {
-		if (isInitImage.value) {
-			return masonryInstance;
-		}
-
-		// 初始化实例并获取实例对象
-		let grid = document.querySelector(".zfile-gallery-body");
-		masonryInstance = new Masonry(grid, {
-			itemSelector: ".zfile-gallery-item",
-			percentPosition: true,
-			gutter: globalConfigStore.zfileConfig.gallery.columnSpacing,
-			// fitWidth: true,
-		});
-		totalSize = fileDataStore.filterFileByType('image').length;
-		isInitImage.value = true;
-		loadingSize = 0
-		return masonryInstance;
+	// 图片行转列函数
+	function transfer(oldArr) {
+		return oldArr[0].map((col, i) => oldArr.map(row => row[i]));
 	}
 
-	let loadingSize = 0;
-	// 图片加载完重试
-	const onImageLoad = (e) => {
-		console.log('图片加载完成', e.target.src)
-		if (loadingSize >= totalSize) {
-			loadingSize = 0;
-		}
-		if (loadingSize === 0) {
-			NProgress.start();
-			getMasonryInstance();
-		}
-		if (e.type === 'error') {
-			console.error(`加载第 ${loadingSize} / ${totalSize} 个图片失败: ${e.path[0].alt}`);
-		}
+	// 图片行转列完成后的数组
+	return transfer(imgArray.value);
+})
 
-		loadedList.push(e.path[0].alt);
 
-		loadingSize += 1;
-		if (loadingSize % galleryColumn === 0) {
-			getMasonryInstance().layout();
-		}
-		if (loadingSize === totalSize) {
-			NProgress.done(true);
-			getMasonryInstance().layout();
-		}
-	}
 
-	// 切换画廊模式
-	watch(() => fileDataStore.imgMode, (newVal) => {
-		// 如果开启了画廊模式，则初始化实例
-		if (newVal) {
-			loadedList.splice(0, loadedList.length - 1)
-			isInitImage.value = false;
-		} else {
-			NProgress.done(true);
-		}
-	})
+// 已加载完的图片列表, 已加载完才悬浮显示标题
+let loadedList = reactive([]);
+const onImageLoad = (e) => {
+	loadedList.push(e.path[0].alt);
+}
 
-	return { onImageLoad, galleryWidth, loadedList, galleryColumnSpacingPx, galleryRowSpacingPx}
-};
+// 图片行间距 px
+let galleryRowSpacingPx = computed(() => {
+	return globalConfigStore.zfileConfig.gallery.rowSpacing + 'px';
+});
 
-const { onImageLoad, galleryWidth, loadedList, galleryColumnSpacingPx, galleryRowSpacingPx} = useImageModel();
+// 图片实际宽度（减去列间距）
+let galleryImgWidth = computed(() => {
+	// 图片列数
+	let galleryColumn = globalConfigStore.zfileConfig.gallery.column;
+	let galleryColumnSpacing = globalConfigStore.zfileConfig.gallery.columnSpacing;
+	return `calc(${100}% - ${((galleryColumn - 1) * galleryColumnSpacing / galleryColumn)}px)`
+})
+
+// 图片外部容器宽度, 100 / 图片列数
+let galleryRowWidth = computed(() => {
+	return `${100/globalConfigStore.zfileConfig.gallery.column}%`;
+})
+
+
+// 引入文件预览组件
+import useFilePreview from '~/composables/file/useFilePreview';
+const { openImage } = useFilePreview();
+
 
 </script>
 
 <style lang="scss" scoped>
 
 .zfile-gallery-body {
+	height: 100%;
+	overflow-y: auto;
 
-	.zfile-gallery-item {
-		@apply flex overflow-hidden;
-		text-align: center;
-		width: v-bind('galleryWidth');
+	.zfile-img-body {
+		@apply flex h-full flex-wrap;
+	}
+
+	.zfile-img-row {
+		width: v-bind('galleryRowWidth');
+	}
+
+	.zfile-img-col {
+		@apply flex overflow-hidden relative text-center;
+		width: v-bind('galleryImgWidth');
 		margin-bottom: v-bind('galleryRowSpacingPx');
 
 		.zfile-gallery-img {
@@ -174,9 +148,9 @@ const { onImageLoad, galleryWidth, loadedList, galleryColumnSpacingPx, galleryRo
 
 		.zfile-gallery-img-hover-info {
 			@apply absolute top-0 h-1/2 left-0 right-0 text-sm p-2
-					transition-opacity duration-300
-					flex justify-between
-					text-white space-x-10 opacity-0;
+			transition-opacity duration-300
+			flex justify-between
+			text-white space-x-10 opacity-0;
 			background: linear-gradient(180deg,rgba(0,0,0,.6),transparent 120px);
 
 			.zfile-gallery-img-text:last-child {
@@ -189,9 +163,6 @@ const { onImageLoad, galleryWidth, loadedList, galleryColumnSpacingPx, galleryRo
 		}
 	}
 
-	:deep(.el-empty) {
-		margin-top: 10%;
-	}
 
 
 }
