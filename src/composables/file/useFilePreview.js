@@ -1,5 +1,5 @@
 import common from "~/common";
-import {api as viewerApi} from "v-viewer" // 图片预览组件
+import { v3ImgPreviewFn } from 'v3-img-preview'
 
 // 基础依赖引入
 import useGlobalConfigStore from "~/stores/global-config";
@@ -26,33 +26,24 @@ export default function useFilePreview() {
     }
 
     const openImage = (row) => {
-        // 过滤当前页面中所有图片，并记录当前打开的文件的索引未知
-        let imageDate = [];
+        // 过滤当前页面中所有图片，并记录当前打开的文件的索引位置
+        let images = [];
         let currIndex = 0;
-
         let imagePreviewMode = globalConfigStore.zfileConfig.imagePreview.mode;
         if (imagePreviewMode === 'only') {
-            imageDate.push({
-                alt: row.name,
-                src: row.url
-            });
+            images.push(row.url);
         } else {
             fileDataStore.filterFileByType('image').forEach((image, index) => {
                 if (row.name === image.name) {
                     currIndex = index;
                 }
-                imageDate.push({
-                    alt: image.name,
-                    src: image.url
-                });
+                images.push(image.url);
             })
         }
 
-        viewerApi({
-            options: {
-                initialViewIndex: currIndex
-            },
-            images: imageDate
+        v3ImgPreviewFn({
+            images: images,
+            index: currIndex
         })
     }
 

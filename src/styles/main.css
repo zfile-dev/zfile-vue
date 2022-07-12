@@ -70,6 +70,9 @@ body,
 	pointer-events: none;
 }
 
+#v3-img-preview-container-id .v-images-wrap .arrow .icon {
+	display: initial;
+}
 
 /* 黑暗模式适配 */
 /*html.dark {*/
