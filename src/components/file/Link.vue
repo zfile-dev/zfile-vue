@@ -52,7 +52,7 @@
 				</el-table-column>
 			</el-table>
 			<el-row class="space-y-6" v-if="selectFiles.length === 1 && data">
-				<div class="flex flex-row space-x-10">
+				<div class="flex flex-row space-x-10 w-full">
 					<el-image ref="qrcodeRef" class="w-3/4" :src="data.currentImg"/>
 					<div class="flex flex-col mt-3 space-y-3.5 overflow-y-auto">
 						<div class="border w-10 h-10 p-1 rounded-md cursor-pointer"
