@@ -1,82 +1,5 @@
 <template>
 	<div class="zfile-index-body" ref="rootRef">
-
-		<transition enter-active-class="animate__animated animate__fadeInUp animate__faster"
-		            leave-active-class="animate__animated animate__fadeOutDown animate__faster">
-			<div v-show="selectRows.length > 0 && storageKey && !fileDataStore.imgMode && linkVisible === false"
-			     class="zfile-index-hover-tools">
-				<div class="zfile-index-hover-body">
-					<el-tooltip
-						:show-arrow="false"
-						:offset="15"
-						v-if="selectStatistics.isAllFile && selectStatistics.isSingleSelect"
-						effect="dark"
-						content="预览"
-						placement="top">
-						<svg-icon v-if="selectStatistics.isAllFile && selectStatistics.isSingleSelect"
-						          @click="openRow(selectRow)" name="tool-preview"></svg-icon>
-					</el-tooltip>
-					<el-tooltip
-						:show-arrow="false"
-						:offset="15"
-						v-if="selectStatistics.isAllFile"
-						effect="dark"
-						content="下载"
-						placement="top">
-						<svg-icon v-if="selectStatistics.isAllFile" @click="batchDownloadFile" name="tool-download"></svg-icon>
-					</el-tooltip>
-					<div v-if="storageConfig.enableFileOperator !== false">
-						<el-tooltip
-							:show-arrow="false"
-							:offset="15"
-							effect="dark"
-							v-if="selectStatistics.isSingleSelect"
-							content="重命名"
-							placement="top">
-							<svg-icon v-if="selectStatistics.isSingleSelect" @click="rename" name="tool-edit"></svg-icon>
-						</el-tooltip>
-
-						<el-tooltip
-							:show-arrow="false"
-							:offset="15"
-							effect="dark"
-							content="移动"
-							placement="top">
-							<svg-icon @click="moveTo" name="tool-move"></svg-icon>
-						</el-tooltip>
-						<el-tooltip
-							:show-arrow="false"
-							:offset="15"
-							effect="dark"
-							content="删除"
-							placement="top">
-							<svg-icon @click="batchDelete" name="tool-delete"></svg-icon>
-						</el-tooltip>
-					</div>
-
-					<el-tooltip
-						:show-arrow="false"
-						:offset="15"
-						effect="dark"
-						content="生成直链"
-						placement="top">
-						<svg-icon v-if="selectStatistics.isAllFile && selectStatistics.isAllFile &&
-(storageConfigStore.config.showLinkBtn && (storageConfigStore.config.showShortLink || storageConfigStore.config.showPathLink))" @click="openLinkDialog" name="tool-link"></svg-icon>
-					</el-tooltip>
-
-					<el-tooltip
-						:show-arrow="false"
-						:offset="15"
-						:disabled="selectRows.length === 0"
-						effect="dark"
-						content="取消选择"
-						placement="top">
-						<svg-icon @click="clearSelection" name="tool-close"></svg-icon>
-					</el-tooltip>
-				</div>
-			</div>
-		</transition>
-
 		<!-- 公告 -->
 		<el-alert v-if="storageConfigStore.config.announcement" class="zfile-index-announcement" type="success">
 			<v-md-preview :text="storageConfigStore.config.announcement"></v-md-preview>
@@ -106,7 +29,7 @@
 			:row-class-name="tableRowClassName"
 			@selection-change="selectRowsChange"
 			:data="skeletonLoading ? skeletonData : fileDataStore.fileList">
-			<template v-slot:empty>
+			<template #empty>
 				<div v-show="!basicLoading">
 					<svg-icon class="empty-icon" name="empty"/>
 					<div class="font-bold text-base">数据为空，请先上传或添加文件</div>
@@ -345,15 +268,94 @@
 		<!-- 回到顶部 -->
 		<back-top></back-top>
 
+		<!-- 弹窗文档 -->
 		<el-dialog draggable
 		           custom-class="zfile-readme-dialog"
 		           v-if="storageConfig.readmeDisplayMode === 'dialog'" :model-value="true">
 			<v-md-preview :text="storageConfig.readmeText"></v-md-preview>
 		</el-dialog>
 
+		<!-- 底部文档 -->
 		<el-card class="mt-5" v-if="storageConfig.readmeDisplayMode === 'bottom'">
 			<v-md-preview :text="storageConfig.readmeText"></v-md-preview>
 		</el-card>
+
+		<!-- 悬浮菜单 -->
+		<transition enter-active-class="animate__animated animate__fadeInUp animate__faster"
+		            leave-active-class="animate__animated animate__fadeOutDown animate__faster">
+			<div v-show="selectRows.length > 0 && storageKey && !fileDataStore.imgMode && linkVisible === false"
+			     class="zfile-index-hover-tools">
+				<div class="zfile-index-hover-body">
+					<el-tooltip
+						:show-arrow="false"
+						:offset="15"
+						v-if="selectStatistics.isAllFile && selectStatistics.isSingleSelect"
+						effect="dark"
+						content="预览"
+						placement="top">
+						<svg-icon v-if="selectStatistics.isAllFile && selectStatistics.isSingleSelect"
+						          @click="openRow(selectRow)" name="tool-preview"></svg-icon>
+					</el-tooltip>
+					<el-tooltip
+						:show-arrow="false"
+						:offset="15"
+						v-if="selectStatistics.isAllFile"
+						effect="dark"
+						content="下载"
+						placement="top">
+						<svg-icon v-if="selectStatistics.isAllFile" @click="batchDownloadFile" name="tool-download"></svg-icon>
+					</el-tooltip>
+					<div v-if="storageConfig.enableFileOperator !== false">
+						<el-tooltip
+							:show-arrow="false"
+							:offset="15"
+							effect="dark"
+							v-if="selectStatistics.isSingleSelect"
+							content="重命名"
+							placement="top">
+							<svg-icon v-if="selectStatistics.isSingleSelect" @click="rename" name="tool-edit"></svg-icon>
+						</el-tooltip>
+
+						<el-tooltip
+							:show-arrow="false"
+							:offset="15"
+							effect="dark"
+							content="移动"
+							placement="top">
+							<svg-icon @click="moveTo" name="tool-move"></svg-icon>
+						</el-tooltip>
+						<el-tooltip
+							:show-arrow="false"
+							:offset="15"
+							effect="dark"
+							content="删除"
+							placement="top">
+							<svg-icon @click="batchDelete" name="tool-delete"></svg-icon>
+						</el-tooltip>
+					</div>
+
+					<el-tooltip
+						:show-arrow="false"
+						:offset="15"
+						effect="dark"
+						content="生成直链"
+						placement="top">
+						<svg-icon v-if="selectStatistics.isAllFile && selectStatistics.isAllFile &&
+(storageConfigStore.config.showLinkBtn && (storageConfigStore.config.showShortLink || storageConfigStore.config.showPathLink))" @click="openLinkDialog" name="tool-link"></svg-icon>
+					</el-tooltip>
+
+					<el-tooltip
+						:show-arrow="false"
+						:offset="15"
+						:disabled="selectRows.length === 0"
+						effect="dark"
+						content="取消选择"
+						placement="top">
+						<svg-icon @click="clearSelection" name="tool-close"></svg-icon>
+					</el-tooltip>
+				</div>
+			</div>
+		</transition>
 	</div>
 </template>
 
@@ -474,7 +476,6 @@ const {rename, batchDownloadFile, moveTo, copyTo, newFolder,
 // 文件上传相关
 import useFileUpload from "~/composables/file/useFileUpload";
 const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route);
-
 </script>
 
 <style lang="scss" scoped>
@@ -700,6 +701,7 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route
 		}
 	}
 }
+
 </style>
 
 <route lang="yaml">
