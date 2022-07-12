@@ -257,7 +257,6 @@ const initArtPlayer = (name, url) => {
 		},
 		customType: {
 			flv: function (video, url) {
-				alert(1);
 				if (flvjs.isSupported()) {
 					const flvPlayer = flvjs.createPlayer({
 						type: 'flv',
