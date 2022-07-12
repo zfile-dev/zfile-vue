@@ -5,7 +5,7 @@
 				<el-breadcrumb separator="/" separator-class="ArrowRight">
 					<el-breadcrumb-item :to="rootPath">{{ '首页' }}</el-breadcrumb-item>
 					<el-breadcrumb-item v-for="item in breadcrumbData"
-					                    :to="{path: item.fullPath}"
+					                    :to="{path: encodeAllIgnoreSlashes(item.fullPath)}"
 					                    :key="item.fullPath"
 					                    class="hidden-xs-only">
 						{{ item.name }}
@@ -134,7 +134,7 @@ import useSetting from "~/composables/header/useSetting";
 const { openSettingVisible } = useSetting();
 
 import useCommon from "~/composables/useCommon";
-const { isNotMobile } = useCommon();
+const { isNotMobile, encodeAllIgnoreSlashes } = useCommon();
 
 
 import useFileData from "~/composables/file/useFileData";

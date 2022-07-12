@@ -89,7 +89,7 @@ let outerTableClickRow;
 
 export default function useTableOperator(router, route) {
 
-    const { storageKey, skeletonLoading, openRow, selectRows, selectRow, currentPath } = useFileData(router, route);
+    const { skeletonLoading, openRow, selectRows, selectRow, currentPath } = useFileData(router, route);
 
     globalCurrentPath = currentPath;
     batchDelete = useFileOperator(router, route).batchDelete;
@@ -99,14 +99,6 @@ export default function useTableOperator(router, route) {
     // 文件单击事件
     const tableClickRow = (row, event) => {
         let isClickSelection = event.type === 'selection';
-
-        if (row.type === 'BACK') {
-            if (globalConfigStore.zfileConfig.fileList.backHandler === 'click') {
-                let fullPath = removeDuplicateSlashes('/' + storageKey.value + '/' + row.path);
-                router.push(fullPath);
-            }
-            return;
-        }
 
         // 如果点击的是文件或文件夹, 且点击的不是 checkbox 列, 且操作习惯是单击打开, 则打开文件/文件夹
         if (!isClickSelection && storageConfigStore.config.fileClickMode === 'click') {

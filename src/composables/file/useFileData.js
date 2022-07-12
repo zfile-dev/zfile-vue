@@ -1,5 +1,7 @@
 import minimatch from 'minimatch';
 const zfilePasswordCache = useStorage('zfile-pwd-cache', {});
+import useCommon from "../useCommon";
+const { encodeAllIgnoreSlashes } = useCommon();
 
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
@@ -202,12 +204,12 @@ export default function useFileData(router, route) {
             if (row.type === 'ROOT') {
                 router.push(row.path);
             } else if (row.type === 'BACK') {
-                if (globalConfigStore.zfileConfig.fileList.backHandler === 'dbclick') {
-                    let fullPath = removeDuplicateSlashes('/' + storageKey.value + '/' + row.path);
-                    router.push(fullPath);
-                }
+                let fullPath = removeDuplicateSlashes('/' + storageKey.value + '/' + row.path);
+                fullPath = encodeAllIgnoreSlashes(fullPath);
+                router.push(fullPath);
             } else {
                 let fullPath = removeDuplicateSlashes('/' + storageKey.value + '/' + row.path + '/' + row.name);
+                fullPath = encodeAllIgnoreSlashes(fullPath);
                 router.push(fullPath);
             }
         }

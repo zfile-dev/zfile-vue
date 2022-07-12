@@ -1,7 +1,8 @@
 import common from "~/common";
 import {shortLinkReq} from "~/api/home";
 import { encodeData, rendererRect, rendererRound, rendererDSJ, rendererLine, rendererFuncB } from 'beautify-qrcode';
-
+import useCommon from "../useCommon";
+const {encodeAllIgnoreSlashes} = useCommon();
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
@@ -73,9 +74,11 @@ export default function useFileLink(router, route) {
             item.row = JSON.parse(JSON.stringify(row));
             item.row.size = common.fileSizeFormat(row.size);
             item.link = response.data;
+            let pathAndName = encodeAllIgnoreSlashes(row.path + "/" + row.name);
             pathDownloadLink = common.removeDuplicateSeparator(storageConfigStore.config.domain + "/" +
-                storageConfigStore.config.directLinkPrefix + "/" + storageKey.value + "/"
-                + encodeURI(row.path) + "/" + encodeURI(row.name));
+              storageConfigStore.config.directLinkPrefix + "/" +
+              storageKey.value + "/" +
+              pathAndName);
             item.directlink = pathDownloadLink;
 
             const qrcode = encodeData({
