@@ -5,48 +5,6 @@ import common from "~/common";
 import {removeDuplicateSlashes} from "fast-glob/out/managers/patterns";
 
 const visible = ref(false);
-// 上传相关
-// const uploadProgressInfo = reactive([{
-//     name: '1.png',
-//     size: 10000,
-//     speed: '1.8MB',
-//     progress: 50,
-//     loaded: 5000,
-//     status: 'finished',
-//     startTime: 1,
-//     endTime: 1,
-//     index: 0
-// }, {
-//     name: '2.png',
-//     size: 10000,
-//     speed: '1.8MB',
-//     progress: 50,
-//     loaded: 5000,
-//     status: 'uploading',
-//     startTime: 2,
-//     endTime: 2,
-//     index: 0
-// }, {
-//     name: '3.png',
-//     size: 10000,
-//     speed: '1.8MB',
-//     progress: 50,
-//     loaded: 5000,
-//     status: 'finished',
-//     startTime: 3,
-//     endTime: 3,
-//     index: 0
-// }, {
-//     name: '4.png',
-//     size: 10000,
-//     speed: '1.8MB',
-//     progress: 50,
-//     loaded: 5000,
-//     status: 'uploading',
-//     startTime: 4,
-//     endTime: 4,
-//     index: 0
-// }]);
 const uploadProgressInfo = reactive([]);
 const cancelTokenSourceMap = new Map();
 const uploadProgressInfoMap = new Map();
@@ -57,16 +15,11 @@ let fileDataStore = useFileDataStore();
 
 import useFileData from "~/composables/file/useFileData";
 
-import { allowShortcuts } from "~/composables/file/useTableOperator";
+import {hasDialog} from "~/composables/file/useTableOperator";
 
 // 拖拽上传状态, true 表示正有文件拖拽悬浮在上传框上
 let dropState = ref(false);
 
-// const allowShortcuts = () => {
-//     // 仅鼠标悬浮在 table 上时且没有打开 dialog 时，才允许快捷键操作.
-//     return document.querySelector(".zfile-index-body:hover") &&
-//         !document.querySelector(".el-popup-parent--hidden")
-// }
 
 export default function useFileUpload(router, route) {
 
@@ -82,7 +35,7 @@ export default function useFileUpload(router, route) {
             removeDragClass();
             dropState.value = false;
 
-            if (!allowShortcuts()) {
+            if (hasDialog()) {
                 return;
             }
 

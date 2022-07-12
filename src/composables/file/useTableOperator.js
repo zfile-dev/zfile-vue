@@ -52,8 +52,18 @@ window.addEventListener("keydown", function(e) {
 
 export const allowShortcuts = () => {
     // 仅鼠标悬浮在 table 上时且没有打开 dialog 时，才允许快捷键操作.
-    return document.querySelector(".zfile-index-body:hover") &&
-        !document.querySelector(".el-popup-parent--hidden")
+    return hoverBody() && hasDialog() === false;
+}
+
+// 是否悬浮在首页上
+export const hoverBody = () => {
+    // 仅鼠标悬浮在 table 上时且没有打开 dialog 时，才允许快捷键操作.
+    return document.querySelector(".zfile-index-body:hover")
+}
+
+// 当前是否打开了 dialog
+export const hasDialog = () => {
+    return !!document.querySelector(".el-popup-parent--hidden")
 }
 
 
