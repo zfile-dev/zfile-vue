@@ -437,7 +437,7 @@ onMounted(() => {
 	@apply bg-gray-50 p-3 space-x-10 flex justify-center flex-wrap;
 
 	.zfile-video-tools-item {
-		@apply bg-white shadow hover:shadow-2xl m-2 px-2 py-1 rounded-md flex-shrink-0;
+		@apply bg-white shadow hover:shadow-2xl m-2 px-2 py-1 rounded-md flex-shrink-0 cursor-pointer;
 
 		img {
 			@apply w-8 h-8 inline;
