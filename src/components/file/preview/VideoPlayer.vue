@@ -1,6 +1,10 @@
 <template>
 	<div>
 		<div class="artplayer-app"></div>
+    <div class="zfile-video-tools" v-if="currentVideo && common.isMobile.value">
+      <el-button v-show="getPrevAndNextVideo(currentVideo.name).prev" :icon="IconPrev" @click="playPrevVideo">上一个视频</el-button>
+      <el-button v-show="getPrevAndNextVideo(currentVideo.name).next" :icon="IconNext" @click="playNextVideo">下一个视频</el-button>
+    </div>
 		<div class="zfile-video-tools">
 			<div class="zfile-video-tools-item" @click="openTarget('download')">
 				<el-tooltip placement="top">
@@ -85,6 +89,10 @@
 import Artplayer from "artplayer";
 let common = useCommon();
 
+import IconPrev from '~icons/custom/prev';
+import IconNext from '~icons/custom/next';
+
+
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
 
@@ -102,37 +110,36 @@ const getVideoList = (currentName) => {
 	return result;
 }
 
-
-let currentVideo;
+let currentVideo = ref(null);
 
 const openTarget = (mode) => {
 	switch (mode) {
-		case 'download':
-			window.location = currentVideo.url;
+    case 'download':
+			window.location = currentVideo.value.url;
 			break;
 		case 'thunder':
-			window.location = `thunder://${btoa('AA' + currentVideo.url + 'ZZ')}`;
+			window.location = `thunder://${btoa('AA' + currentVideo.value.url + 'ZZ')}`;
 			break;
 		case 'motrix':
-			window.location = `motrix://new-task?uri=${encodeURIComponent(currentVideo.url)}&out=${encodeURIComponent(currentVideo.name)}`;
+			window.location = `motrix://new-task?uri=${encodeURIComponent(currentVideo.value.url)}&out=${encodeURIComponent(currentVideo.value.name)}`;
 			break;
 		case 'potplayer':
-			window.location = `potplayer://${currentVideo.url}`;
+			window.location = `potplayer://${currentVideo.value.url}`;
 			break;
 		case 'iina':
-			window.location = `iina://weblink?url=${encodeURIComponent(currentVideo.url)}`;
+			window.location = `iina://weblink?url=${encodeURIComponent(currentVideo.value.url)}`;
 			break;
 		case 'vlc':
-			window.location = `vlc://${currentVideo.url}`;
+			window.location = `vlc://${currentVideo.value.url}`;
 			break;
 		case 'nplayer':
-			window.location = `nplayer-${currentVideo.url}`;
+			window.location = `nplayer-${currentVideo.value.url}`;
 			break;
 		case 'mxplayer':
-			window.location = 'intent:' + currentVideo.url + '#Intent;package=com.mxtech.videoplayer.ad;S.title=' + currentVideo.name +';end';
+			window.location = 'intent:' + currentVideo.value.url + '#Intent;package=com.mxtech.videoplayer.ad;S.title=' + currentVideo.value.name +';end';
 			break;
 		case 'mxplayer-pro':
-			window.location = 'intent:' + currentVideo.url + '#Intent;package=com.mxtech.videoplayer.pro;S.title=' + currentVideo.name +';end';
+			window.location = 'intent:' + currentVideo.value.url + '#Intent;package=com.mxtech.videoplayer.pro;S.title=' + currentVideo.value.name +';end';
 			break;
 	}
 }
@@ -201,7 +208,7 @@ let subtitleIcon = '<i class="art-icon art-icon-subtitle"><svg xmlns="http://www
 	'</svg></i>';
 
 let nextVideoIcon = '<i class="art-icon art-icon-next-video"><svg height="25" width="25"  viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path></svg></i>';
-let prevVideoIcon = '<i class="art-icon art-icon-prev-video" v-cloak style="transform: scale(-1,1);"><svg height="25" width="25"  viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path></svg></i>';
+let prevVideoIcon = '<i class="art-icon art-icon-prev-video" style="transform: scale(-1,1);"><svg height="25" width="25"  viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path></svg></i>';
 
 import flvjs from 'flv.js';
 import Hls from 'hls.js';
@@ -211,7 +218,7 @@ const autoPlayVideo = useStorage('zfile-video-auto-player', false);
 
 let art = null;
 const initArtPlayer = (name, url) => {
-	currentVideo = {
+	currentVideo.value = {
 		name,
 		url
 	}
@@ -371,10 +378,9 @@ const initArtPlayer = (name, url) => {
 	// });
 
 	art.on('destory', () => {
-		debugger;
 	})
 
-	if (!common.isMobile) {
+	if (common.isMobile.value === false) {
 		art.on('ready', () => {
 			let prevAndNextVideo = getPrevAndNextVideo(art.option.title);
 			if (prevAndNextVideo.prev) {
@@ -385,7 +391,7 @@ const initArtPlayer = (name, url) => {
 					tooltip: '播放上一个',
 					html: prevVideoIcon,
 					click: () => {
-						initArtPlayer(prevAndNextVideo.prev.name, prevAndNextVideo.prev.url);
+            playPrevVideo();
 					}
 				})
 			}
@@ -397,7 +403,7 @@ const initArtPlayer = (name, url) => {
 					tooltip: '播放下一个',
 					html: nextVideoIcon,
 					click: () => {
-						initArtPlayer(prevAndNextVideo.next.name, prevAndNextVideo.next.url);
+            playNextVideo();
 					}
 				})
 			}
@@ -405,10 +411,7 @@ const initArtPlayer = (name, url) => {
 	}
 	art.on('video:ended', () => {
 		if (autoPlayNextVideo.value) {
-			const nextVideo = getPrevAndNextVideo(art.option.title).next;
-			if (nextVideo) {
-				initArtPlayer(nextVideo.name, nextVideo.url);
-			}
+			playNextVideo();
 		}
 	});
 
@@ -416,6 +419,21 @@ const initArtPlayer = (name, url) => {
 	if (subtitles.length > 0) {
 		art.subtitle.url = subtitles[0].url;
 	}
+}
+
+
+const playNextVideo = () => {
+  const nextVideo = getPrevAndNextVideo(art.option.title).next;
+  if (nextVideo) {
+    initArtPlayer(nextVideo.name, nextVideo.url);
+  }
+}
+
+const playPrevVideo = () => {
+  const prevVideo = getPrevAndNextVideo(art.option.title).prev;
+  if (prevVideo) {
+    initArtPlayer(prevVideo.name, prevVideo.url);
+  }
 }
 
 onMounted(() => {
@@ -434,10 +452,12 @@ onMounted(() => {
 }
 
 .zfile-video-tools {
-	@apply bg-gray-50 p-3 space-x-10 flex justify-center flex-wrap;
+	@apply bg-gray-50 p-3
+        grid grid-cols-3 gap-0
+        sm:space-x-10 sm:flex sm:justify-center sm:flex-wrap;
 
 	.zfile-video-tools-item {
-		@apply bg-white shadow hover:shadow-2xl m-2 px-2 py-1 rounded-md flex-shrink-0 cursor-pointer;
+		@apply bg-white shadow hover:shadow-2xl m-2 px-2 py-1 rounded-md flex-shrink-0 cursor-pointer text-center;
 
 		img {
 			@apply w-8 h-8 inline;
