@@ -437,7 +437,9 @@ let useS3Util = () => {
 	const loadSharePointSites = (s3Credentials) => {
 		loadS3BucketsReq(s3Credentials).then((res) => {
 			bucketList.value = res.data;
-		})
+		}).catch((e) => {
+      bucketList.value = [];
+    })
 	}
 
 	return { bucketList }
