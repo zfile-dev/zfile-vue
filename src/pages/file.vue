@@ -1,5 +1,7 @@
 <template>
-	<div class="zfile-index-body" ref="rootRef">
+	<div class="zfile-index-body"
+       :class="storageConfigStore.config?.layout === 'center' ? 'zfile-index-table-center' : ''"
+       ref="rootRef">
 		<!-- 公告 -->
 		<el-alert v-if="storageConfigStore.config.announcement" class="zfile-index-announcement" type="success">
 			<v-md-preview :text="storageConfigStore.config.announcement"></v-md-preview>
@@ -618,6 +620,10 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route
 	margin: 0 auto;
 }
 
+
+.zfile-index-table-center {
+  @apply w-[80%] ml-[10%];
+}
 
 
 // 文件选中效果
