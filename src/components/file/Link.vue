@@ -114,7 +114,7 @@
 			</el-row>
 
 			<template #footer>
-				<el-button type="primary" @click="exportExcel">导出</el-button>
+				<el-button type="primary" v-show="selectFiles.length > 1" @click="exportExcel">导出</el-button>
 				<el-button type="info" @click="visible = false">关闭</el-button>
 			</template>
 		</el-dialog>
