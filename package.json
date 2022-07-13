@@ -55,9 +55,9 @@
 		"sortablejs": "^1.15.0",
 		"v-contextmenu": "^3.0.0",
 		"v3-img-preview": "^1.1.16",
+		"vanilla-lazyload": "^17.8.2",
 		"viewerjs": "^1.10.5",
 		"vue": "^3.2.37",
-		"vue-masonry": "^0.15.0",
 		"xlsx": "^0.18.5"
 	},
 	"devDependencies": {
