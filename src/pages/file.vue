@@ -286,6 +286,7 @@
 			<div v-show="selectRows.length > 0 && storageKey && !fileDataStore.imgMode && linkVisible === false"
 			     class="zfile-index-hover-tools">
 				<div class="zfile-index-hover-body">
+
 					<el-tooltip
 						:show-arrow="false"
 						:offset="15"
@@ -305,7 +306,18 @@
 						placement="top">
 						<svg-icon v-if="selectStatistics.isAllFile" @click="batchDownloadFile" name="tool-download"></svg-icon>
 					</el-tooltip>
-					<div v-if="storageConfig.enableFileOperator !== false">
+
+          <el-tooltip
+            :show-arrow="false"
+            :offset="15"
+            effect="dark"
+            content="生成直链"
+            placement="top">
+            <svg-icon v-if="selectStatistics.isAllFile && selectStatistics.isAllFile &&
+(storageConfigStore.config.showLinkBtn && (storageConfigStore.config.showShortLink || storageConfigStore.config.showPathLink))" @click="openLinkDialog" name="tool-link"></svg-icon>
+          </el-tooltip>
+
+					<template v-if="storageConfig.enableFileOperator !== false">
 						<el-tooltip
 							:show-arrow="false"
 							:offset="15"
@@ -315,15 +327,14 @@
 							placement="top">
 							<svg-icon v-if="selectStatistics.isSingleSelect" @click="rename" name="tool-edit"></svg-icon>
 						</el-tooltip>
-
-						<el-tooltip
-							:show-arrow="false"
-							:offset="15"
-							effect="dark"
-							content="移动"
-							placement="top">
-							<svg-icon @click="moveTo" name="tool-move"></svg-icon>
-						</el-tooltip>
+						<!--<el-tooltip-->
+						<!--	:show-arrow="false"-->
+						<!--	:offset="15"-->
+						<!--	effect="dark"-->
+						<!--	content="移动"-->
+						<!--	placement="top">-->
+						<!--	<svg-icon @click="moveTo" name="tool-move"></svg-icon>-->
+						<!--</el-tooltip>-->
 						<el-tooltip
 							:show-arrow="false"
 							:offset="15"
@@ -332,17 +343,7 @@
 							placement="top">
 							<svg-icon @click="batchDelete" name="tool-delete"></svg-icon>
 						</el-tooltip>
-					</div>
-
-					<el-tooltip
-						:show-arrow="false"
-						:offset="15"
-						effect="dark"
-						content="生成直链"
-						placement="top">
-						<svg-icon v-if="selectStatistics.isAllFile && selectStatistics.isAllFile &&
-(storageConfigStore.config.showLinkBtn && (storageConfigStore.config.showShortLink || storageConfigStore.config.showPathLink))" @click="openLinkDialog" name="tool-link"></svg-icon>
-					</el-tooltip>
+					</template>
 
 					<el-tooltip
 						:show-arrow="false"
