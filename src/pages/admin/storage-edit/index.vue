@@ -194,6 +194,7 @@
 
 			<!-- s3 存储器列表 -->
 			<el-select
+        filterable
 				v-else-if="item.key === 'bucketName' && bucketList?.length > 0"
 				placeholder="请选择存储器列表"
 				v-model="storageItem.storageSourceAllParam.bucketName" class="input-with-select">
