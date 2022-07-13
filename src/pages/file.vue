@@ -52,7 +52,7 @@
 					<span>文件名</span>
 				</template>
 				<template #default="scope">
-					<div v-if="skeletonLoading">
+					<div v-show="skeletonLoading">
 						<el-skeleton animated>
 							<template #template>
 								<el-skeleton-item variant="circle"
@@ -62,7 +62,7 @@
 							</template>
 						</el-skeleton>
 					</div>
-					<div v-else>
+					<div v-show="!skeletonLoading">
 						<svg-icon :name="'file-type-' + scope.row.icon"></svg-icon>
 						{{ scope.row.name }}
 					</div>
@@ -82,14 +82,14 @@
 					<span>修改时间</span>
 				</template>
 				<template #default="scope">
-					<div v-if="skeletonLoading">
+          <div v-show="skeletonLoading">
 						<el-skeleton animated>
 							<template #template>
 								<el-skeleton-item variant="text" style="width: 60%"/>
 							</template>
 						</el-skeleton>
 					</div>
-					<div v-else>
+          <div v-show="!skeletonLoading">
 						{{ scope.row.time }}
 					</div>
 				</template>
@@ -108,14 +108,14 @@
 					<span>大小</span>
 				</template>
 				<template #default="scope">
-					<div v-if="skeletonLoading">
+          <div v-show="skeletonLoading">
 						<el-skeleton animated>
 							<template #template>
 								<el-skeleton-item variant="text" style="width: 30%"/>
 							</template>
 						</el-skeleton>
 					</div>
-					<div v-else>
+          <div v-show="!skeletonLoading">
 						{{ common.fileSizeFilter(scope.row, null, scope.row.size) }}
 					</div>
 				</template>
