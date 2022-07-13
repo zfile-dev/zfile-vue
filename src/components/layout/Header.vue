@@ -156,17 +156,24 @@ const toLoginView = () => {
 // 自定义 css js 功能.
 import { useStyleTag } from '@vueuse/core'
 if (storageConfigStore.config.customCss) {
-	useStyleTag(storageConfigStore.config.customCss);
+  try {
+	  useStyleTag(storageConfigStore.config.customCss);
+  } catch (e) {
+    console.error('加载自定义 css 加载失败:', storageConfigStore.config.customCss, e);
+  }
 }
 
 if (storageConfigStore.config.customJs) {
-	let script = document.createElement('script');
-	script.type = 'text/javascript';
-	script.text = storageConfigStore.config.customJs;
-	document.getElementsByTagName('head')[0].appendChild(script)
+  try {
+    let script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.text = storageConfigStore.config.customJs;
+    document.getElementsByTagName('head')[0].appendChild(script)
+  } catch (e) {
+    console.log('加载自定义 js 失败: ', storageConfigStore.config.customJs, e);
+  }
+
 }
-
-
 </script>
 
 <style scoped lang="scss">
