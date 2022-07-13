@@ -4,38 +4,44 @@
 		<div class="zfile-img-body" v-if="transferResult.length > 0">
 			<div class="zfile-img-row" v-for="(rowItem, index) in transferResult" :key="index">
 				<div class="zfile-img-col"
-				     @click="openImage(colItem)"
+				     @click="openGalleryImage(colItem)"
 				     :style="{ display: globalConfigStore.zfileConfig.gallery.showInfoMode === 'hover' ? 'flex' : 'block'}"
 				     v-for="colItem in rowItem">
-					<el-image class="zfile-gallery-img"
-					          :class="globalConfigStore.zfileConfig.gallery.roundedBorder ? 'zfile-gallery-img-rounded' : ''"
-					          :src="colItem?.url"
-					          :alt="colItem?.name"
-					          loading="lazy"
-					          lazy
-					          @load="onImageLoad"
-					          scroll-container=".zfile-gallery-body">
-					</el-image>
-					<div v-if="globalConfigStore.zfileConfig.gallery.showInfo &&
+					<template v-if="colItem?.url">
+            <img class="zfile-gallery-img lazy"
+                 :class="globalConfigStore.zfileConfig.gallery.roundedBorder ? 'zfile-gallery-img-rounded' : ''"
+                 :data-src="colItem.url"
+                 loading="lazy"
+                 src="/loading.gif"
+                 :alt="colItem.name"/>
+            <div v-if="globalConfigStore.zfileConfig.gallery.showInfo &&
 					    globalConfigStore.zfileConfig.gallery.showInfoMode === 'hover'"
-					     :class="globalConfigStore.zfileConfig.gallery.roundedBorder ? 'zfile-gallery-img-rounded' : ''"
-					     class="zfile-gallery-img-hover-info">
-						<span class="zfile-gallery-img-text">{{colItem?.name}}</span>
-						<span class="zfile-gallery-img-text">{{common.fileSizeFormat(colItem?.size)}}</span>
-					</div>
-					<div
-						v-show="loadedList.includes(colItem?.name)"
-						v-if="globalConfigStore.zfileConfig.gallery.showInfo &&
+                 :class="globalConfigStore.zfileConfig.gallery.roundedBorder ? 'zfile-gallery-img-rounded' : ''"
+                 v-show="loadedList.includes(colItem.name)"
+                 class="zfile-gallery-img-hover-info">
+              <span class="zfile-gallery-img-text">{{colItem.name}}</span>
+              <span class="zfile-gallery-img-text">{{common.fileSizeFormat(colItem.size)}}</span>
+            </div>
+            <div
+              v-show="loadedList.includes(colItem.name)"
+              v-if="globalConfigStore.zfileConfig.gallery.showInfo &&
 						globalConfigStore.zfileConfig.gallery.showInfoMode === 'bottom'">
-						<span class="zfile-gallery-img-text"> {{ colItem?.name }} </span>
-					</div>
+              <span class="zfile-gallery-img-text"> {{ colItem.name }} </span>
+            </div>
+          </template>
 				</div>
 			</div>
 		</div>
+    <div v-else class="h-full">
+      <el-empty class="h-full" description="当前文件夹无图片">
+        <el-button type="primary" @click="imgModel = false">退出画廊模式</el-button>
+      </el-empty>
+    </div>
 	</div>
 </template>
 
 <script setup>
+
 // 是否已初始化图片
 import {computed, reactive, ref} from "vue";
 import common from "~/common";
@@ -52,6 +58,10 @@ let fileDataStore = useFileDataStore();
 const transferResult = computed(() => {
 	// 获取图片列表
 	let imgList = fileDataStore.filterFileByType('image');
+
+  if (imgList.length === 0) {
+    return [];
+  }
 
 	// 图片二维数组, 表示每行每列的图片
 	let imgArray = ref([]);
@@ -81,13 +91,8 @@ const transferResult = computed(() => {
 	return transfer(imgArray.value);
 })
 
-
-
 // 已加载完的图片列表, 已加载完才悬浮显示标题
 let loadedList = reactive([]);
-const onImageLoad = (e) => {
-	loadedList.push(e.path[0].alt);
-}
 
 // 图片行间距 px
 let galleryRowSpacingPx = computed(() => {
@@ -112,6 +117,31 @@ let galleryRowWidth = computed(() => {
 import useFilePreview from '~/composables/file/useFilePreview';
 const { openImage } = useFilePreview();
 
+const openGalleryImage = (item) => {
+  if (loadedList.includes(item.name)) {
+    openImage(item);
+  }
+}
+
+import LazyLoad from "vanilla-lazyload";
+
+onMounted(() => {
+  new LazyLoad({
+    element_selector: ".lazy",
+    callback_loaded: (elt) => {
+      // 加载完成后添加到已加载列表
+      loadedList.push(elt.alt);
+    },
+    callback_error: (elt) => {
+      loadedList.push(elt.alt);
+      elt.setAttribute("src", "/error.svg");
+    }
+  });
+});
+
+// 获取图片模式是否开启
+import useHeaderImgMode from "~/composables/header/useHeaderImgMode";
+const { imgModel } = useHeaderImgMode();
 
 </script>
 
@@ -119,7 +149,6 @@ const { openImage } = useFilePreview();
 
 .zfile-gallery-body {
 	height: 100%;
-	overflow-y: auto;
 
 	.zfile-img-body {
 		@apply flex h-full flex-wrap;
@@ -135,8 +164,12 @@ const { openImage } = useFilePreview();
 		margin-bottom: v-bind('galleryRowSpacingPx');
 
 		.zfile-gallery-img {
-			@apply border;
+			@apply border min-h-[150px];
 		}
+
+    .zfile-gallery-img:not(.loaded) {
+      @apply w-full;
+    }
 
 		.zfile-gallery-img-rounded {
 			@apply rounded-lg;
@@ -162,8 +195,6 @@ const { openImage } = useFilePreview();
 			@apply opacity-100;
 		}
 	}
-
-
 
 }
 
