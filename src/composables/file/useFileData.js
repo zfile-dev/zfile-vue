@@ -293,13 +293,14 @@ export default function useFileData(router, route) {
 
     // 显示密码输入框
     let popPassword = () => {
+        let allowClosePasswordDialog = searchParam.path !== '/';
         // 如果输入了密码, 则写入到 sessionStorage 缓存中, 并重新调用加载文件.
         ElMessageBox.prompt('此文件夹已加密，请输入密码', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
-            showCancelButton: false,
-            showClose: false,
-            closeOnClickModal: false,
+            showCancelButton: allowClosePasswordDialog,
+            showClose: allowClosePasswordDialog,
+            closeOnClickModal: allowClosePasswordDialog,
             inputValidator(val) {
                 return !!val
             },
