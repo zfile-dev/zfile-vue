@@ -29,7 +29,6 @@ export default function useFileOperator(router, route) {
         if (row.name) {
             confirmMsg = `是否确认下载文件 ${row.name}？`;
         } else if (selectRows.value.length === 1) {
-            debugger;
             confirmMsg = `是否确认下载文件 ${selectRows.value[0].name}？`;
         } else if (selectRows.value.length > 1) {
             confirmMsg = `是否确认批量下载 ${selectRows.value.length} 个文件？`;
