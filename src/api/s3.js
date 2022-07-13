@@ -5,6 +5,9 @@ export const loadS3BucketsReq = (data) => {
     return axios({
         url: `/s3/getBuckets`,
         method: "post",
-        data
+        data,
+        config: {
+            showDefaultMsg: false
+        }
     })
 }
