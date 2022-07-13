@@ -13,9 +13,6 @@ let baseData = {
         showInfoMode: 'hover',
         roundedBorder: true
     },
-    getShortLinkListPreview: {
-        mode: "only"
-    },
     imagePreview: {
         mode: "only"
     }
