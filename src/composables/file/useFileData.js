@@ -45,7 +45,12 @@ const loading = ref(false);
 // 是否是已经调用了首次 loading
 const firstLoading = ref(false);
 let skeletonData = reactive([]);
-
+if (skeletonData.length === 0) {
+    // 动态配置骨架屏行数
+    for (let i = 0; i < globalConfigStore.zfileConfig.skeleton.size; i++) {
+        skeletonData.push({})
+    }
+}
 // ------------- loading end   ------------
 
 
@@ -274,10 +279,6 @@ export default function useFileData(router, route) {
             return false;
         }
     });
-    // 动态配置骨架屏行数
-    for (let i = 0; i < globalConfigStore.zfileConfig.skeleton.size; i++) {
-        skeletonData.push({})
-    }
     // 是否显示普通 loading
     let basicLoading = computed(() => {
         return skeletonLoading.value ? false : loading.value;
