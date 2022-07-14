@@ -303,6 +303,7 @@ export default function useFileData(router, route) {
         ElMessageBox.prompt('此文件夹已加密，请输入密码', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
+            inputType: 'password',
             inputValidator(val) {
                 return !!val
             },
@@ -310,14 +311,14 @@ export default function useFileData(router, route) {
         }).then(({value}) => {
             loadFile({password: value});
         }).catch(() => {
-            if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.config.rootShowStorage === true) {
-                fileDataStore.updateFileList(storageListAsFileList.value);
-                router.push("/");
-                title.value = storageConfigStore.config.siteName + ' | 首页';
-                loading.value = false;
-            } else {
-                let parentPath = path.resolve(searchParam.path, '../');
-                router.push("/" + storageKey.value + parentPath);
+                    if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.config.rootShowStorage === true) {
+                        fileDataStore.updateFileList(storageListAsFileList.value);
+                        router.push("/");
+                        title.value = storageConfigStore.config.siteName + ' | 首页';
+                        loading.value = false;
+                    } else {
+                        let parentPath = path.resolve(searchParam.path, '../');
+                        router.push("/" + storageKey.value + parentPath);
             }
         });
     }
