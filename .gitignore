@@ -2,3 +2,4 @@ dist
 node_modules
 .eslintcache
 .idea
+/stats.html
