@@ -55,10 +55,10 @@ export default function useHeaderStorageList(router, route) {
                 // 否则读取存储源列表中的第一个, 并跳转到响应的 URL 中.
                 routerToFirstStorage();
             }
-
         } else {
             if (rootShowStorage) {
                 fileDataStore.updateFileList(storageListAsFileList.value);
+                document.title = storageConfigStore.config.siteName + ' | 首页';
             } else {
                 routerToFirstStorage();
             }
@@ -126,6 +126,6 @@ export default function useHeaderStorageList(router, route) {
     initialized = true;
 
     return {
-        loadStorageSourceList, storageList, findStorageByKey, storageKey, currentStorageKey
+        loadStorageSourceList, storageList, findStorageByKey, storageKey, currentStorageKey, storageListAsFileList
     }
 }

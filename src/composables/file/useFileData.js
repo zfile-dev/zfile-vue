@@ -313,6 +313,7 @@ export default function useFileData(router, route) {
             if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.config.rootShowStorage === true) {
                 fileDataStore.updateFileList(storageListAsFileList.value);
                 router.push("/");
+                title.value = storageConfigStore.config.siteName + ' | 首页';
                 loading.value = false;
             } else {
                 let parentPath = path.resolve(searchParam.path, '../');
