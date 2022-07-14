@@ -7,7 +7,7 @@ import Inspect from 'vite-plugin-inspect'
 import Markdown from './plugins/markdown'
 // import Windicss from 'vite-plugin-windicss'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import Rmovelog from 'vite-plugin-removelog'
+import Removelog from 'vite-plugin-removelog'
 import ViteRestart from 'vite-plugin-restart'
 import I18n from '@intlify/vite-plugin-vue-i18n'
 import { viteMockServe } from 'vite-plugin-mock'
@@ -167,9 +167,9 @@ export default () => {
 			algorithm: env.VITE_APP_COMPRESSINON_ALGORITHM,
 		}),
 		// 生产环境下移除 console.log, console.warn, console.error
-		Rmovelog({
-
-		}),
+		// Removelog({
+		//
+		// }),
 		createSvgIconsPlugin({
 			// 指定需要缓存的图标文件夹
 			iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
