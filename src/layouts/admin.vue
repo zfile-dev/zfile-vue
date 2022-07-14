@@ -18,14 +18,8 @@
 						:disabled="githubLatestLoading"
 						trigger="hover">
 						<div v-if="githubLatestInfo?.data" class="zfile-admin-index-version-info text-center">
-							<div class="cursor-pointer" @click="openZFileGithub">
-								<el-icon size="40">
-									<i-custom-zfile></i-custom-zfile>
-								</el-icon>
-								<div>ZFile v {{ common.version }}</div>
-							</div>
-							<br>
-							<div v-html="`最新版：v${githubLatestInfo.data.tag_name}`"></div>
+              <div v-html="`当前版本：v${common.version}`"></div>
+              <div v-html="`最新版：v${githubLatestInfo.data.tag_name}`"></div>
 							<div v-html="`发布时间: ${common.dateFormat(githubLatestInfo.data.published_at)}`"></div>
 							<br>
 							文档地址：
@@ -50,6 +44,9 @@
 								     alt="Workflow"/>
 								<img class="hidden lg:block h-8 w-auto" src="../assets/icons/zfile-horizontal.svg"
 								     alt="Workflow"/>
+                <el-badge :is-dot="githubLatestInfo?.data?.tag_name && common.version !== githubLatestInfo?.data?.tag_name" class="hidden lg:block text-sm font-bold word ml-1 tracking-wider">
+                  {{common.version}}
+                </el-badge>
 							</div>
 						</template>
 					</el-popover>

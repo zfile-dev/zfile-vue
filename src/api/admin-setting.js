@@ -6,6 +6,7 @@ export const githubInfoReq = () => {
         url: "https://api.github.com/repos/zhaojun1998/zfile/releases/latest",
         method: "get",
         config: {
+            responseIntercept: false,
             withCredentials: false,
             showDefaultMsg: false
         }
