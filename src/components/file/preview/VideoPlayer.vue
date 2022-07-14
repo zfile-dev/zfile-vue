@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div class="artplayer-app"></div>
-    <div class="zfile-video-tools" v-if="currentVideo && common.isMobile.value">
+    <div class="zfile-video-switch-tools" v-if="currentVideo && common.isMobile.value">
       <el-button v-show="getPrevAndNextVideo(currentVideo.name).prev" :icon="IconPrev" @click="playPrevVideo">上一个视频</el-button>
       <el-button v-show="getPrevAndNextVideo(currentVideo.name).next" :icon="IconNext" @click="playNextVideo">下一个视频</el-button>
     </div>
@@ -451,6 +451,9 @@ onMounted(() => {
 	}
 }
 
+.zfile-video-switch-tools {
+  @apply px-5 py-2 bg-gray-50 flex justify-between;
+}
 .zfile-video-tools {
 	@apply bg-gray-50 p-3
         grid grid-cols-3 gap-0
