@@ -3,6 +3,9 @@ const zfilePasswordCache = useStorage('zfile-pwd-cache', {});
 import useCommon from "../useCommon";
 const { encodeAllIgnoreSlashes } = useCommon();
 
+import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
+
+
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
 
@@ -33,7 +36,6 @@ import useFileOperator from '~/composables/file/useFileOperator';
 
 // 所有选中的文件行列表
 const selectRows = ref([]);
-
 // ------------- select end   ------------
 
 
@@ -68,6 +70,9 @@ const storageConfig = ref({});
 const initStorageConfig = ref(false);
 
 export default function useFileData(router, route) {
+
+    const { storageListAsFileList } = useHeaderStorageList(router, route);
+
 
     const checkSelectable = (row) => {
         return row.type === 'FILE' || row.type === 'FOLDER';
@@ -294,14 +299,10 @@ export default function useFileData(router, route) {
 
     // 显示密码输入框
     let popPassword = () => {
-        let allowClosePasswordDialog = searchParam.path !== '/';
         // 如果输入了密码, 则写入到 sessionStorage 缓存中, 并重新调用加载文件.
         ElMessageBox.prompt('此文件夹已加密，请输入密码', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
-            showCancelButton: allowClosePasswordDialog,
-            showClose: allowClosePasswordDialog,
-            closeOnClickModal: allowClosePasswordDialog,
             inputValidator(val) {
                 return !!val
             },
@@ -309,7 +310,14 @@ export default function useFileData(router, route) {
         }).then(({value}) => {
             loadFile({password: value});
         }).catch(() => {
-            router.push("/" + storageKey.value + path.resolve(searchParam.path, '../'));
+            if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.config.rootShowStorage === true) {
+                fileDataStore.updateFileList(storageListAsFileList.value);
+                router.push("/");
+                loading.value = false;
+            } else {
+                let parentPath = path.resolve(searchParam.path, '../');
+                router.push("/" + storageKey.value + parentPath);
+            }
         });
     }
     // 获取当前路径缓存中的密码
