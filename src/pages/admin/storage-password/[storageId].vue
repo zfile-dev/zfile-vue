@@ -13,9 +13,9 @@
 		<template #form-sub-title>
 			<el-alert :closable="false" type="info">
 				<div class="rules-tips">Glob 表达式规则：</div>
-				<div class="rules-tips"><b>/</b>: 根目录, 如 /, 表示根路径下需要密码访问.</div>
-				<div class="rules-tips"><b>*</b>：单级路径通配符，如表达式 /*，表示根路径下的直接子文件夹需要密码访问.</div>
-				<div class="rules-tips"><b>**</b>：多级路径通配符，如表达式 /music/**，表示 /music 文件夹及以下所有文件夹都需要密码访问.</div>
+				<div class="rules-tips"><b>/</b>: 单层根目录加密, 如 /, 表示根路径下需要密码访问.</div>
+        <div class="rules-tips"><b>/music*</b>: 单层子目录加密, 如 /music*, 表示根目录下的 music 文件夹需要密码访问, 子文件夹不加密.</div>
+        <div class="rules-tips"><b>/music**</b>: 嵌套子目录加密, 如 /music**, 表示根目录下的 music 文件夹及其所有子文件夹都需要密码访问.</div>
 				<div class="rules-tips">注：系统匹配到第一个符合的规则就会取密码进行校验，并返回结果，所以请调整好规则顺序，下方规则可进行拖拽排序。</div>
 				<div class="rules-tips-link">
 					<a target="_blank" class="link" href="http://www.ruanyifeng.com/blog/2018/09/bash-wildcards.html"><Collection class="inline mr-1"></Collection><span>参考文章 (Wikipedia)</span></a>
