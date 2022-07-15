@@ -308,7 +308,7 @@ let useInitData = () => {
 		alias: '',
 		defaultSwitchToImgMode: false,
 		enable: true,
-		enableFileOperator: false,
+		enableFileOperator: true,
 		enableFileAnnoOperator: false,
 		searchEnable: false,
 		searchIgnoreCase: false,
