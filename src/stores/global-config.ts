@@ -24,10 +24,12 @@ const useGlobalConfigStore = defineStore('globalConfigStore', {
           rowSpacing: 10,
           showInfo: false,
           showInfoMode: "hover",
-          roundedBorder: true
+          roundedBorder: true,
+          showBackTop: true,
         },
         imagePreview: {
-          mode: "only"
+          mode: "only",
+          gallery: true
         },
         officePreview: {}
       }

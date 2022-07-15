@@ -118,6 +118,9 @@ import useFilePreview from '~/composables/file/useFilePreview';
 const { openImage } = useFilePreview();
 
 const openGalleryImage = (item) => {
+  if (!globalConfigStore.zfileConfig.imagePreview.gallery) {
+    return;
+  }
   if (loadedList.includes(item.name)) {
     openImage(item);
   }

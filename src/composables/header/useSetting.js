@@ -11,10 +11,12 @@ let baseData = {
         rowSpacing: 10,
         showInfo: true,
         showInfoMode: 'hover',
-        roundedBorder: true
+        roundedBorder: true,
+        showBackTop: true
     },
     imagePreview: {
-        mode: "only"
+        mode: "only",
+        gallery: true
     }
 };
 

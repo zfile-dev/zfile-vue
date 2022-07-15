@@ -268,7 +268,7 @@
 		<audio-player></audio-player>
 
 		<!-- 回到顶部 -->
-		<back-top></back-top>
+		<back-top v-show="globalConfigStore.zfileConfig.gallery.showBackTop"></back-top>
 
 		<!-- 弹窗文档 -->
 		<el-dialog draggable

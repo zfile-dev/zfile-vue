@@ -96,7 +96,14 @@
 							<el-option label="显示单张" value="only"></el-option>
 						</el-select>
 					</div>
-
+          <div class="flex justify-between">
+            <div class="text-lg font-medium">点击放大预览</div>
+            <el-switch v-model="zfileSettingCache.imagePreview.gallery"></el-switch>
+          </div>
+          <div class="flex justify-between">
+            <div class="text-lg font-medium">回到顶部按钮</div>
+            <el-switch v-model="zfileSettingCache.gallery.showBackTop"></el-switch>
+          </div>
 				</div>
 				<div class="text-gray-400 text-sm mt-10">
 					Tips: 设置会自动保存，刷新后仍有效.
@@ -135,6 +142,7 @@ watch(() => zfileSettingCache.value, (value) => {
 	globalConfigStore.zfileConfig.gallery.showInfo = value.gallery.showInfo;
 	globalConfigStore.zfileConfig.gallery.showInfoMode = value.gallery.showInfoMode;
 	globalConfigStore.zfileConfig.gallery.roundedBorder = value.gallery.roundedBorder;
+  globalConfigStore.zfileConfig.gallery.showBackTop = value.gallery.showBackTop;
 
 	if (value?.view?.size) {
 		storageConfigStore.config.tableSize = viewSizeMap[value.view.size];
@@ -147,6 +155,7 @@ watch(() => zfileSettingCache.value, (value) => {
 	if (value?.imagePreview?.mode) {
 		globalConfigStore.zfileConfig.imagePreview.mode = value.imagePreview.mode;
 	}
+  globalConfigStore.zfileConfig.imagePreview.gallery = value.imagePreview.gallery;
 }, {
 	immediate: true,
 	deep: true
