@@ -560,8 +560,13 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route
 	:deep(.el-dialog__header) {
 		margin-bottom: -10px;
 		padding: 5px 0 5px 0;
-		@apply line-clamp-1 w-10/12 text-center ml-2;
+		@apply line-clamp-1 text-center ml-2;
 	}
+
+  /* 视频弹窗样式 -- 修正去除边框后关闭按钮错位的问题 */
+  :deep(.el-dialog__header .el-dialog__headerbtn) {
+    top: -6px;
+  }
 
 	/* 所有弹窗 -- 去除 dialog 打开后滚动条 */
 	:deep(.el-overlay-dialog) {
@@ -572,12 +577,6 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route
 	:deep(.zfile-video-dialog .el-dialog__body) {
 		padding: 10px 0 0 0;
 	}
-
-	/* 视频弹窗样式 -- 修正去除边框后关闭按钮错位的问题 */
-	:deep(.zfile-video-dialog .el-dialog__headerbtn) {
-		top: -6px;
-	}
-
 
 	// 移动端视频宽屏显示
 	@media screen and (max-device-width: 769px) {
@@ -613,11 +612,14 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route
 	cursor: pointer;
 }
 
-#ListTable >>> .img-mode-img {
-	display: block;
-	width: 80%;
-	height: auto;
-	margin: 0 auto;
+#ListTable {
+  height: 100%;
+  :deep(.el-table__inner-wrapper) {
+    height: 100%;
+  }
+  :deep(.el-table__body-wrapper) {
+    height: 100%;
+  }
 }
 
 
@@ -703,10 +705,17 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route
 		.el-dialog__body {
 			padding: 15px 5px;
 		}
-		.el-dialog__headerbtn {
-			top: -6px;
-		}
 	}
+}
+
+
+.zfile-index-body {
+  :deep(.el-table__empty-block) {
+    @apply -mt-10;
+  }
+  :deep(.el-table__empty-text) {
+    @apply w-full;
+  }
 }
 
 </style>
