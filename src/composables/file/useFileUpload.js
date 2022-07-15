@@ -5,6 +5,7 @@ import common from "~/common";
 import {removeDuplicateSlashes} from "fast-glob/out/managers/patterns";
 
 const visible = ref(false);
+const uploadMode = ref('');
 const uploadProgressInfo = reactive([]);
 const cancelTokenSourceMap = new Map();
 const uploadProgressInfoMap = new Map();
@@ -323,11 +324,13 @@ export default function useFileUpload(router, route) {
     // 打开上传文件 dialog
     const openUploadDialog = () => {
         visible.value = true;
+        uploadMode.value = 'file';
     }
 
     // 打开上传文件夹 dialog
     const openUploadFolderDialog = () => {
         visible.value = true;
+        uploadMode.value = 'folder';
         nextTick(() => {
             document.getElementsByClassName('el-upload__input')[0].webkitdirectory = true;
         })
@@ -599,7 +602,7 @@ export default function useFileUpload(router, route) {
     }
 
     return {
-        visible, openUploadDialog, openUploadFolderDialog, cancelUpload, dropState, listenDropFile,
+        visible, uploadMode, openUploadDialog, openUploadFolderDialog, cancelUpload, dropState, listenDropFile,
         beforeUpload, uploadFile, uploadProgressInfoSorted, uploadProgressInfoStatistics
     }
 }

@@ -2,7 +2,7 @@
 	<div class="zfile-file-upload-body">
 		<el-dialog v-if="visible" v-model="visible" :destroy-on-close="true"
 		           @close="closeDialog"
-		           title="上传"
+		           :title="uploadMode === 'file' ? '上传文件' : '上传文件夹'"
 		           custom-class="zfile-file-upload-dialog"
 		           draggable
 		           top="5vh"
@@ -17,7 +17,14 @@
 					<SvgIcon name="upload-1"></SvgIcon>
 				</el-icon>
 				<div class="el-upload__text text-gray-400">
-					拖拽文件到这里或<em> 点击上传</em>, 上传至 <em>{{ currentPath }}</em>
+          <span v-show="uploadMode === 'file'">
+            拖拽文件到这里或<em> 点击上传</em>, 上传至 <em>{{ currentPath }}</em>
+          </span>
+          <span v-show="uploadMode === 'folder'">
+            点击选择文件夹上传, 上传至 <em>{{ currentPath }}</em>
+            <br>
+            <span class="text-gray-400">（此处不支持拖拽文件夹，只支持点击选择文件夹）</span>
+          </span>
 				</div>
 			</el-upload>
 			<div class="mt-5 space-y-2.5">
@@ -74,7 +81,7 @@ import useFileOperator from "~/composables/file/useFileOperator";
 const { uploadFile } = useFileOperator(router, route);
 
 import useFileUpload from "~/composables/file/useFileUpload";
-const { visible, cancelUpload, beforeUpload, uploadProgressInfoSorted,
+const { visible, uploadMode, cancelUpload, beforeUpload, uploadProgressInfoSorted,
 	dropState, listenDropFile} = useFileUpload(router, route);
 
 // 如果有上传完成的文件，关闭对话框时调用 close 方法刷新文件列表
