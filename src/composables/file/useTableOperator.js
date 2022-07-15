@@ -98,6 +98,11 @@ export default function useTableOperator(router, route) {
 
     // 文件单击事件
     const tableClickRow = (row, event) => {
+        if (event === undefined) {
+            openRow(row);
+            return;
+        }
+
         let isClickSelection = event.type === 'selection';
 
         // 如果点击的是文件或文件夹, 且点击的不是 checkbox 列, 且操作习惯是单击打开, 则打开文件/文件夹
