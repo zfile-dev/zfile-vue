@@ -3,12 +3,12 @@
        :class="storageConfigStore.config?.layout === 'center' ? 'zfile-index-table-center' : ''"
        ref="rootRef">
 		<!-- 公告 -->
-		<el-alert v-if="storageConfigStore.config.announcement" class="zfile-index-announcement" type="success">
+		<el-alert v-if="storageConfigStore.config.showAnnouncement && storageConfigStore.config.announcement" class="zfile-index-announcement" type="success">
 			<v-md-preview :text="storageConfigStore.config.announcement"></v-md-preview>
 		</el-alert>
 
 		<!-- 文档模式显示 -->
-		<el-card v-if="route.params.storageKey && storageConfig.readmeDisplayMode === 'top'" class="my-3" >
+		<el-card v-if="storageConfigStore.config.showDocument && route.params.storageKey && storageConfig.readmeDisplayMode === 'top'" class="my-3" >
 			<v-md-preview :text="storageConfig.readmeText"></v-md-preview>
 		</el-card>
 
@@ -273,12 +273,12 @@
 		<!-- 弹窗文档 -->
 		<el-dialog draggable
 		           custom-class="zfile-readme-dialog"
-		           v-if="storageConfig.readmeDisplayMode === 'dialog'" :model-value="true">
+		           v-if="storageConfigStore.config.showDocument && storageConfig.readmeDisplayMode === 'dialog'" :model-value="true">
 			<v-md-preview :text="storageConfig.readmeText"></v-md-preview>
 		</el-dialog>
 
 		<!-- 底部文档 -->
-		<el-card class="mt-5" v-if="storageConfig.readmeDisplayMode === 'bottom'">
+		<el-card class="mt-5" v-if="storageConfigStore.config.showDocument && storageConfig.readmeDisplayMode === 'bottom'">
 			<v-md-preview :text="storageConfig.readmeText"></v-md-preview>
 		</el-card>
 

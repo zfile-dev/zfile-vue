@@ -61,7 +61,7 @@
 			<el-switch v-model="data.showDocument"/>
 			<el-tooltip placement="right">
 				<template #content>
-					在文件列表下，显示当前文件夹中 readme.md 的内容，支持 md 和 html 语法
+					在文件列表下，显示当前文件夹的目录文档
 				</template>
 				<i class="el-icon-info zfile-info-tooltip"></i>
 			</el-tooltip>
