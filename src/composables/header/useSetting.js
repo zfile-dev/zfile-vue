@@ -1,11 +1,14 @@
 const visible = ref(false);
 
+import useCommon from "~/composables/useCommon";
+const { isMobile } = useCommon();
+
 let baseData = {
     view: {
         size: 2
     },
     gallery: {
-        column: 3,
+        column: isMobile.value ? 1 : 3,
         mobileColumn: 1,
         columnSpacing: 50,
         rowSpacing: 10,
