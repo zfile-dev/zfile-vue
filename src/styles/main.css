@@ -80,6 +80,10 @@ body,
 	top: 2.5vh !important;
 }
 
+#v3-img-preview-container-id .img-container .img-content {
+	width: 95%;
+}
+
 /* 黑暗模式适配 */
 /*html.dark {*/
 /*	height: 100%;*/
