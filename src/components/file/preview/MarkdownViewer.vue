@@ -56,6 +56,9 @@ let markdownHtml = computed(() => {
 </script>
 
 <style scoped>
+.content {
+  padding: 10px 20px;
+}
 .content >>> img {
 	max-height: 150vh;
 	max-width: 150vh;

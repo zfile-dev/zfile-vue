@@ -363,33 +363,53 @@
 </template>
 
 <script setup>
+import common from "~/common";
+
+import MarkdownViewerAsyncLoading from '~/components/file/preview/MarkdownViewerAsyncLoading.vue'
+import MarkdownViewerDialogAsyncLoading from '~/components/file/preview/MarkdownViewerDialogAsyncLoading.vue'
+import VideoPlayerAsyncLoading from '~/components/file/preview/VideoPlayerAsyncLoading.vue'
+import TextViewerAsyncLoading from '~/components/file/preview/TextViewerAsyncLoading.vue'
+
 // markdown viewer 组件懒加载, 节约首屏打开时间
-const VMdPreview = defineAsyncComponent(() => {
-	return new Promise((resolve, reject) => {
-		;(async function () {
-			try {
-				const res = await import('@kangc/v-md-editor/lib/preview')
-				import('@kangc/v-md-editor/lib/style/preview.css');
-				import('@kangc/v-md-editor/lib/theme/style/github.css');
-				const hljs = await import('highlight.js');
-				const githubTheme = await import('@kangc/v-md-editor/lib/theme/github.js');
-				res.use(githubTheme, {
-					Hljs: hljs,
-				});
-				resolve(res)
-			} catch (error) {
-				reject(error)
-			}
-		})()
-	})
+const VMdPreview = defineAsyncComponent({
+  loader: () => {
+    return new Promise((resolve, reject) => {
+      ;(async function () {
+        try {
+          const res = await import('@kangc/v-md-editor/lib/preview')
+          import('@kangc/v-md-editor/lib/style/preview.css');
+          import('@kangc/v-md-editor/lib/theme/style/github.css');
+          const hljs = await import('highlight.js');
+          const githubTheme = await import('@kangc/v-md-editor/lib/theme/github.js');
+          res.use(githubTheme, {
+            Hljs: hljs,
+          });
+          resolve(res)
+        } catch (error) {
+          reject(error)
+        }
+      })()
+    })
+  },
+  loadingComponent: MarkdownViewerAsyncLoading
 })
 
-import common from "~/common";
 // 文件预览相关, 视频、音频、文本、图片
-const VideoPlayer = defineAsyncComponent(() => import("~/components/file/preview/VideoPlayer.vue"))
+const VideoPlayer = defineAsyncComponent({
+  loader: () => import("~/components/file/preview/VideoPlayer.vue"),
+  loadingComponent: VideoPlayerAsyncLoading
+})
+const TextViewer = defineAsyncComponent({
+  loader: () => import("~/components/file/preview/TextViewer.vue"),
+  loadingComponent: TextViewerAsyncLoading
+})
+const MarkdownViewer = defineAsyncComponent({
+  loader: () => import("~/components/file/preview/MarkdownViewer.vue"),
+  loadingComponent: MarkdownViewerDialogAsyncLoading
+})
+
+
 import AudioPlayer from '~/components/file/preview/AudioPlayer.vue'
-const TextViewer = defineAsyncComponent(() => import("~/components/file/preview/TextViewer.vue"))
-const MarkdownViewer = defineAsyncComponent(() => import("~/components/file/preview/MarkdownViewer.vue"))
 const FileGallery = defineAsyncComponent(() => import("~/components/file/preview/FileGallery.vue"))
 import BackTop from '~/components/BackTop.vue'
 import SvgIcon from '~/components/SvgIcon.vue'
