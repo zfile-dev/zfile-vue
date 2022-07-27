@@ -124,7 +124,7 @@ const openTarget = (mode) => {
 			window.location = `motrix://new-task?uri=${encodeURIComponent(currentVideo.value.url)}&out=${encodeURIComponent(currentVideo.value.name)}`;
 			break;
 		case 'potplayer':
-			window.location = `potplayer://${currentVideo.value.url}`;
+      window.location = `potplayer://${encodeURI(currentVideo.value.url)}`;
 			break;
 		case 'iina':
 			window.location = `iina://weblink?url=${encodeURIComponent(currentVideo.value.url)}`;
