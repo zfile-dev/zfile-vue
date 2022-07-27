@@ -81,7 +81,7 @@ body,
 }
 
 #v3-img-preview-container-id .img-container .img-content {
-	width: 95%;
+	max-width: 95%;
 }
 
 /* 黑暗模式适配 */
