@@ -421,7 +421,7 @@ let useS3Util = () => {
 
 	let s3Credentials = computed(() => {
 		return {
-			accessKey: storageItem.value.storageSourceAllParam.accessKey,
+			accessKey: storageItem.value.storageSourceAllParam.accessKey || storageItem.value.storageSourceAllParam.secretId,
 			secretKey: storageItem.value.storageSourceAllParam.secretKey,
 			endPoint: storageItem.value.storageSourceAllParam.endPoint,
 			region: storageItem.value.storageSourceAllParam.region
