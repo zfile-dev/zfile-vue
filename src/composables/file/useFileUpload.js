@@ -40,16 +40,17 @@ export default function useFileUpload(router, route) {
                 return;
             }
 
-            // 如果不允许文件操作，直接返回.
-            if (storageConfig.value.enableFileOperator === false) {
-                return;
-            }
 
             if (!storageKey.value) {
                 return;
             }
 
             if (visible.value) {
+                return;
+            }
+
+            // 如果不允许文件操作，直接返回.
+            if (storageConfig.value.enableFileOperator === false) {
                 return;
             }
 
