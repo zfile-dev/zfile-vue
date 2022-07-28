@@ -219,7 +219,7 @@
 		<!-- 视频播放器 -->
 		<el-dialog draggable custom-class="zfile-video-dialog" :destroy-on-close="true"
 		           top="5vh"
-		           width="80%"
+		           width="90%"
 		           v-model="dialogVideoVisible">
 			<video-player v-if="dialogVideoVisible" ref="videoPlayer"/>
 		</el-dialog>
