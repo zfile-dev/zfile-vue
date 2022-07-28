@@ -10,20 +10,16 @@
 					<template v-if="colItem?.url">
             <img class="zfile-gallery-img lazy"
                  :class="globalConfigStore.zfileConfig.gallery.roundedBorder ? 'zfile-gallery-img-rounded' : ''"
-                 :data-src="colItem.url"
-                 loading="lazy"
-                 src="/loading.gif"
+                 :src="colItem.url"
                  :alt="colItem.name"/>
             <div v-if="globalConfigStore.zfileConfig.gallery.showInfo &&
 					    globalConfigStore.zfileConfig.gallery.showInfoMode === 'hover'"
                  :class="globalConfigStore.zfileConfig.gallery.roundedBorder ? 'zfile-gallery-img-rounded' : ''"
-                 v-show="loadedList.includes(colItem.name)"
                  class="zfile-gallery-img-hover-info">
               <span class="zfile-gallery-img-text">{{colItem.name}}</span>
               <span class="zfile-gallery-img-text">{{common.fileSizeFormat(colItem.size)}}</span>
             </div>
             <div
-              v-show="loadedList.includes(colItem.name)"
               v-if="globalConfigStore.zfileConfig.gallery.showInfo &&
 						globalConfigStore.zfileConfig.gallery.showInfoMode === 'bottom'">
               <span class="zfile-gallery-img-text"> {{ colItem.name }} </span>
@@ -126,21 +122,6 @@ const openGalleryImage = (item) => {
   }
 }
 
-import LazyLoad from "vanilla-lazyload";
-
-onMounted(() => {
-  new LazyLoad({
-    element_selector: ".lazy",
-    callback_loaded: (elt) => {
-      // 加载完成后添加到已加载列表
-      loadedList.push(elt.alt);
-    },
-    callback_error: (elt) => {
-      loadedList.push(elt.alt);
-      elt.setAttribute("src", "/error.svg");
-    }
-  });
-});
 
 // 获取图片模式是否开启
 import useHeaderImgMode from "~/composables/header/useHeaderImgMode";
