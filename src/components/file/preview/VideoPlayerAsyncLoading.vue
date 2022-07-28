@@ -1,6 +1,6 @@
 <template>
   <div class="zfile-async-loading">
-    <el-skeleton class="w-full h-[80vh]" animated>
+    <el-skeleton class="w-full h-[40vh] sm:h-[80vh]" animated>
       <template #template>
         <div class="flex justify-center items-center h-full loading">
           <svg-icon name="file-type-video" class="w-12 h-12"></svg-icon>
@@ -24,7 +24,6 @@ onMounted(() => {
   }
 
   .loading {
-    padding: 250px;
     background: linear-gradient(
         100deg,
         rgba(255, 255, 255, 0) 40%,
