@@ -35,7 +35,7 @@
 			<z-form-item label="是否允许使用短链">
 				<el-switch v-model="data.showShortLink"/>
 				<template #tips>
-					控制是否生成直链时显示短链路径及是否允许使用短链进行下载（短链依赖直链，允许短链下载，不允许直链下载，最终也无法下载）
+					控制是否生成直链时显示短链路径及是否允许使用短链进行下载
 				</template>
 			</z-form-item>
 
