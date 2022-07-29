@@ -18,7 +18,7 @@ let baseData = {
         showBackTop: true
     },
     imagePreview: {
-        mode: "only",
+        mode: "full",
         gallery: true
     }
 };
