@@ -513,6 +513,7 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route
 	@media (max-device-width: 768px) {
 		padding: 0;
 	}
+
 }
 
 // 文件列表主体
@@ -633,7 +634,6 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route
 }
 
 #ListTable {
-  height: 100%;
   :deep(.el-table__inner-wrapper) {
     height: 100%;
   }
