@@ -1,10 +1,10 @@
 <template>
-	<div class="min-h-screen bg-gray-100 text-gray-900 flex justify-center items-center">
-		<div class="max-w-screen-lg bg-white shadow-xl sm:rounded-xl flex flex-1">
+	<div class="h-full min-h-screen bg-gray-100 text-gray-900 flex justify-center items-center">
+		<div class="h-full lg:h-auto max-w-screen-lg bg-white shadow-xl sm:rounded-xl flex flex-1">
 			<div class="flex-1 bg-gray-50 text-center hidden lg:flex rounded-l-xl">
 				<div class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat zfile-login-logo"/>
 			</div>
-			<div class="lg:w-1/2 mt-10 xl:w-1/2 w-11/12 p-6 sm:p-12">
+			<div class="w-full lg:w-1/2 xl:w-1/2 mt-10 p-6 sm:p-12">
 				<div class="mt-0 flex flex-col items-center">
 					<h1 class="text-2xl mt-0 xl:text-3xl font-extrabold box animate__animated animate__fadeInDown">
 						<img class="w-16 cursor-pointer"
@@ -12,13 +12,17 @@
 						     src="../assets/icons/zfile-basic.svg" />
 					</h1>
 					<div class="w-full flex-1">
-						<div class="my-12 border-b text-center">
-							<div
-								class="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
-								管理员登录
-							</div>
-						</div>
-						<el-form @submit.native.prevent ref="loginFormRef" :rules="formRules" :model="formData"
+
+            <div class="my-12 relative">
+              <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t text-gray-600" />
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-sm leading-none text-gray-600 tracking-wide font-medium">管理员登录</span>
+              </div>
+            </div>
+
+            <el-form @submit.native.prevent ref="loginFormRef" :rules="formRules" :model="formData"
 						        class="zfile-login-form" size="large">
 							<el-form-item class="box animate__animated animate__fadeInUp" prop="username">
 								<el-input placeholder="管理员账号" :prefix-icon="User" v-model.trim="formData.username"/>
@@ -33,17 +37,16 @@
 							</el-form-item>
 
 							<el-form-item v-else-if="loginVerifyMode === 'image'" class="box animate__animated animate__fadeInUp" prop="verifyCode">
-								<div class="flex space-x-5">
-									<el-input class="flex-1" placeholder="请输入验证码" :prefix-icon="PhotographIcon" v-model.trim="formData.verifyCode">
-									</el-input>
-									<el-image class="flex-1" :src="loginVerifyCodeImgData?.imgBase64" @click="loadLoginVerifyCodeImgData()"></el-image>
+								<div class="flex space-x-5 w-full">
+									<el-input class="flex-1" placeholder="请输入验证码" :prefix-icon="PhotographIcon" v-model.trim="formData.verifyCode"/>
+									<el-image :src="loginVerifyCodeImgData?.imgBase64" @click="loadLoginVerifyCodeImgData()"></el-image>
 								</div>
 							</el-form-item>
 
 							<el-form-item class="box animate__animated animate__fadeInUp float-right">
 								<el-tooltip class="item" effect="dark" placement="left">
 									<template #content>
-										将配置文件 application.properties 中 zfile.debug 修改为 true, 访问首页即可重置密码 <br>
+										将配置文件 application.properties 中 zfile.debug 修改为 true, 重启后访问首页即可重置密码 <br>
 										<a target="_blank" class="text-blue-400" href="https://docs.zfile.vip/#/question?id=reset-pwd">点击可前往文档查看操作方式</a>
 									</template>
 									<el-link :icon="QuestionFilled" :underline="false" class="zfile-float-right">忘记密码</el-link>

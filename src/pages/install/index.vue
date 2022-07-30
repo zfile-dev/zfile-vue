@@ -1,10 +1,10 @@
 <template>
-	<div class="min-h-screen bg-gray-100 text-gray-900 flex justify-center items-center">
-		<div class="max-w-screen-lg bg-white shadow-xl sm:rounded-xl flex flex-1">
+	<div class="h-full min-h-screen bg-gray-100 text-gray-900 flex justify-center items-center">
+		<div class="h-full lg:h-auto max-w-screen-lg bg-white shadow-xl sm:rounded-xl flex flex-1">
 			<div class="flex-1 bg-gray-50 text-center hidden lg:flex rounded-l-xl">
 				<div class="m-12 xl:m-16 w-full bg-contain bg-center bg-no-repeat zfile-install-logo"/>
 			</div>
-			<div class="lg:w-1/2 mt-10 xl:w-1/2 w-11/12 p-6 sm:p-12">
+			<div class="w-full lg:w-1/2 xl:w-1/2 mt-10 p-6 sm:p-12">
 				<div class="mt-0 flex flex-col items-center">
 					<h1 class="text-2xl mt-0 xl:text-3xl font-extrabold box animate__animated animate__fadeInDown">
 						<img class="w-16 cursor-pointer"
@@ -12,12 +12,16 @@
 						     src="../../assets/icons/zfile-basic.svg"/>
 					</h1>
 					<div class="w-full flex-1">
-						<div class="my-12 border-b text-center">
-							<div
-								class="leading-none px-2 inline-block text-sm text-gray-600 tracking-wide font-medium bg-white transform translate-y-1/2">
-								系统初始化
-							</div>
-						</div>
+
+            <div class="my-12 relative">
+              <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                <div class="w-full border-t text-gray-600" />
+              </div>
+              <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-sm leading-none text-gray-600 tracking-wide font-medium">系统初始化</span>
+              </div>
+            </div>
+
 						<el-form @submit.native.prevent ref="installFormRef" :rules="formRules" :model="formData"
 						         class="zfile-install-form" size="large">
 							<el-form-item class="box animate__animated animate__fadeInUp" prop="siteName">
