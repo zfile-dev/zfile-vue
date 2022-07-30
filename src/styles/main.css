@@ -84,6 +84,19 @@ body,
 	max-width: 95%;
 }
 
+@media screen and (max-width: 500px) {
+	.el-message {
+		min-width: calc(100% - 30px) !important;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	.el-message-box{
+		width: calc(100% - 30px) !important;
+	}
+}
+
+
 /* 黑暗模式适配 */
 /*html.dark {*/
 /*	height: 100%;*/
