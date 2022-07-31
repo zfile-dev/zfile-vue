@@ -196,16 +196,31 @@
 					as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
 					<router-link to="/admin/view-setting">显示设置</router-link>
 				</DisclosureButton>
-				<DisclosureButton
-					:class="currentActive === '/link' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
-					as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-					<router-link to="/admin/download-link">直链管理</router-link>
-				</DisclosureButton>
+        <DisclosureButton
+          :class="currentActive === '/admin/download-link' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
+          as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+          <router-link to="/admin/download-link">直链列表</router-link>
+        </DisclosureButton>
+        <DisclosureButton
+          :class="currentActive === '/admin/download-link/log' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
+          as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+          <router-link to="/admin/download-link/log">直链日志</router-link>
+        </DisclosureButton>
+        <DisclosureButton
+          :class="currentActive === '/admin/download-link/setting' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
+          as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+          <router-link to="/admin/download-link/setting">直链设置</router-link>
+        </DisclosureButton>
+        <DisclosureButton
+          @click="logDownload"
+          as="span" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700">
+          日志下载
+        </DisclosureButton>
 			</div>
 		</DisclosurePanel>
 	</Disclosure>
 
-	<div class="p-3 sm:p-10 pb-20 sm:pb-28 bg-gray-100 h-full overflow-y-auto">
+	<div class="p-0 sm:p-10 pb-20 sm:pb-28 bg-gray-100 h-full overflow-y-auto">
 		<div class="max-w-7xl mx-auto bg-white shadow overflow-hidden sm:rounded-lg">
 			<router-view class="box animate__animated animate__fadeIn"/>
 		</div>
