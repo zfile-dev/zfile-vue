@@ -1,6 +1,6 @@
 <template>
 	<form class="z-form">
-		<div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+		<div class="space-y-8 divide-y divide-gray-200">
 			<div class="z-form-body">
 				<div>
 					<h3 class="z-form-title text-lg leading-6 font-medium text-gray-900">
@@ -127,7 +127,11 @@ defineExpose({validate, formAddField, formRemoveField, rulesArray, formError})
 <style lang="scss" scoped>
 
 .z-form {
-	@apply divide-y divide-gray-200 p-6
+	@apply divide-y divide-gray-200 p-6;
+
+  :deep(.z-form-item-input) {
+    @apply flex-wrap;
+  }
 }
 
 </style>
