@@ -88,6 +88,7 @@
 <script setup>
 import Artplayer from "artplayer";
 let common = useCommon();
+let route = useRoute();
 
 import IconPrev from '~icons/custom/prev';
 import IconNext from '~icons/custom/next';
@@ -95,6 +96,9 @@ import IconNext from '~icons/custom/next';
 
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
+
+import useStorageConfigStore from "~/stores/storage-config";
+let storageConfigStore = useStorageConfigStore();
 
 // 获取视频列表, 如果是当前视频, 则设置为默认勾选.
 const getVideoList = (currentName) => {
@@ -222,24 +226,45 @@ const initArtPlayer = (name, url) => {
 		name,
 		url
 	}
-	document.querySelector(".zfile-video-dialog .el-dialog__title").innerHTML = name;
+  document.querySelector(".zfile-video-dialog .el-dialog__title").innerHTML = name;
+  if (art) {
+    art.destroy();
+  }
 
-	if (art) {
-		art.destroy();
-	}
+  let videoType = 'mp4';
 
-	let videoType = 'mp4';
+  if (name.toLowerCase().endsWith('flv')) {
+    videoType = 'flv';
+  } else if (name.toLowerCase().endsWith('m3u8')) {
+    videoType = 'm3u8';
+  }
 
-	if (name.toLowerCase().endsWith('flv')) {
-		videoType = 'flv';
-	} else if (name.toLowerCase().endsWith('m3u8')) {
-		videoType = 'hls';
-	}
+  // 兼容 h5ai_dplayer https://github.com/Pearlulu/h5ai_dplayer
+  // 如果 {video-name} 同目录下有 __{video_name}__ 则取 __{video_name}__/video.m3u8
+  let m3u8Folder = fileDataStore.fileList.find((item) => {
+      if ('__' + name + '__' === item.name) {
+        return item;
+      }
+  });
+
+  if (m3u8Folder) {
+    // 取 __{video_name}__/video.m3u8 完整路径
+    let pathAndName = common.removeDuplicateSeparator(m3u8Folder.path + "/" + m3u8Folder.name + '/video.m3u8');
+    // 取 __{video_name}__/video.m3u8 直链地址
+    let m3u8Link = common.removeDuplicateSeparator(storageConfigStore.config.domain + "/" +
+      storageConfigStore.config.directLinkPrefix + "/" +
+      route.params.storageKey + "/" +
+      pathAndName);
+
+    // 替换原始视频地址为 m3u8 地址, 并设置视频类型为 m3u8
+    currentVideo.value.url = m3u8Link;
+    videoType = 'm3u8';
+  }
 
 	let options = {
 		container: '.artplayer-app',
 		title: name,
-		url: url,
+		url: currentVideo.value.url,
 		type: videoType,
 		setting: true,
 		playbackRate: true,
@@ -276,9 +301,18 @@ const initArtPlayer = (name, url) => {
 				}
 			},
 			m3u8: function (video, url) {
-				let hls = new Hls();
-				hls.loadSource(url);
-				hls.attachMedia(video);
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(url);
+          hls.attachMedia(video);
+        } else {
+          const canPlay = video.canPlayType('application/vnd.apple.mpegurl');
+          if (canPlay === 'probably' || canPlay == 'maybe') {
+            video.src = url;
+          } else {
+            art.notice.show = '不支持播放格式：m3u8';
+          }
+        }
 			},
 		},
 		contextmenu: [
