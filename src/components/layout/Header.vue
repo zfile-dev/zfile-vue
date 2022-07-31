@@ -1,86 +1,130 @@
 <template>
-	<div class="zfile-header">
-		<el-scrollbar>
-			<div class="zfile-header-breadcrumb box animate__animated animate__fadeIn">
-				<el-breadcrumb separator="/" separator-class="ArrowRight">
-					<el-breadcrumb-item :to="rootPath">{{ '首页' }}</el-breadcrumb-item>
+  <div class="zfile-header">
+    <el-scrollbar>
+      <div class="zfile-header-breadcrumb box animate__animated animate__fadeIn">
+        <el-breadcrumb separator="/" separator-class="ArrowRight">
+          <el-breadcrumb-item :to="rootPath">{{ '首页' }}</el-breadcrumb-item>
 					<el-breadcrumb-item v-for="item in breadcrumbData"
-					                    :to="{path: encodeAllIgnoreSlashes(item.fullPath)}"
-					                    :key="item.fullPath"
-					                    class="hidden-xs-only">
-						{{ item.name }}
-					</el-breadcrumb-item>
-				</el-breadcrumb>
-			</div>
-		</el-scrollbar>
+                              :to="{path: encodeAllIgnoreSlashes(item.fullPath)}"
+                              :key="item.fullPath"
+                              class="hidden-xs-only">
+            {{ item.name }}
+          </el-breadcrumb-item>
+        </el-breadcrumb>
+      </div>
+    </el-scrollbar>
 
-		<div class="zfile-header-right box animate__animated animate__fadeIn">
-			<div class="zfile-header-btn" v-if="initStorageConfig">
-				<el-tooltip placement="bottom">
-					<template #content>
-						此功能为 DEBUG 模式下重置管理员密码功能, 使用完后请关闭 DEBUG 模式并重启服务.
-					</template>
-					<el-button @click="resetAdminPwd" type="danger"  v-if="storageConfigStore.config.debugMode">
-						重置管理员密码
-					</el-button>
-				</el-tooltip>
+    <div class="zfile-header-right box animate__animated animate__fadeIn">
+      <!-- 功能区 -->
+      <div class="zfile-header-btn" v-if="isNotMobile && initStorageConfig">
+        <el-tooltip placement="bottom">
+          <template #content>
+            此功能为 DEBUG 模式下重置管理员密码功能, 使用完后请关闭 DEBUG 模式并重启服务.
+          </template>
+          <el-button @click="resetAdminPwd" type="danger"  v-if="storageConfigStore.config.debugMode">
+            重置管理员密码
+          </el-button>
+        </el-tooltip>
 
-
-				<el-tooltip placement="bottom">
-					<template #content>
-						后台管理
-					</template>
-					<div @click="toLoginView" v-if="storageConfigStore.config.showLogin">
-						<svg-icon class="text-2xl text-gray-500 hover:text-blue-500" name="login"></svg-icon>
-					</div>
-				</el-tooltip>
+        <el-tooltip placement="bottom">
+          <template #content>
+            后台管理
+          </template>
+          <div @click="toLoginView" v-if="storageConfigStore.config.showLogin">
+            <svg-icon class="text-2xl text-gray-500 hover:text-blue-500" name="login"></svg-icon>
+          </div>
+        </el-tooltip>
 
 				<el-dropdown v-if="storageConfig.enableFileOperator !== false" trigger="click" popper-class="zfile-header-dropdown">
-					<div v-show="route.params.storageKey">
-						<svg-icon class="text-2xl text-gray-500 hover:text-blue-500" name="add"></svg-icon>
-					</div>
-					<template #dropdown>
-						<el-dropdown-menu class="font-medium">
+          <div v-show="route.params.storageKey">
+            <svg-icon class="text-2xl text-gray-500 hover:text-blue-500" name="add"></svg-icon>
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu class="font-medium">
 							<el-dropdown-item @click="newFolder">
-								<svg-icon class="text-[17px] mr-3" name="add-folder"></svg-icon>
-								新建文件夹
-							</el-dropdown-item>
+                <svg-icon class="text-[17px] mr-3" name="add-folder"></svg-icon>
+                新建文件夹
+              </el-dropdown-item>
 							<el-dropdown-item @click="openUploadDialog" divided>
-								<svg-icon class="text-[17px] mr-3" name="upload"></svg-icon>
-								上传文件
-							</el-dropdown-item>
-							<el-dropdown-item @click="openUploadFolderDialog">
-								<svg-icon class="text-[17px] mr-3" name="upload-folder"></svg-icon>
-								上传文件夹
-							</el-dropdown-item>
-						</el-dropdown-menu>
-					</template>
-				</el-dropdown>
+                <svg-icon class="text-[17px] mr-3" name="upload"></svg-icon>
+                上传文件
+              </el-dropdown-item>
+              <el-dropdown-item @click="openUploadFolderDialog">
+                <svg-icon class="text-[17px] mr-3" name="upload-folder"></svg-icon>
+                上传文件夹
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
 
-				<div v-show="route.params.storageKey" @click="imgModel = !imgModel">
-					<svg-icon v-if="imgModel" class="text-4xl" name="img-enable"></svg-icon>
-					<svg-icon v-else class="text-4xl" name="img-disable"></svg-icon>
-				</div>
+        <div v-show="route.params.storageKey" @click="imgModel = !imgModel">
+          <svg-icon v-if="imgModel" class="text-4xl" name="img-enable"></svg-icon>
+          <svg-icon v-else class="text-4xl" name="img-disable"></svg-icon>
+        </div>
 
-				<div @click="openSettingVisible">
-					<i-custom-tool-setting></i-custom-tool-setting>
-				</div>
-			</div>
-			<div class="zfile-header-storage-select" v-if="isNotMobile">
-				<el-select size="default" v-model="currentStorageKey" placeholder="请选择存储源">
-					<el-option v-for="item in storageList"
-					           :key="item.key"
-					           :label="item.name"
-					           :value="item.key">
-					</el-option>
-				</el-select>
-			</div>
-		</div>
-	</div>
-	<Setting></Setting>
+        <div @click="openSettingVisible">
+          <i-custom-tool-setting></i-custom-tool-setting>
+        </div>
+      </div>
+
+      <!-- 存储源选择 -->
+      <div class="zfile-header-storage-select" v-if="isNotMobile">
+        <el-select size="default" v-model="currentStorageKey" placeholder="请选择存储源">
+          <el-option v-for="item in storageList"
+                     :key="item.key"
+                     :label="item.name"
+                     :value="item.key">
+          </el-option>
+        </el-select>
+      </div>
+    </div>
+
+    <div v-if="isMobile" v-show="route.params.storageKey">
+      <el-dropdown trigger="click" class="top-3">
+        <MenuIcon class="block h-6 w-6" aria-hidden="true"/>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item v-if="storageConfigStore.config.showLogin" @click="toLoginView">
+              <svg-icon class="text-base mr-2 text-gray-500" name="login"></svg-icon>
+              后台管理
+            </el-dropdown-item>
+            <template v-if="storageConfig.enableFileOperator !== false">
+              <el-dropdown-item @click="newFolder">
+                <svg-icon class="text-base mr-2 text-gray-500" name="add-folder"></svg-icon>
+                新建文件夹
+              </el-dropdown-item>
+              <el-dropdown-item @click="openUploadDialog">
+                <svg-icon class="text-base mr-2 text-gray-500" name="upload"></svg-icon>
+                上传文件
+              </el-dropdown-item>
+              <el-dropdown-item @click="openUploadFolderDialog">
+                <svg-icon class="text-base mr-2 text-gray-500" name="upload-folder"></svg-icon>
+                上传文件夹
+              </el-dropdown-item>
+            </template>
+            <el-dropdown-item v-if="!imgModel" @click="imgModel = true">
+              <svg-icon class="text-base mr-2 text-gray-500" name="image"></svg-icon>
+              打开画廊模式
+            </el-dropdown-item>
+            <el-dropdown-item v-else-if="imgModel" @click="imgModel = false">
+              <svg-icon class="text-base mr-2 text-gray-500" name="image"></svg-icon>
+              关闭画廊模式
+            </el-dropdown-item>
+            <el-dropdown-item @click="openSettingVisible">
+              <svg-icon class="text-base mr-2 text-gray-500" name="tool-setting"></svg-icon>
+              更多设置
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
+  </div>
+  <Setting></Setting>
 </template>
 
 <script setup>
+import { MenuIcon } from '@heroicons/vue/outline'
+
 let router = useRouter();
 let route = useRoute();
 
@@ -104,23 +148,21 @@ import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
 onMounted(() => {
-	loadStorageSourceList().then(() => {
-		buildBreadcrumbData();
-	});
+  loadStorageSourceList().then(() => {
+    buildBreadcrumbData();
+  });
 })
 
-import useSearch from "~/composables/header/useSearch";
-const { search } = useSearch();
 
 watch(() => route.params.storageKey, (value) => {
-	if (value === undefined) {
-		currentStorageKey.value = '';
-	}
+  if (value === undefined) {
+    currentStorageKey.value = '';
+  }
 })
 
 // 切换存储源或路径时，取消图片模式.
 watch(() => [route.params.storageKey, route.params.fullpath], () => {
-	imgModel.value = false;
+  imgModel.value = false;
 })
 
 
@@ -134,7 +176,7 @@ import useSetting from "~/composables/header/useSetting";
 const { openSettingVisible } = useSetting();
 
 import useCommon from "~/composables/useCommon";
-const { isNotMobile, encodeAllIgnoreSlashes } = useCommon();
+const { isNotMobile, isMobile, encodeAllIgnoreSlashes } = useCommon();
 
 
 import useFileData from "~/composables/file/useFileData";
@@ -142,14 +184,14 @@ let { storageConfig, initStorageConfig } = useFileData(router, route);
 
 // 监听存储源设置 -> 默认打开图片模式, 如果为是, 则打开图片模式.
 watchOnce(() => storageConfig.value.defaultSwitchToImgMode, (val) => {
-	if (val === true) {
-		imgModel.value = val;
-	}
+  if (val === true) {
+    imgModel.value = val;
+  }
 })
 
 
 const toLoginView = () => {
-	window.location.href = '/login'
+  window.location.href = '/login'
 }
 
 
@@ -157,7 +199,7 @@ const toLoginView = () => {
 import { useStyleTag } from '@vueuse/core'
 if (storageConfigStore.config.customCss) {
   try {
-	  useStyleTag(storageConfigStore.config.customCss);
+    useStyleTag(storageConfigStore.config.customCss);
   } catch (e) {
     console.error('加载自定义 css 加载失败:', storageConfigStore.config.customCss, e);
   }
@@ -179,89 +221,100 @@ if (storageConfigStore.config.customJs) {
 <style scoped lang="scss">
 
 .zfile-header {
-	display: flex;
-	flex-flow: row nowrap;
-	justify-content: space-between;
-	height: 48px;
-	line-height: 48px !important;
-	padding: 0 15px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  height: 48px;
+  line-height: 48px !important;
+  padding: 0 15px;
 
-	background-color: #ffffff;
-	color: #606266;
-	transition: border-color var(--el-transition-duration), background-color var(--el-transition-duration);
-	border-bottom: 1px solid rgba(132, 133, 141, 0.2);
-	@apply space-x-20;
+  background-color: #ffffff;
+  color: #606266;
+  transition: border-color var(--el-transition-duration), background-color var(--el-transition-duration);
+  border-bottom: 1px solid rgba(132, 133, 141, 0.2);
+  @apply space-x-5 sm:space-x-20;
 
 
-	.el-scrollbar {
-		@apply max-w-[40%] md:max-w-[50%] lg:max-w-[60%] xl:max-w-[70%];
-		:deep(.el-scrollbar__bar.is-vertical) {
-			display: none !important;
-		}
-	}
+  .el-scrollbar {
+    @apply max-w-[40%] md:max-w-[50%] lg:max-w-[60%] xl:max-w-[70%];
+    :deep(.el-scrollbar__bar.is-vertical) {
+      display: none !important;
+    }
+  }
 
-	.zfile-header-breadcrumb {
-		:deep(.el-breadcrumb) {
-			line-height: 48px;
-			font-size: 13px;
-			white-space: nowrap;
-			margin-left: 14px;
+  .zfile-header-breadcrumb {
+    :deep(.el-breadcrumb) {
+      line-height: 48px;
+      font-size: 13px;
+      white-space: nowrap;
+      margin-left: 14px;
 
-			.el-breadcrumb__item {
-				display: inline;
-				float: none;
-			}
-		}
-	}
+      .el-breadcrumb__item {
+        display: inline;
+        float: none;
+      }
+    }
+  }
 
-	.zfile-header-right {
-		@apply flex space-x-10;
+  .zfile-header-right {
+    @apply flex space-x-10;
 
-		.zfile-header-btn {
-			@apply flex text-4xl space-x-10 items-center;
+    :deep(.el-dropdown) {
+      line-height: 48px !important;
+    }
 
-			div {
-				@apply cursor-pointer h-5 #{!important};
-			}
-		}
+    .zfile-header-btn {
+      @apply flex text-4xl space-x-10 items-center;
 
-		.zfile-header-storage-select {
-			@apply mr-4;
-		}
-	}
+      div {
+        @apply cursor-pointer h-5 #{!important};
+      }
+    }
+
+    .zfile-header-storage-select {
+      @apply mr-4;
+    }
+  }
 
 }
 
 @media only screen and (max-width: 767px) {
-	.zfile-header {
-		:deep(.el-breadcrumb__separator) {
-			display: none !important;
-		}
+  .zfile-header {
+    :deep(.el-breadcrumb__separator) {
+      display: none !important;
+    }
 
-		:deep(.el-form-item__label) {
-			display: none !important;
-		}
+    :deep(.el-form-item__label) {
+      display: none !important;
+    }
 
-		:deep(.el-select) {
-			width: 120px;
-		}
-	}
+    :deep(.el-select) {
+      width: 120px;
+      @apply truncate text-sm font-medium text-gray-700;
+    }
+  }
 }
 
 .zfile-debug-tips {
-	:deep(.el-form-item__label) {
-		font-weight: bold;
-		color: red !important;
-	}
+  :deep(.el-form-item__label) {
+    font-weight: bold;
+    color: red !important;
+  }
+}
+
+.zfile-header-storage-select {
+  :deep(.el-input__wrapper) {
+    @apply truncate text-sm font-medium;
+  }
 }
 
 </style>
 
 <style lang="scss">
 .zfile-header-dropdown {
-	.el-dropdown-menu__item:hover,
-	.el-dropdown-menu__item:hover svg {
-		@apply text-blue-500
-	}
+  .el-dropdown-menu__item:hover,
+  .el-dropdown-menu__item:hover svg {
+    @apply text-blue-500
+  }
 }
 </style>
