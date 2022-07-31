@@ -1,6 +1,6 @@
 {
 	"name": "zfile",
-	"version": "4.0.6",
+	"version": "4.0.7",
 	"description": "ZFile 文件管理",
 	"scripts": {
 		"dev": "vite",
