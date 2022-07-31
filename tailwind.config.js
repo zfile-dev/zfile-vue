@@ -12,6 +12,9 @@ module.exports = {
     //   'tips': '#aaaaaa',
     // },
     extend: {
+      spacing: {
+        '26': '6.5rem',
+      },
       colors: {
         'info': '#2d8cf0'
       },
