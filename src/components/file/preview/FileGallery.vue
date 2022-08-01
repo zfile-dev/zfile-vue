@@ -123,7 +123,7 @@ const openGalleryImage = (item) => {
 // 已加载完的图片列表, 已加载完才悬浮显示标题
 let loadedList = reactive([]);
 const loadImg = (e) => {
-  loadedList.push(e.path[0].alt);
+  loadedList.push(e.currentTarget.alt);
 }
 
 // 获取图片模式是否开启
