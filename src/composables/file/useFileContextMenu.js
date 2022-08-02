@@ -1,53 +1,62 @@
 import "v-contextmenu/dist/themes/default.css";
-import useFileData from "~/composables/file/useFileData";
+
+import useFileSelect from "~/composables/file/useFileSelect";
+const { selectRows, clearSelection, toggleRowSelection } = useFileSelect();
+
+import useRouterData from "~/composables/useRouterData";
+let { storageKey } = useRouterData();
 
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
 
-import useFileRef from "~/composables/file/useFileRef";
-const { clearSelection, toggleRowSelection } = useFileRef();
+const contextMenuTargetFile = ref(false);
+const contextMenuTargetBlank = ref(false);
 
-const visible = ref(false);
+export default function useFileContextMenu(currentInstance) {
 
-export default function useFileContextMenu(router, route, currentInstance) {
-
-    const { storageKey, selectRows } = useFileData(router, route);
-
-    const showMenu = (row, column, event) => {
-
-        if (row.type === 'BACK') {
-            return;
-        }
-
-        let contextmenuRef = currentInstance.proxy.$refs.contextmenu;
-
+    const showFileMenu = (row, column, event) => {
         if (!storageKey.value) {
             return;
         }
 
-        fileDataStore.updateCurrentRightClickRow(row);
+        // 如果右键的不是空白区域，则不显示菜单
+        if (row instanceof Event) {
+            event = row;
+            contextMenuTargetBlank.value = true;
+        } else {
+            if (row.type === 'BACK') {
+                return;
+            }
+            fileDataStore.updateCurrentRightClickRow(row);
 
-        if (!selectRows.value.includes(row)) {
-            clearSelection();
-            toggleRowSelection(row, true);
+            if (!selectRows.value.includes(row)) {
+                clearSelection();
+                toggleRowSelection(row, true);
+            }
+            contextMenuTargetFile.value = true;
         }
 
+        let contextmenuRef = currentInstance.proxy.$refs.contextmenu;
+
         event.preventDefault();
+        event.stopPropagation();
+
         contextmenuRef.show({
             top: event.clientY,
             left: event.clientX
         });
-        visible.value = true;
 
         window.onclick = () => {
             contextmenuRef.hide();
-            visible.value = false;
+            contextMenuTargetBlank.value = false;
+            contextMenuTargetFile.value = false;
         };
 
         contextmenuRef.$el.hidden = false;
     }
 
+
     return {
-        showMenu, visible
+        showFileMenu, contextMenuTargetFile, contextMenuTargetBlank
     }
 }
