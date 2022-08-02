@@ -13,6 +13,20 @@ export const loadFileListReq = (data) => {
 }
 
 
+// 获取存储源文件详情
+export const loadFileItemReq = (data) => {
+    return axios({
+        url: `/api/storage/file/item`,
+        method: "post",
+        data,
+        config: {
+            responseIntercept: false,
+            showDefaultMsg: false
+        }
+    })
+}
+
+
 // 获取全局站点设置
 export const loadGlobalSiteConfigReq = () => {
     return axios({
