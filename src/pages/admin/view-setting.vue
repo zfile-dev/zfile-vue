@@ -17,12 +17,6 @@
 			<el-radio v-model="data.layout" label="center">居中</el-radio>
 		</z-form-item>
 
-		<z-form-item label="列表尺寸">
-			<el-radio v-model="data.tableSize" label="large">大</el-radio>
-			<el-radio v-model="data.tableSize" label="default">中</el-radio>
-			<el-radio v-model="data.tableSize" label="small">小</el-radio>
-		</z-form-item>
-
 		<z-form-item label="根目录显示所有存储源">
 			<el-switch v-model="data.rootShowStorage"/>
 			<template #tips>
