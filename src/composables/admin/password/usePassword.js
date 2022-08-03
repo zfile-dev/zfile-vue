@@ -42,7 +42,7 @@ export default function usePassword() {
                         message: '保存成功',
                         type: 'success'
                     });
-                    updateLoading.value = true;
+                    updateLoading.value = false;
                 })
             }
         })
