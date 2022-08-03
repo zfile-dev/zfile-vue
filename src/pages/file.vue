@@ -599,13 +599,13 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route
 		padding: 10px 0 0 0;
 	}
 
-	// 移动端视频宽屏显示
-	@media screen and (max-device-width: 769px) {
-		:deep(.zfile-video-dialog) {
-			margin-top: 10vh !important;
-			width: 90% !important;
-		}
-	}
+  // 移动端视频宽屏显示
+  @media screen and (max-device-width: 769px) {
+    :deep(.zfile-video-dialog) {
+      margin-top: 3vh !important;
+      width: 90% !important;
+    }
+  }
 }
 
 // 右键菜单

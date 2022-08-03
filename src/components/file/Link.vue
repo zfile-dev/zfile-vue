@@ -51,7 +51,7 @@
 					</template>
 				</el-table-column>
 			</el-table>
-			<el-row class="space-y-6" v-if="selectFiles.length === 1 && data">
+      <el-row class="md:space-y-6" v-if="selectFiles.length === 1 && data">
 				<div class="flex flex-row space-x-10 w-full">
 					<el-image ref="qrcodeRef" class="w-3/4" :src="data.currentImg"/>
 					<div class="flex flex-col mt-3 space-y-3.5 overflow-y-auto">
@@ -238,6 +238,10 @@ const exportExcel = () => {
 
 	:deep(.zfile-file-download-link-dialog-single) {
 		@apply w-10/12 md:w-96;
+
+    .el-form-item {
+      margin-bottom: 8px;
+    }
 	}
 
 	:deep(.zfile-file-download-link-dialog-multiple) {

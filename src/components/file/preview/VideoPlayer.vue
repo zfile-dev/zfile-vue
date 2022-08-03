@@ -2,8 +2,8 @@
 	<div>
 		<div class="artplayer-app"></div>
     <div class="zfile-video-switch-tools" v-if="currentVideo && common.isMobile.value">
-      <el-button v-show="getPrevAndNextVideo(currentVideo.name).prev" :icon="IconPrev" @click="playPrevVideo">上一个视频</el-button>
-      <el-button v-show="getPrevAndNextVideo(currentVideo.name).next" :icon="IconNext" @click="playNextVideo">下一个视频</el-button>
+      <el-button :disabled="!getPrevAndNextVideo(currentVideo.name).prev" :icon="IconPrev" @click="playPrevVideo">上一个视频</el-button>
+      <el-button :disabled="!getPrevAndNextVideo(currentVideo.name).next" :icon="IconNext" @click="playNextVideo">下一个视频</el-button>
     </div>
 		<div class="zfile-video-tools">
 			<div class="zfile-video-tools-item" @click="openTarget('download')">
