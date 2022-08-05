@@ -7220,6 +7220,11 @@ vue-i18n@^9.1.10:
     "@intlify/vue-devtools" "9.1.10"
     "@vue/devtools-api" "^6.0.0-beta.7"
 
+vue-pdf-embed@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.npmmirror.com/vue-pdf-embed/-/vue-pdf-embed-1.1.4.tgz#80a95c313ffc4f76c14d9c90ca28c567d5469729"
+  integrity sha512-d4c7nM3LneWUiL4MssIyPHfGgVMRPh4Z7UgLsXMZ+lbAtH/6SBUFHdzZQLY2BASdh16BM/v6YCbmtQU+KIQdrg==
+
 vue-request@^1.2.4:
   version "1.2.4"
   resolved "https://registry.npmmirror.com/vue-request/-/vue-request-1.2.4.tgz"
