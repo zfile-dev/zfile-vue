@@ -5,7 +5,7 @@ import useGlobalConfigStore from "~/stores/global-config";
 // 创建 axios 的一个实例
 const instance = axios.create({
     baseURL: useGlobalConfigStore().zfileConfig.baseUrl, //接口统一域名
-    timeout: 60000, //设置超时
+    timeout: 0, //设置超时
     headers: {
         'Content-Type': 'application/json;charset=UTF-8;',
     },
