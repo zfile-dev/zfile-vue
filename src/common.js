@@ -6,12 +6,13 @@ const fileTypeMap = {
     text: ['scss', 'sass', 'kt', 'gitignore', 'bat', 'properties', 'yml', 'css', 'js', 'md', 'xml', 'txt', 'py', 'go', 'html', 'less', 'php', 'rb', 'rust', 'script', 'java', 'sh', 'sql'],
     executable: ['exe', 'dll', 'com', 'vbs'],
     archive: ['7z', 'zip', 'rar', 'tar', 'gz'],
-    office: ['doc', 'docx', 'pdf', 'csv', 'xls', 'xlsx', "ppt", 'pptx'],
+    pdf: ['pdf'],
+    office: ['doc', 'docx', 'csv', 'xls', 'xlsx', "ppt", 'pptx'],
     document: ['txt', 'pages', 'epub', 'numbers', 'keynote']
 };
 
 // 可预览的文件类型
-const previewFileType = ['image', 'video', 'audio', 'text', 'office'];
+const previewFileType = ['image', 'video', 'audio', 'text', 'office', 'pdf'];
 
 import config from '/package.json'
 

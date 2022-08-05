@@ -236,8 +236,17 @@
                         v-if="dialogTextVisible && fileDataStore.currentClickRow.name.indexOf('.md') !== -1"/>
       </el-dialog>
 
-		<!-- 生成直链 -->
-		<Link></Link>
+      <!-- pdf 在线预览 -->
+      <el-dialog draggable custom-class="zfile-pdf-dialog"
+                 :title="fileDataStore.currentClickRow.name"
+                 v-model="dialogPdfVisible">
+        <PdfViewer :file-name="fileDataStore.currentClickRow.name"
+                   :file-url="fileDataStore.currentClickRow.url"
+                   v-if="dialogPdfVisible"/>
+      </el-dialog>
+
+      <!-- 生成直链 -->
+      <Link></Link>
 
       <!-- 批量删除结果 -->
       <el-dialog draggable :destroy-on-close="true"
@@ -411,7 +420,10 @@ const MarkdownViewer = defineAsyncComponent({
   loader: () => import("~/components/file/preview/MarkdownViewer.vue"),
   loadingComponent: MarkdownViewerDialogAsyncLoading
 })
-
+const PdfViewer = defineAsyncComponent({
+  loader: () => import("~/components/file/preview/PdfViewer.vue"),
+  loadingComponent: MarkdownViewerDialogAsyncLoading
+})
 
 import AudioPlayer from '~/components/file/preview/AudioPlayer.vue'
 const FileGallery = defineAsyncComponent(() => import("~/components/file/preview/FileGallery.vue"))
