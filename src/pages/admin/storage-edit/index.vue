@@ -354,8 +354,27 @@ let useInitData = () => {
 				},
 			}
 		],
-		type: [{required: true, message: '存储策略不能为空'}],
-		'storageSourceAllParam.domain': [{type: 'url', message: '请输入正确的域名，需以 http:// 或 https:// 开头'}],
+    type: [{required: true, message: '存储策略不能为空'}],
+    'storageSourceAllParam.domain': [
+      {
+        type: 'url', message: '请输入正确的域名，需以 http:// 或 https:// 开头'
+      },
+      {
+        validator: (rule, value, callback) => {
+          if (value === undefined || value === null || value === '') {
+            callback();
+            return;
+          }
+
+          if (window.location.protocol === 'https:' && value.indexOf('http://') === 0) {
+            callback(new Error('检测到当前 ZFile 站点是 https 协议, 受浏览器限制, 此处也必须是 https 协议, 否则可能无法正常使用.'));
+            return;
+          }
+
+          callback();
+        },
+      }
+    ],
 	})
 
 	return { storageItem, supportStorageType, loading, rules, isEditMode }
