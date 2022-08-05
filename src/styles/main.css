@@ -85,6 +85,12 @@ body,
 }
 
 @media screen and (max-width: 500px) {
+	#v3-img-preview-container-id .v3-img-preview-toolbar {
+		bottom: 20%;
+	}
+}
+
+@media screen and (max-width: 500px) {
 	.el-message {
 		min-width: calc(100% - 30px) !important;
 	}
@@ -103,7 +109,8 @@ body,
 
 	.el-dialog .el-dialog__body {
 		max-height: 80vh;
-		overflow: auto;
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
 }
 
@@ -125,3 +132,4 @@ body,
 /*html.dark ::-webkit-scrollbar-thumb {*/
 /*	background-color: #343a40;*/
 /*}*/
+/*@import 'element-plus/theme-chalk/dark/css-vars.css';*/
