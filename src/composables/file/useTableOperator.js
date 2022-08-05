@@ -10,14 +10,6 @@ let storageConfigStore = useStorageConfigStore();
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
 
-import useFileData from "~/composables/file/useFileData";
-
-// table ref 相关操作
-import useFileRef from "~/composables/file/useFileRef";
-const { clearSelection, toggleRowSelection, toggleAllSelection } = useFileRef();
-
-import useFileOperator from "~/composables/file/useFileOperator";
-
 // 按键监听
 const mateState = useKeyModifier('Meta');
 const controlState = useKeyModifier('Control');
@@ -28,8 +20,14 @@ let isMultiSelectState = computed(() => {
     return mateState.value || controlState.value;
 });
 
-let batchDelete;
-let selectRowsInfo;
+import useFileOperator from "~/composables/file/useFileOperator";
+let { batchDelete } = useFileOperator();
+
+import useFileData from "~/composables/file/useFileData";
+const { skeletonLoading, openRow } = useFileData();
+
+import useFileSelect from "~/composables/file/useFileSelect";
+const { selectRows, selectRow, clearSelection, toggleRowSelection, toggleAllSelection } = useFileSelect();
 
 // ctrl + a 全选
 window.addEventListener("keydown", function(e) {
@@ -39,13 +37,13 @@ window.addEventListener("keydown", function(e) {
         e.preventDefault();
         toggleAllSelection();
     } else if (e.key === 'Delete' && allowShortcuts()) {  // 如果按了删除键，且当前状态允许快捷键操作
-        if (batchDelete && selectRowsInfo?.value?.length > 0) {
+        if (batchDelete && selectRows?.value?.length > 0) {
             e.preventDefault();
             batchDelete();
         }
     }  else if (e.key === 'Backspace' && allowShortcuts()) {  // 如果按了删除键，且当前状态允许快捷键操作
         if (fileDataStore.fileList.length > 0 && fileDataStore.fileList[0].type === 'BACK') {
-            outerTableClickRow(fileDataStore.fileList[0]);
+            tableClickRow(fileDataStore.fileList[0]);
         }
     }
 }, false);
@@ -84,20 +82,13 @@ watch(() => pressed.value, (value, oldValue) => {
     }
 })
 
-let globalCurrentPath;
-let outerTableClickRow;
 
-export default function useTableOperator(router, route) {
+let tableClickRow;
 
-    const { skeletonLoading, openRow, selectRows, selectRow, currentPath } = useFileData(router, route);
-
-    globalCurrentPath = currentPath;
-    batchDelete = useFileOperator(router, route).batchDelete;
-
-    selectRowsInfo = selectRows;
+export default function useTableOperator() {
 
     // 文件单击事件
-    const tableClickRow = (row, event) => {
+    tableClickRow = (row, event) => {
         if (event === undefined) {
             openRow(row);
             return;
@@ -106,7 +97,7 @@ export default function useTableOperator(router, route) {
         let isClickSelection = event.type === 'selection';
 
         // 如果点击的是文件或文件夹, 且点击的不是 checkbox 列, 且操作习惯是单击打开, 则打开文件/文件夹
-        if (!isClickSelection && storageConfigStore.config.fileClickMode === 'click') {
+        if (!isClickSelection && storageConfigStore.globalConfig.fileClickMode === 'click') {
             openRow(row);
             return;
         }
@@ -146,7 +137,6 @@ export default function useTableOperator(router, route) {
         }
         toggleRowSelection(row);
     }
-    outerTableClickRow = tableClickRow;
 
     // 文件双击事件
     const tableDbClickRow = (row) => {

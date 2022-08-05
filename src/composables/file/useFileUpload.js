@@ -14,17 +14,19 @@ let uploadIndex = 0;
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
 
-import useFileData from "~/composables/file/useFileData";
+import useStorageConfigStore from "~/stores/storage-config";
+let storageConfigStore = useStorageConfigStore();
 
 import {hasDialog} from "~/composables/file/useTableOperator";
 
 // 拖拽上传状态, true 表示正有文件拖拽悬浮在上传框上
 let dropState = ref(false);
 
+import useRouterData from "~/composables/useRouterData";
 
-export default function useFileUpload(router, route) {
+export default function useFileUpload() {
 
-    const { currentPath, storageKey, storageConfig } = useFileData(router, route);
+    let { storageKey, currentPath } = useRouterData();
 
     // 监听文件拖拽上传事件
     const listenDropFile = (dropArea) => {
@@ -40,7 +42,6 @@ export default function useFileUpload(router, route) {
                 return;
             }
 
-
             if (!storageKey.value) {
                 return;
             }
@@ -50,7 +51,7 @@ export default function useFileUpload(router, route) {
             }
 
             // 如果不允许文件操作，直接返回.
-            if (storageConfig.value.enableFileOperator === false) {
+            if (!storageConfigStore.permission.upload) {
                 return;
             }
 
@@ -145,7 +146,7 @@ export default function useFileUpload(router, route) {
             }
 
             // 如果不允许文件操作，直接返回.
-            if (storageConfig.value.enableFileOperator === false) {
+            if (!storageConfigStore.permission.upload) {
                 return;
             }
 
@@ -167,7 +168,7 @@ export default function useFileUpload(router, route) {
             }
 
             // 如果不允许文件操作，直接返回.
-            if (storageConfig.value.enableFileOperator === false) {
+            if (!storageConfigStore.permission.upload) {
                 return;
             }
 
@@ -187,7 +188,7 @@ export default function useFileUpload(router, route) {
             }
 
             // 如果不允许文件操作，直接返回.
-            if (storageConfig.value.enableFileOperator === false) {
+            if (!storageConfigStore.permission.upload) {
                 return;
             }
 

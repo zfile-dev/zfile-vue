@@ -1,10 +1,22 @@
-import minimatch from 'minimatch';
-const zfilePasswordCache = useStorage('zfile-pwd-cache', {});
+import {ElMessage, ElMessageBox} from "element-plus";
+
+import path from "path-browserify";
+import {removeDuplicateSlashes} from "fast-glob/out/managers/patterns";
+
+import {loadFileListReq, loadStorageConfigReq} from "~/api/home";
+
+import common from "~/common";
 import useCommon from "../useCommon";
 const { encodeAllIgnoreSlashes } = useCommon();
 
-import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
+import useRouterData from "~/composables/useRouterData";
+let { routerRef, fullpath, storageKey, currentPath } = useRouterData()
 
+import useFilePwd from "~/composables/file/useFilePwd";
+let { getPathPwd, putPathPwd } = useFilePwd();
+
+import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
+const { storageListAsFileList } = useHeaderStorageList();
 
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
@@ -12,34 +24,17 @@ let fileDataStore = useFileDataStore();
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
-const title = useTitle(storageConfigStore.config.siteName);
+const title = useTitle(storageConfigStore.globalConfig.siteName);
 
 import useGlobalConfigStore from "~/stores/global-config";
-import {loadFileListReq, loadStorageConfigReq} from "~/api/home";
-import path from "path-browserify";
-import common from "~/common";
-import {ElMessage, ElMessageBox} from "element-plus";
-import {removeDuplicateSlashes} from "fast-glob/out/managers/patterns";
 let globalConfigStore = useGlobalConfigStore();
-
-// table ref 相关操作
-import useFileRef from "~/composables/file/useFileRef";
-const { clearSelection } = useFileRef();
 
 // 引入文件预览组件
 import useFilePreview from '~/composables/file/useFilePreview';
-const { openAudio, openImage, openOffice, openText, openVideo } = useFilePreview();
+const { openAudio, openImage, openOffice, openPdf, openText, openVideo } = useFilePreview();
 
 // 文件操作相关
 import useFileOperator from '~/composables/file/useFileOperator';
-// ------------- select start ------------
-
-// 所有选中的文件行列表
-const selectRows = ref([]);
-// ------------- select end   ------------
-
-
-
 
 // ------------- loading start ------------
 
@@ -64,19 +59,12 @@ let searchParam = reactive({
     orderDirection: ''
 });
 
-
-const storageConfig = ref({});
-
 const initStorageConfig = ref(false);
 
-export default function useFileData(router, route) {
+import useFileSelect from "~/composables/file/useFileSelect";
+let { selectRows, clearSelection } = useFileSelect();
 
-    const { storageListAsFileList } = useHeaderStorageList(router, route);
-
-
-    const checkSelectable = (row) => {
-        return row.type === 'FILE' || row.type === 'FOLDER';
-    }
+export default function useFileData() {
 
     // 排序并重新加载数据
     const sortChangeMethod = ({prop, order}) => {
@@ -84,20 +72,6 @@ export default function useFileData(router, route) {
         searchParam.orderDirection = order === "descending" ? "desc" : "asc";
         loadFile();
     };
-
-    // 当前目录
-    const currentPath = computed(() => {
-        if (route.params.fullpath) {
-            return '/' + route.params.fullpath.join('/');
-        } else {
-            return '/';
-        }
-    });
-
-    // 当前驱动器 key
-    const storageKey = computed(() => {
-        return route.params.storageKey;
-    });
 
     // 加载数据
     const loadFile = (initParam) => {
@@ -129,11 +103,6 @@ export default function useFileData(router, route) {
                 return;
             }
 
-            // 如果切换了存储器 ID, 则
-            if (storageKey.value !== fileDataStore.oldStorageKey) {
-                fileDataStore.updateOldStorageKey(storageKey.value);
-            }
-
             let fileList = response.data.files;
 
             // 如果不是根路径, 则构建 back 上级路径的数据.
@@ -153,10 +122,10 @@ export default function useFileData(router, route) {
             selectRows.value = [];
 
             // 修改标题
-            if (route.params.fullpath) {
-                title.value = storageConfigStore.config.siteName + ' | ' + route.params.fullpath[route.params.fullpath.length - 1];
+            if (fullpath.value) {
+                title.value = storageConfigStore.globalConfig.siteName + ' | ' + fullpath.value[fullpath.value.length - 1];
             } else {
-                title.value = storageConfigStore.config.siteName + ' | 首页';
+                title.value = storageConfigStore.globalConfig.siteName + ' | 首页';
             }
         }).catch((error) => {
             let data = error.response.data;
@@ -176,11 +145,17 @@ export default function useFileData(router, route) {
     // 加载存储器设置
     const loadFileConfig = () => {
         let param = {
-            storageKey: route.params.storageKey,
+            storageKey: storageKey.value,
             path: currentPath.value
         }
         loadStorageConfigReq(param).then((res) => {
-            storageConfig.value = res.data;
+            storageConfigStore.updateFolderConfig(res.data);
+
+            // 如果切换了存储器 ID, 则
+            if (storageKey.value !== fileDataStore.oldStorageKey) {
+                fileDataStore.updateOldStorageKey(storageKey.value);
+            }
+
         }).finally(() => {
             initStorageConfig.value = true;
         });
@@ -195,7 +170,7 @@ export default function useFileData(router, route) {
         fileDataStore.updateCurrentClickRow(row);
         // 如果是文件且格式支持预览, 则进行预览, 格式不支持预览, 则直接进行下载 (ftp 模式不支持预览, 全部是下载)
         if (row.type === 'FILE') {
-            const { batchDownloadFile } = useFileOperator(router, route);
+            const { batchDownloadFile } = useFileOperator();
 
             // 获取文件类型
             let fileType = row.fileType;
@@ -206,63 +181,25 @@ export default function useFileData(router, route) {
                 case 'text': openText(); break;
                 case 'audio': openAudio(row); break;
                 // case 'office': openOffice(row); break;
+                case 'pdf': openPdf(row); break;
                 default: batchDownloadFile(row);
             }
 
             clearSelection();
         } else {
             if (row.type === 'ROOT') {
-                router.push(row.path);
+                routerRef.value.push(row.path);
             } else if (row.type === 'BACK') {
                 let fullPath = removeDuplicateSlashes('/' + storageKey.value + '/' + row.path);
                 fullPath = encodeAllIgnoreSlashes(fullPath);
-                router.push(fullPath);
+                routerRef.value.push(fullPath);
             } else {
                 let fullPath = removeDuplicateSlashes('/' + storageKey.value + '/' + row.path + '/' + row.name);
                 fullPath = encodeAllIgnoreSlashes(fullPath);
-                router.push(fullPath);
+                routerRef.value.push(fullPath);
             }
         }
     }
-
-    // ------------- select start ------------
-
-    // 行选中 class
-    const tableRowClassName = ({row, rowIndex}) => {
-        row.index = rowIndex;
-        return selectRows.value.indexOf(row) !== -1 ? 'select-row' : '';
-    }
-
-    // 当前最后选中的文件行
-    const selectRow = computed(() => {
-        if (selectRows.value.length > 0) {
-            return selectRows.value[selectRows.value.length - 1];
-        } else {
-            return null;
-        }
-    });
-
-    // 当前选中的文件
-    const selectFiles = computed(() => {
-        return selectRows.value.filter((row) => {
-            return row.type === 'FILE'
-        })
-    })
-
-    // 当前选中的文件夹
-    const selectFolders = computed(() => {
-        return selectRows.value.filter((row) => {
-            return row.type === 'FOLDER'
-        })
-    })
-
-    // 更新选中的文件列表
-    const selectRowsChange = (selection) => {
-        selectRows.value = selection;
-    };
-
-    // ------------- select end ------------
-
 
     // ------------- loading start ------------
 
@@ -311,91 +248,24 @@ export default function useFileData(router, route) {
         }).then(({value}) => {
             loadFile({password: value});
         }).catch(() => {
-                    if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.config.rootShowStorage === true) {
+                    if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.globalConfig.rootShowStorage === true) {
                         fileDataStore.updateFileList(storageListAsFileList.value);
-                        router.push("/");
-                        title.value = storageConfigStore.config.siteName + ' | 首页';
+                        routerRef.value.push("/");
+                        title.value = storageConfigStore.globalConfig.siteName + ' | 首页';
                         loading.value = false;
                     } else {
                         let parentPath = path.resolve(searchParam.path, '../');
-                        router.push("/" + storageKey.value + parentPath);
+                        routerRef.value.push("/" + storageKey.value + parentPath);
             }
         });
     }
-    // 获取当前路径缓存中的密码
-    let getPathPwd = () => {
-        for (let storageTag of Object.keys(zfilePasswordCache.value)) {
-            if (storageTag === storageKey.value) {
-                for (let key of Object.keys(zfilePasswordCache.value[storageTag])) {
-                    if (minimatch(currentPath.value, key)) {
-                        return zfilePasswordCache.value[storageTag][key];
-                    }
-                }
-            }
-        }
-        return '';
-    };
-    // 向缓存中写入当前路径密码
-    let putPathPwd = (pattern, password) => {
-        if (pattern) {
-            if (!zfilePasswordCache.value[storageKey.value]) {
-                zfilePasswordCache.value[storageKey.value]= {};
-            }
-            zfilePasswordCache.value[storageKey.value][pattern] = password;
-        }
-    };
 
     // ------------- folder password end   ------------
 
-    // 统计信息
-    const statistics = computed(() => {
-        let total = 0;
-        let size = 0;
-        let fileCount = 0;
-        let dirCount = 0;
-        let fileList = fileDataStore.fileList;
-        for (let i = 0; i < fileList.length; i++) {
-            let item = fileList[i];
-            if (item.type === 'FOLDER') {
-                dirCount++;
-            } else if (item.type === 'FILE') {
-                fileCount++;
-                size += item.size;
-            }
-        }
-        total = dirCount + fileCount;
-        return {
-            total,
-            size,
-            fileCount,
-            dirCount
-        };
-    });
-
-    const selectStatistics = computed(() => {
-        let selectRowsLength = selectRows.value.length;
-        let selectFilesLength = selectFiles.value.length;
-        let selectFoldersLength = selectFolders.value.length;
-
-        let isSingleSelect = selectRowsLength === 1;
-        let isMultiSelect = selectRowsLength > 1;
-        let isAllFile = selectFilesLength === selectRowsLength;
-        let isAllFolder = selectFoldersLength === selectRowsLength;
-
-        return {
-            isSingleSelect,
-            isMultiSelect,
-            isAllFile,
-            isAllFolder
-        };
-    })
-
     return {
-        currentPath, storageKey, loadFile, openRow, searchParam, sortChangeMethod, checkSelectable,
-        selectRow, selectRows, selectFiles, selectFolders, selectRowsChange, tableRowClassName,
+        loadFile, openRow, searchParam, sortChangeMethod,
         skeletonLoading, skeletonData, basicLoading,
-        statistics, selectStatistics,
-        storageConfig, initStorageConfig, loadFileConfig
+        initStorageConfig, loadFileConfig
     }
 
 }

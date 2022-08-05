@@ -1,13 +1,18 @@
+import { toClipboard } from '@soerenmartius/vue3-clipboard'
+import { encodeData, rendererRect, rendererRound,
+    rendererDSJ, rendererLine, rendererFuncB } from 'beautify-qrcode';
+
 import common from "~/common";
-import {shortLinkReq} from "~/api/home";
-import { encodeData, rendererRect, rendererRound, rendererDSJ, rendererLine, rendererFuncB } from 'beautify-qrcode';
 import useCommon from "../useCommon";
-const {encodeAllIgnoreSlashes} = useCommon();
+const { encodeAllIgnoreSlashes } = useCommon();
+
+import { shortLinkReq } from "~/api/home";
+
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
-import { toClipboard } from '@soerenmartius/vue3-clipboard'
-
+import useRouterData from "~/composables/useRouterData";
+let { storageKey } = useRouterData()
 
 let data = computed(() => {
     return datas.value.length > 0 ? datas.value[0] : null;
@@ -16,15 +21,10 @@ let data = computed(() => {
 const datas = ref([]);
 let visible = ref(false);
 
-export default function useFileLink(router, route) {
-
+export default function useFileLink() {
     const openLinkDialog = () => {
         visible.value = true;
     }
-
-    const storageKey = computed(() => {
-        return route.params.storageKey;
-    });
 
     /**
      *  复制直链
@@ -50,7 +50,7 @@ export default function useFileLink(router, route) {
         return 'data:image/svg+xml;utf8,' + encodeURIComponent(xmlElement.innerHTML);
     }
 
-    const loadRowLinkData = (row) => {
+    const loadRowLinkData = (row, permission) => {
         let pathDownloadLink = common.removeDuplicateSeparator("/" + row.path
             + "/" + row.name);
         shortLinkReq({storageKey: storageKey.value, path: pathDownloadLink}).then((response) => {
@@ -75,14 +75,14 @@ export default function useFileLink(router, route) {
             item.row.size = common.fileSizeFormat(row.size);
             item.link = response.data;
             let pathAndName = encodeAllIgnoreSlashes(row.path + "/" + row.name);
-            pathDownloadLink = common.removeDuplicateSeparator(storageConfigStore.config.domain + "/" +
-              storageConfigStore.config.directLinkPrefix + "/" +
+            pathDownloadLink = common.removeDuplicateSeparator(storageConfigStore.globalConfig.domain + "/" +
+              storageConfigStore.globalConfig.directLinkPrefix + "/" +
               storageKey.value + "/" +
               pathAndName);
             item.directlink = pathDownloadLink;
 
             const qrcode = encodeData({
-                text: response.data,
+                text: permission.shortLink ? item.link : item.directlink,
                 correctLevel: 2,
                 isSpace: false
             });

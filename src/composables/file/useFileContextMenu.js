@@ -22,6 +22,9 @@ export default function useFileContextMenu(currentInstance) {
         // 如果右键的不是空白区域，则不显示菜单
         if (row instanceof Event) {
             event = row;
+            if (!event.target.classList.contains("zfile-index-body-wrapper") && !event.target.classList.contains("zfile-index-body")) {
+                return;
+            }
             contextMenuTargetBlank.value = true;
         } else {
             if (row.type === 'BACK') {

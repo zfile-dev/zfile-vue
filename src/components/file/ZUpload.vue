@@ -60,7 +60,7 @@
 		</el-dialog>
 
 		<!-- 文件拖拽提示框-->
-		<div ref="dropBoxRef" id="dropBox" class="drop-view" v-if="storageConfig.enableFileOperator !== false" v-show="dropState">
+		<div ref="dropBoxRef" id="dropBox" class="drop-view" v-if="storageConfigStore.permission.upload" v-show="dropState">
 			<div class="drop-sub">
 				<span>上传文件至 {{ currentPath }}</span>
 			</div>
@@ -74,15 +74,15 @@ import common from "~/common";
 let router = useRouter();
 let route = useRoute();
 
-import useFileData from "~/composables/file/useFileData";
-let { storageConfig, currentPath } = useFileData(router, route);
-
-import useFileOperator from "~/composables/file/useFileOperator";
-const { uploadFile } = useFileOperator(router, route);
+import useFileSelect from "~/composables/file/useFileSelect";
+let { currentPath } = useFileSelect();
 
 import useFileUpload from "~/composables/file/useFileUpload";
 const { visible, uploadMode, cancelUpload, beforeUpload, uploadProgressInfoSorted,
-	dropState, listenDropFile} = useFileUpload(router, route);
+	dropState, listenDropFile} = useFileUpload();
+
+import useStorageConfigStore from "~/stores/storage-config";
+let storageConfigStore = useStorageConfigStore();
 
 // 如果有上传完成的文件，关闭对话框时调用 close 方法刷新文件列表
 const emit = defineEmits()

@@ -2,7 +2,6 @@ import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
 
 // 画廊模式
-
 let imgModel = ref(false);
 // 检测手动切换画廊模式
 watch(() => imgModel.value, () => {

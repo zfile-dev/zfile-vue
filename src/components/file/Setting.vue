@@ -145,11 +145,11 @@ watch(() => zfileSettingCache.value, (value) => {
   globalConfigStore.zfileConfig.gallery.showBackTop = value.gallery.showBackTop;
 
 	if (value?.view?.size) {
-		storageConfigStore.config.tableSize = viewSizeMap[value.view.size];
+		storageConfigStore.globalConfig.tableSize = viewSizeMap[value.view.size];
 	}
 
-	if (!storageConfigStore.config.tableSize) {
-		storageConfigStore.config.tableSize = 'defualt';
+	if (!storageConfigStore.globalConfig.tableSize) {
+		storageConfigStore.globalConfig.tableSize = 'defualt';
 	}
 
 	if (value?.imagePreview?.mode) {
@@ -168,7 +168,7 @@ import useCommon from "~/composables/useCommon";
 const { isMobile } = useCommon();
 
 import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
-const { currentStorageKey, storageList } = useHeaderStorageList(router, route);
+const { currentStorageKey, storageList } = useHeaderStorageList();
 
 
 </script>

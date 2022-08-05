@@ -12,8 +12,10 @@ let fileDataStore = useFileDataStore();
 export let dialogVideoVisible = ref(false);
 // 文本预览
 export let dialogTextVisible = ref(false);
-// office 或 pdf 预览
+// office 预览
 export let dialogOfficeVisible = ref(false);
+// pdf 预览
+export let dialogPdfVisible = ref(false);
 
 export default function useFilePreview() {
 
@@ -52,12 +54,12 @@ export default function useFilePreview() {
     }
 
     const openOffice = (row) => {
-        if (common.getFileSuffix(row.name) === 'pdf') {
-            dialogOfficeVisible.value = true;
-        } else {
-            let previewUrl = globalConfigStore.zfileConfig.officePreview.previewUrl(row.url);
-            window.open(previewUrl);
-        }
+        let previewUrl = globalConfigStore.zfileConfig.officePreview.previewUrl(row.url);
+        window.open(previewUrl);
+    }
+
+    const openPdf = () => {
+        dialogPdfVisible.value = true;
     }
 
     return {
@@ -65,7 +67,8 @@ export default function useFilePreview() {
         openText, dialogTextVisible,
         openOffice, dialogOfficeVisible,
         openImage,
-        openAudio
+        openAudio,
+        openPdf, dialogPdfVisible
     }
 
 }

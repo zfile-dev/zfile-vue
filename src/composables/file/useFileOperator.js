@@ -6,17 +6,26 @@ import {
     renameFolderReq,
 } from "~/api/file-operator";
 
+import useFileDataStore from "~/stores/file-data";
+let fileDataStore = useFileDataStore();
+
+import useStorageConfigStore from "~/stores/storage-config";
+let storageConfigStore = useStorageConfigStore();
 
 import useFileData from "~/composables/file/useFileData";
+import useRouterData from "~/composables/useRouterData";
+let { storageKey, currentPath } = useRouterData();
 
 // 删除相关
 const batchDeleteResult = ref([]);
 const batchDeleteDialogShow = ref(false);
 
-export default function useFileOperator(router, route) {
+import useFileSelect from "~/composables/file/useFileSelect";
+let { selectRows, selectRow, selectFolders, selectFiles } = useFileSelect();
 
-    const { currentPath, storageKey, loadFile, storageConfig,
-            selectRows, selectRow, selectFolders, selectFiles } = useFileData(router, route);
+export default function useFileOperator() {
+
+    const { loadFile } = useFileData();
 
     // 批量下载已选择的所有文件
     const batchDownloadFile = (row) => {
@@ -153,7 +162,7 @@ export default function useFileOperator(router, route) {
 
     // 删除相关 start
     const batchDelete = () => {
-        if (!storageConfig.value.enableFileOperator) {
+        if (!storageConfigStore.permission.delete) {
             return;
         }
 
@@ -162,10 +171,12 @@ export default function useFileOperator(router, route) {
             return;
         }
 
-        let deleteConfirmMsg = '是否确认批量删除 ';
+        let deleteConfirmMsg = selectRows.value.length === 1 ? '是否确认删除 ' : '是否确认批量删除 ';
+
+        let notSupportDeleteNotEmptyFolderType = ['s3', 'tencent', 'aliyun', 'qiniu', 'minio', 'huawei', 'upyun'];
 
         if (selectFolders.value.length > 0) {
-            deleteConfirmMsg += (' ' + selectFolders.value.length + ' 个文件夹(如文件夹非空，可能会删除失败)');
+            deleteConfirmMsg += (' ' + selectFolders.value.length + ' 个文件夹');
         }
 
         if (selectFolders.value.length > 0 && selectFiles.value.length > 0) {
@@ -174,6 +185,10 @@ export default function useFileOperator(router, route) {
 
         if (selectFiles.value.length > 0) {
             deleteConfirmMsg += (selectFiles.value.length + ' 个文件');
+        }
+
+        if (selectFolders.value.length > 0 && notSupportDeleteNotEmptyFolderType.includes(fileDataStore.currentStorageSource.type.key)) {
+            deleteConfirmMsg += (' (不支持删除非空文件夹)');
         }
 
         deleteConfirmMsg += "?"
@@ -226,7 +241,6 @@ export default function useFileOperator(router, route) {
         return Math.floor(batchDeleteResult.value.length / selectRows.value.length * 100);
     })
     // 删除相关 end
-
 
     return {
         batchDownloadFile, rename, newFolder, moveTo, copyTo,

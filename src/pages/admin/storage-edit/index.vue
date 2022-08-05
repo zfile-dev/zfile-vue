@@ -73,61 +73,6 @@
 			</template>
 		</z-form-item>
 
-		<!--<z-form-item label="开启缓存">-->
-		<!--	<el-switch v-model="storageItem.enableCache"/>-->
-		<!--	<el-tooltip placement="right">-->
-		<!--		<template #content>-->
-		<!--			开启缓存后，N 秒内重复请求相同文件夹，不会重复调用 API。-->
-		<!--			<br>-->
-		<!--			参数 N 在配置文件中设置 {zfile.cache.timeout}，默认为 1800 秒。-->
-		<!--			<br>-->
-		<!--			<br>-->
-		<!--			注意：开启缓存后，可能会导致系统不稳定，如非必要或不了解缓存的，不建议开启此功能。-->
-		<!--		</template>-->
-		<!--		<i class="el-icon-info zfile-info-tooltip"></i>-->
-		<!--	</el-tooltip>-->
-		<!--</z-form-item>-->
-
-		<!--<z-form-item v-show="storageItem.enableCache" label="开启缓存自动刷新">-->
-		<!--	<el-switch v-model="storageItem.autoRefreshCache"/>-->
-		<!--	<el-tooltip placement="right">-->
-		<!--		<template #content>-->
-		<!--			每隔 N 秒检测到期的缓存，对于过期缓存尝试调用 API，重新写入缓存.-->
-		<!--			<br>-->
-		<!--			参数 N 在配置文件中设置 {zfile.cache.auto-refresh-interval}，默认为 5 秒。-->
-		<!--		</template>-->
-		<!--		<i class="el-icon-info zfile-info-tooltip"></i>-->
-		<!--	</el-tooltip>-->
-		<!--</z-form-item>-->
-
-		<!--<z-form-item label="文件搜索">-->
-		<!--	<el-switch v-model="storageItem.searchEnable"/>-->
-		<!--	<template #tips>-->
-		<!--		文件搜索是一个实验性功能，可能不稳定，也可能会造成存储源请求数频繁调用，为了你的资产安全，请谨慎使用。-->
-		<!--	</template>-->
-		<!--</z-form-item>-->
-
-		<!--<z-form-item v-show="storageItem.searchEnable" label="搜索忽略大小写">-->
-		<!--	<el-switch v-model="storageItem.searchIgnoreCase"/>-->
-		<!--</z-form-item>-->
-
-		<!--<z-form-item v-show="storageItem.searchEnable" label="搜索模式">-->
-		<!--	<el-radio-group v-model="storageItem.searchMode">-->
-		<!--		<el-radio label="SEARCH_CACHE">仅搜索缓存</el-radio>-->
-		<!--		<el-radio label="SEARCH_ALL">搜索全部</el-radio>-->
-		<!--	</el-radio-group>-->
-		<!--	<template #tips>-->
-		<!--		<span v-if="storageItem.searchMode === 'SEARCH_CACHE'">-->
-		<!--			表示仅从缓存中搜索，访问过的文件夹才会被记录到缓存中, 所以搜索结果可能不全, 但搜索速度快.-->
-		<!--		</span>-->
-		<!--		<span v-if="storageItem.searchMode === 'SEARCH_ALL'">-->
-		<!--			搜索全部，会在后台模拟点击每个文件夹取得数据，全部文件夹点击完后，显示搜索结果.-->
-		<!--			<br>故文件量较大时，搜索速度很慢, 且会频繁调用 API. 某些存储源按照 API 请求次数收费，请谨慎开启此功能.-->
-		<!--			<br>（如启用缓存后，搜索会读取缓存且不存在的也会写入缓存.）-->
-		<!--		</span>-->
-		<!--	</template>-->
-		<!--</z-form-item>-->
-
 		<z-form-item
 			v-for="(item) in storageSourceParamList"
 			:label="item.name"
@@ -380,6 +325,7 @@ let useInitData = () => {
 				validator: (rule, value, callback) => {
 					if (value === undefined || value === null || value === '') {
 						callback();
+            return;
 					}
 
 					let systemNames = ['admin', 'file', 'login', 'install'];

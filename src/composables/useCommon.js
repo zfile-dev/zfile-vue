@@ -2,7 +2,6 @@
 import { useWindowSize } from '@vueuse/core'
 const { width, height } = useWindowSize()
 
-
 export default function useCommon() {
 
     const isMobile = computed(() => {
@@ -13,7 +12,11 @@ export default function useCommon() {
         return width.value >= 768;
     })
 
-    // encodeURIComponent 编码所有 url, 但忽略 / 字符
+    /**
+     * encodeURIComponent 编码所有 url, 但忽略 / 字符
+     * @param str
+     * @returns {string}
+     */
     const encodeAllIgnoreSlashes = (str) => {
         if (strIsEmpty(str)) {
             return '';

@@ -6,7 +6,9 @@
 		           :custom-class="selectFiles.length > 1 ? 'zfile-file-download-link-dialog-multiple' : 'zfile-file-download-link-dialog-single'"
 		           draggable
 		           top="5vh">
+
 			<el-table class="zfile-download-link-table" :max-height="height * 0.7" :data="datas" v-if="selectFiles.length > 1">
+
 				<el-table-column
 				                 show-tooltip-when-overflow
 				                 label="文件名">
@@ -14,8 +16,9 @@
 						{{ scope.row.row.name }}
 					</template>
 				</el-table-column>
+
 				<el-table-column
-					v-if="storageConfigStore.config.showLinkBtn && storageConfigStore.config.showPathLink"
+					v-if="storageConfigStore.permission.pathLink"
 					show-overflow-tooltip>
 					<template #header="scope">
 						直链
@@ -32,9 +35,10 @@
 						{{ scope.row.directlink }}
 					</template>
 				</el-table-column>
+
 				<el-table-column
-					v-if="storageConfigStore.config.showLinkBtn && storageConfigStore.config.showShortLink"
-					show-overflow-tooltip width="250">
+          v-if="storageConfigStore.permission.shortLink"
+          show-overflow-tooltip width="250">
 					<template #header="scope">
 						短链
 						<el-tooltip
@@ -50,6 +54,7 @@
 						{{ scope.row.link }}
 					</template>
 				</el-table-column>
+
 			</el-table>
       <el-row class="md:space-y-6" v-if="selectFiles.length === 1 && data">
 				<div class="flex flex-row space-x-10 w-full">
@@ -93,7 +98,7 @@
 						<el-form-item>
 							<el-input readonly :prefix-icon="Coin" v-model="data.row.size"></el-input>
 						</el-form-item>
-						<el-form-item v-if="storageConfigStore.config.showLinkBtn && storageConfigStore.config.showPathLink">
+						<el-form-item v-if="storageConfigStore.permission.pathLink">
 							<el-tooltip append-to=".zfile-file-download-link-body"
 							            popper-class="zfile-link-tips"
 							            placement="left" content="路径直链地址，包含文件完整路径.">
@@ -101,7 +106,7 @@
 								</el-input>
 							</el-tooltip>
 						</el-form-item>
-						<el-form-item v-if="storageConfigStore.config.showLinkBtn && storageConfigStore.config.showShortLink">
+						<el-form-item v-if="storageConfigStore.permission.shortLink">
 							<el-tooltip append-to=".zfile-file-download-link-body"
 							            popper-class="zfile-link-tips"
 							            placement="left" content="缩短版直链地址，便于复制分发.">
@@ -137,19 +142,23 @@ let storageConfigStore = useStorageConfigStore();
 let router = useRouter();
 let route = useRoute();
 
-import useFileLink from "~/composables/file/useFileLink";
-let { visible, copyText, data, datas, loadRowLinkData } = useFileLink(router, route);
+import useFileSelect from "~/composables/file/useFileSelect";
+let { selectFiles } = useFileSelect();
 
-import useFileData from "~/composables/file/useFileData";
-let { selectFiles } = useFileData(router, route);
+import useFileLink from "~/composables/file/useFileLink";
+let { visible, copyText, data, datas, loadRowLinkData } = useFileLink();
 
 watch(() => visible.value, (value) => {
 	if (value) {
 		if (selectFiles.value.length === 0) {
 			ElMessage.warning('请至少选择一个文件');
 		} else {
+      if (!storageConfigStore.permission.link) {
+        ElMessage.error('没有权限生成直链或短链');
+        return;
+      }
 			selectFiles.value.forEach((item) => {
-				loadRowLinkData(item);
+				loadRowLinkData(item, storageConfigStore.permission);
 			})
 		}
 	} else {

@@ -79,17 +79,8 @@ const useFileDataStore = defineStore('fileDataStore', {
     updateFileList(val: any) {
       this.fileListSource = val;
     },
-    updateNewImgMode(val: any) {
-      this.newImgMode = val;
-    },
     updateOldStorageKey(val: any) {
       this.oldStorageKey = val;
-    },
-    updateSearchParam(val: any) {
-      this.searchParam = val;
-    },
-    switchImgMode(val: any) {
-      this.imgMode = val;
     },
   },
 })

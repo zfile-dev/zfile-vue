@@ -1,365 +1,369 @@
 <template>
-	<div class="zfile-index-body"
-       :class="storageConfigStore.config?.layout === 'center' ? 'zfile-index-table-center' : ''"
-       ref="rootRef">
-		<!-- 公告 -->
-		<el-alert v-if="storageConfigStore.config.showAnnouncement && storageConfigStore.config.announcement" class="zfile-index-announcement" type="success">
-			<v-md-preview :text="storageConfigStore.config.announcement"></v-md-preview>
-		</el-alert>
+  <div class="zfile-index-body-wrapper" @contextmenu="showFileMenu">
+    <div class="zfile-index-body"
+         :class="storageConfigStore.globalConfig?.layout === 'center' ? 'zfile-index-table-center' : ''">
 
-		<!-- 文档模式显示 -->
-		<el-card v-if="storageConfigStore.config.showDocument && route.params.storageKey && storageConfig.readmeDisplayMode === 'top'" class="my-3" >
-			<v-md-preview :text="storageConfig.readmeText"></v-md-preview>
-		</el-card>
+      <!-- 公告 -->
+      <el-alert v-if="storageConfigStore.globalConfig.showAnnouncement && storageConfigStore.globalConfig.announcement" class="zfile-index-announcement" type="success">
+        <v-md-preview :text="storageConfigStore.globalConfig.announcement"></v-md-preview>
+      </el-alert>
 
-		<!-- 文件区 -->
-		<el-table
-			v-if="!fileDataStore.imgMode"
-			id="ListTable"
-			ref="fileTableRef"
-			v-loading="basicLoading"
-			element-loading-text="拼命加载中"
-			element-loading-background="rgba(255, 255, 255, 0.6)"
-			@sort-change="sortChangeMethod"
-			@row-click="tableClickRow"
-			@row-dblclick="tableDbClickRow"
-			@cell-mouse-enter="tableHoverRow"
-			@cell-mouse-leave="tableLeaveRow"
-			:size="storageConfigStore.config?.tableSize"
-			empty-text=""
-			@row-contextmenu="showMenu"
-			:row-class-name="tableRowClassName"
-			@selection-change="selectRowsChange"
-			:data="skeletonLoading ? skeletonData : fileDataStore.fileList">
-			<template #empty>
-				<div v-show="!basicLoading">
-					<svg-icon class="empty-icon" name="empty"/>
-					<div class="font-bold text-base">数据为空，请先上传或添加文件</div>
-				</div>
-			</template>
+      <!-- 文档模式显示 -->
+      <el-card v-if="storageConfigStore.globalConfig.showDocument && route.params.storageKey && storageConfigStore.folderConfig.readmeDisplayMode === 'top'" class="my-3" >
+        <v-md-preview :text="storageConfigStore.folderConfig.readmeText"></v-md-preview>
+      </el-card>
 
-			<el-table-column width="45px" type="selection" :selectable="checkSelectable">
-			</el-table-column>
+      <!-- 文件区 -->
+      <el-table
+        v-if="!fileDataStore.imgMode"
+        id="ListTable"
+        ref="fileTableRef"
+        v-loading="basicLoading"
+        element-loading-text="拼命加载中"
+        element-loading-background="rgba(255, 255, 255, 0.6)"
+        @sort-change="sortChangeMethod"
+        @row-click="tableClickRow"
+        @row-dblclick="tableDbClickRow"
+        @cell-mouse-enter="tableHoverRow"
+        @cell-mouse-leave="tableLeaveRow"
+        :size="storageConfigStore.globalConfig?.tableSize"
+        empty-text=""
+        @row-contextmenu="showFileMenu"
+        :row-class-name="tableRowClassName"
+        @selection-change="selectRowsChange"
+        :data="skeletonLoading ? skeletonData : fileDataStore.fileList">
+        <template #empty>
+          <div v-show="!basicLoading">
+            <svg-icon class="empty-icon" name="empty"/>
+            <div class="font-bold text-base">数据为空，请先上传或添加文件</div>
+          </div>
+        </template>
 
-			<el-table-column
-				prop="name"
-				sortable="custom"
-				class-name="zfile-table-col-name"
-				label-class-name="table-header-left"
-				min-width="100%">
-				<template #header>
-					<el-icon>
-						<Document/>
-					</el-icon>
-					<span>文件名</span>
-				</template>
-				<template #default="scope">
-					<div v-show="skeletonLoading">
-						<el-skeleton animated>
-							<template #template>
-								<el-skeleton-item variant="circle"
-								                  style="vertical-align: middle;width: 18px; height: 18px; margin-right: 20px" />
-								<el-skeleton-item variant="text"
-								                  style="vertical-align: middle;width: 30%;"/>
-							</template>
-						</el-skeleton>
-					</div>
-					<div v-show="!skeletonLoading">
-						<svg-icon :name="'file-type-' + scope.row.icon"></svg-icon>
-						{{ scope.row.name }}
-					</div>
-				</template>
-			</el-table-column>
+        <el-table-column width="45px" type="selection" :selectable="checkSelectable">
+        </el-table-column>
 
-			<el-table-column
-				prop="time"
-				v-if="isNotMobile"
-				sortable="custom"
-				class-name="zfile-table-col-time"
-				min-width="25%">
-				<template #header>
-					<el-icon>
-						<Calendar/>
-					</el-icon>
-					<span>修改时间</span>
-				</template>
-				<template #default="scope">
-          <div v-show="skeletonLoading">
-						<el-skeleton animated>
-							<template #template>
-								<el-skeleton-item variant="text" style="width: 60%"/>
-							</template>
-						</el-skeleton>
-					</div>
-          <div v-show="!skeletonLoading">
-						{{ scope.row.time }}
-					</div>
-				</template>
-			</el-table-column>
+        <el-table-column
+          prop="name"
+          sortable="custom"
+          class-name="zfile-table-col-name"
+          label-class-name="table-header-left"
+          min-width="100%">
+          <template #header>
+            <el-icon>
+              <Document/>
+            </el-icon>
+            <span>文件名</span>
+          </template>
+          <template #default="scope">
+            <div v-show="skeletonLoading">
+              <el-skeleton animated>
+                <template #template>
+                  <el-skeleton-item variant="circle"
+                                    style="vertical-align: middle;width: 18px; height: 18px; margin-right: 20px" />
+                  <el-skeleton-item variant="text"
+                                    style="vertical-align: middle;width: 30%;"/>
+                </template>
+              </el-skeleton>
+            </div>
+            <div v-show="!skeletonLoading">
+              <svg-icon :name="'file-type-' + scope.row.icon"></svg-icon>
+              {{ scope.row.name }}
+            </div>
+          </template>
+        </el-table-column>
 
-			<el-table-column
-				prop="size"
-				v-if="isNotMobile"
-				class-name="zfile-table-col-size"
-				sortable="custom"
-				min-width="20%">
-				<template #header>
-					<el-icon>
-						<Coin/>
-					</el-icon>
-					<span>大小</span>
-				</template>
-				<template #default="scope">
-          <div v-show="skeletonLoading">
-						<el-skeleton animated>
-							<template #template>
-								<el-skeleton-item variant="text" style="width: 30%"/>
-							</template>
-						</el-skeleton>
-					</div>
-          <div v-show="!skeletonLoading">
-						{{ common.fileSizeFilter(scope.row, null, scope.row.size) }}
-					</div>
-				</template>
-			</el-table-column>
-		</el-table>
+        <el-table-column
+          prop="time"
+          v-if="isNotMobile"
+          sortable="custom"
+          class-name="zfile-table-col-time"
+          min-width="25%">
+          <template #header>
+            <el-icon>
+              <Calendar/>
+            </el-icon>
+            <span>修改时间</span>
+          </template>
+          <template #default="scope">
+            <div v-show="skeletonLoading">
+              <el-skeleton animated>
+                <template #template>
+                  <el-skeleton-item variant="text" style="width: 60%"/>
+                </template>
+              </el-skeleton>
+            </div>
+            <div v-show="!skeletonLoading">
+              {{ scope.row.time }}
+            </div>
+          </template>
+        </el-table-column>
 
-		<!-- 画廊模式 -->
-		<file-gallery v-if="fileDataStore.imgMode"></file-gallery>
+        <el-table-column
+          prop="size"
+          v-if="isNotMobile"
+          class-name="zfile-table-col-size"
+          sortable="custom"
+          min-width="20%">
+          <template #header>
+            <el-icon>
+              <Coin/>
+            </el-icon>
+            <span>大小</span>
+          </template>
+          <template #default="scope">
+            <div v-show="skeletonLoading">
+              <el-skeleton animated>
+                <template #template>
+                  <el-skeleton-item variant="text" style="width: 30%"/>
+                </template>
+              </el-skeleton>
+            </div>
+            <div v-show="!skeletonLoading">
+              {{ common.fileSizeFilter(scope.row, null, scope.row.size) }}
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
 
-		<!-- 右键菜单 -->
-		<Contextmenu ref="contextmenu">
-			<div>
-				<ContextmenuItem v-show="selectStatistics.isSingleSelect && selectStatistics.isAllFolder"
-				                 @click="openRow(selectRow)">
-					<el-icon class="contextmenu-icon">
-						<FolderOpened/>
-					</el-icon>
-					<label>打开</label>
-				</ContextmenuItem>
-			</div>
-			<ContextmenuItem v-show="selectStatistics.isSingleSelect && selectStatistics.isAllFile"
-			                 @click="openRow(selectRow)">
-				<el-icon class="contextmenu-icon">
-					<i-custom-preview/>
-				</el-icon>
-				<label>预览</label>
-			</ContextmenuItem>
-			<ContextmenuItem v-show="selectStatistics.isAllFile"
-			                 @click="batchDownloadFile">
-				<el-icon class="contextmenu-icon">
-					<i-custom-download/>
-				</el-icon>
-				<label>下载</label>
-			</ContextmenuItem>
-			<ContextmenuItem v-show="selectStatistics.isAllFile &&
-(storageConfigStore.config.showLinkBtn && (storageConfigStore.config.showShortLink || storageConfigStore.config.showPathLink))"
-			                 @click="openLinkDialog">
-				<el-icon class="contextmenu-icon">
-					<svg-icon class="inline" name="link"></svg-icon>
-				</el-icon>
-				<label>生成直链</label>
-			</ContextmenuItem>
-			<div v-show="storageConfig.enableFileOperator !== false">
-				<ContextmenuDivider></ContextmenuDivider>
+      <!-- 画廊模式 -->
+      <file-gallery v-if="fileDataStore.imgMode"></file-gallery>
 
-				<ContextmenuItem v-show="selectStatistics.isSingleSelect"
-				                 @click="rename">
-					<el-icon class="contextmenu-icon">
-						<svg-icon name="edit"/>
-					</el-icon>
-					<label>重命名</label>
-				</ContextmenuItem>
-				<!--<ContextmenuItem @click="moveTo">-->
-				<!--	<el-icon class="contextmenu-icon">-->
-				<!--		<svg-icon class="inline" name="move"></svg-icon>-->
-				<!--	</el-icon>-->
-				<!--	<label>移动</label>-->
-				<!--</ContextmenuItem>-->
-				<!--<ContextmenuItem-->
-				<!--                 @click="copyTo">-->
-				<!--	<el-icon class="contextmenu-icon">-->
-				<!--		<CopyDocument/>-->
-				<!--	</el-icon>-->
-				<!--	<label>复制</label>-->
-				<!--</ContextmenuItem>-->
-				<ContextmenuItem @click="batchDelete">
-					<el-icon class="contextmenu-icon">
-						<svg-icon class="inline" name="delete"></svg-icon>
-					</el-icon>
-					<label>删除 {{selectRows.length > 0 ? ('(' + selectRows.length + ')') : ''}}</label>
-				</ContextmenuItem>
+      <!-- 右键菜单 -->
+      <Contextmenu auto-ajust-placement ref="contextmenu">
+        <template v-if="contextMenuTargetFile">
+          <ContextmenuItem v-show="storageConfigStore.permission.open"
+                           @click="openRow(selectRow)">
+            <el-icon class="contextmenu-icon">
+              <FolderOpened/>
+            </el-icon>
+            <label>打开</label>
+          </ContextmenuItem>
+          <ContextmenuItem v-show="storageConfigStore.permission.preview"
+                           @click="openRow(selectRow)">
+            <el-icon class="contextmenu-icon">
+              <i-custom-preview/>
+            </el-icon>
+            <label>预览</label>
+          </ContextmenuItem>
+          <ContextmenuItem v-show="storageConfigStore.permission.download"
+                           @click="batchDownloadFile">
+            <el-icon class="contextmenu-icon">
+              <i-custom-download/>
+            </el-icon>
+            <label>下载</label>
+          </ContextmenuItem>
+          <ContextmenuItem v-show="storageConfigStore.permission.link"
+                           @click="openLinkDialog">
+            <el-icon class="contextmenu-icon">
+              <svg-icon class="inline" name="link"></svg-icon>
+            </el-icon>
+            <label>生成直链</label>
+          </ContextmenuItem>
+          <ContextmenuDivider v-show="storageConfigStore.permission.rename || storageConfigStore.permission.delete"></ContextmenuDivider>
+          <ContextmenuItem v-show="storageConfigStore.permission.rename"
+                           @click="rename">
+            <el-icon class="contextmenu-icon">
+              <svg-icon name="edit"/>
+            </el-icon>
+            <label>重命名</label>
+          </ContextmenuItem>
+          <!--<ContextmenuItem @click="moveTo">-->
+          <!--	<el-icon class="contextmenu-icon">-->
+          <!--		<svg-icon class="inline" name="move"></svg-icon>-->
+          <!--	</el-icon>-->
+          <!--	<label>移动</label>-->
+          <!--</ContextmenuItem>-->
+          <!--<ContextmenuItem-->
+          <!--                 @click="copyTo">-->
+          <!--	<el-icon class="contextmenu-icon">-->
+          <!--		<CopyDocument/>-->
+          <!--	</el-icon>-->
+          <!--	<label>复制</label>-->
+          <!--</ContextmenuItem>-->
+          <ContextmenuItem v-if="storageConfigStore.permission.delete" @click="batchDelete">
+            <el-icon class="contextmenu-icon">
+              <svg-icon class="inline" name="delete"></svg-icon>
+            </el-icon>
+            <label>删除 {{selectRows.length > 0 ? ('(' + selectRows.length + ')') : ''}}</label>
+          </ContextmenuItem>
+          <ContextmenuDivider v-show="storageConfigStore.permission.newFolder || storageConfigStore.permission.upload"></ContextmenuDivider>
+        </template>
+        <ContextmenuItem v-show="storageConfigStore.permission.newFolder" @click="newFolder">
+          <el-icon class="contextmenu-icon">
+            <FolderOpened/>
+          </el-icon>
+          <label>新建文件夹</label>
+        </ContextmenuItem>
+        <ContextmenuItem v-show="storageConfigStore.permission.upload" @click="openUploadDialog">
+          <el-icon class="contextmenu-icon">
+            <i-custom-upload/>
+          </el-icon>
+          <label>上传文件</label>
+        </ContextmenuItem>
+        <ContextmenuItem v-show="storageConfigStore.permission.upload" @click="openUploadFolderDialog">
+          <el-icon class="contextmenu-icon">
+            <i-custom-upload-folder/>
+          </el-icon>
+          <label>上传文件夹</label>
+        </ContextmenuItem>
 
-				<ContextmenuDivider></ContextmenuDivider>
+        <ContextmenuDivider v-show="storageConfigStore.permission.newFolder || storageConfigStore.permission.upload"></ContextmenuDivider>
+        <ContextmenuItem @click="reload">
+          <el-icon class="contextmenu-icon">
+            <i-custom-refresh/>
+          </el-icon>
+          <label>刷新</label>
+        </ContextmenuItem>
 
-				<ContextmenuItem @click="newFolder">
-					<el-icon class="contextmenu-icon">
-						<FolderOpened/>
-					</el-icon>
-					<label>新建文件夹</label>
-				</ContextmenuItem>
 
-				<ContextmenuItem @click="openUploadDialog">
-					<el-icon class="contextmenu-icon">
-						<i-custom-upload/>
-					</el-icon>
-					<label>上传文件</label>
-				</ContextmenuItem>
+      </Contextmenu>
 
-				<ContextmenuItem @click="openUploadFolderDialog">
-					<el-icon class="contextmenu-icon">
-						<i-custom-upload-folder/>
-					</el-icon>
-					<label>上传文件夹</label>
-				</ContextmenuItem>
-			</div>
+      <!-- 视频播放器 -->
+      <el-dialog draggable custom-class="zfile-video-dialog" :destroy-on-close="true"
+                 v-model="dialogVideoVisible">
+        <video-player v-if="dialogVideoVisible" ref="videoPlayer"/>
+      </el-dialog>
 
-		</Contextmenu>
-
-		<!-- 视频播放器 -->
-		<el-dialog draggable custom-class="zfile-video-dialog" :destroy-on-close="true"
-		           top="5vh"
-		           width="90%"
-		           v-model="dialogVideoVisible">
-			<video-player v-if="dialogVideoVisible" ref="videoPlayer"/>
-		</el-dialog>
-
-		<!-- 文本编辑器 -->
-		<el-dialog draggable custom-class="zfile-text-dialog" :destroy-on-close="true"
-		           top="5vh"
-		           :title="fileDataStore.currentClickRow.name"
-		           v-model="dialogTextVisible">
-			<TextViewer :file-name="fileDataStore.currentClickRow.name"
-			            :file-url="fileDataStore.currentClickRow.url"
-			            v-if="dialogTextVisible && fileDataStore.currentClickRow.name.indexOf('.md') === -1"/>
-			<MarkdownViewer :file-name="fileDataStore.currentClickRow.name"
-			                :file-url="fileDataStore.currentClickRow.url"
-			                v-if="dialogTextVisible && fileDataStore.currentClickRow.name.indexOf('.md') !== -1"/>
-		</el-dialog>
+      <!-- 文本编辑器 -->
+      <el-dialog draggable custom-class="zfile-text-dialog" :destroy-on-close="true"
+                 :title="fileDataStore.currentClickRow.name"
+                 v-model="dialogTextVisible">
+        <TextViewer :file-name="fileDataStore.currentClickRow.name"
+                    :file-url="fileDataStore.currentClickRow.url"
+                    v-if="dialogTextVisible && fileDataStore.currentClickRow.name.indexOf('.md') === -1"/>
+        <MarkdownViewer :file-name="fileDataStore.currentClickRow.name"
+                        :file-url="fileDataStore.currentClickRow.url"
+                        v-if="dialogTextVisible && fileDataStore.currentClickRow.name.indexOf('.md') !== -1"/>
+      </el-dialog>
 
 		<!-- 生成直链 -->
 		<Link></Link>
 
-		<!-- 批量删除结果 -->
-		<el-dialog draggable :destroy-on-close="true"
-		           width="40%"
-		           title="操作结果"
-		           @close="batchDeleteCloseAction"
-		           v-model="batchDeleteDialogShow">
-			<el-progress
-				:text-inside="true"
-				:stroke-width="26"
-				:percentage="batchDeletePercentage"
-				:status="batchDeletePercentage === 100 ? 'success' : ''" />
-			<el-table :data="batchDeleteResult" height="60vh" style="width: 100%">
-				<el-table-column show-overflow-tooltip prop="name" label="文件名" />
-				<el-table-column prop="status" label="状态" width="150">
-					<template #default="scope">
-						<span v-if="scope.row.status" class="text-green-500">成功</span>
-						<span v-else class="text-red-500">失败</span>
-					</template>
-				</el-table-column>
-			</el-table>
-		</el-dialog>
+      <!-- 批量删除结果 -->
+      <el-dialog draggable :destroy-on-close="true"
+                 width="40%"
+                 title="操作结果"
+                 @close="batchDeleteCloseAction"
+                 v-model="batchDeleteDialogShow">
+        <el-progress
+          :text-inside="true"
+          :stroke-width="26"
+          :percentage="batchDeletePercentage"
+          :status="batchDeletePercentage === 100 ? 'success' : ''" />
+        <el-table :data="batchDeleteResult" height="60vh" style="width: 100%">
+          <el-table-column show-overflow-tooltip prop="name" label="文件名" />
+          <el-table-column prop="status" label="状态" width="150">
+            <template #default="scope">
+              <span v-if="scope.row.status" class="text-green-500">成功</span>
+              <span v-else class="text-red-500">失败</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
 
-		<ZUpload @close="loadFileAndConfig"></ZUpload>
+      <!-- 上传框 -->
+      <ZUpload @close="loadFileAndConfig"></ZUpload>
 
-		<!-- 音频播放器 -->
-		<audio-player></audio-player>
+      <!-- 音频播放器 -->
+      <audio-player></audio-player>
 
-		<!-- 回到顶部 -->
-		<back-top v-show="globalConfigStore.zfileConfig.gallery.showBackTop"></back-top>
+      <!-- 回到顶部 -->
+      <back-top v-show="globalConfigStore.zfileConfig.gallery.showBackTop"></back-top>
 
-		<!-- 弹窗文档 -->
-		<el-dialog draggable
-		           custom-class="zfile-readme-dialog"
-		           v-if="storageConfigStore.config.showDocument && storageConfig.readmeDisplayMode === 'dialog'" :model-value="true">
-			<v-md-preview :text="storageConfig.readmeText"></v-md-preview>
-		</el-dialog>
+      <!-- 弹窗文档 -->
+      <el-dialog draggable
+                 custom-class="zfile-readme-dialog"
+                 v-if="storageConfigStore.globalConfig.showDocument && storageConfigStore.folderConfig.readmeDisplayMode === 'dialog'" :model-value="true">
+        <v-md-preview :text="storageConfigStore.folderConfig.readmeText"></v-md-preview>
+      </el-dialog>
 
-		<!-- 底部文档 -->
-		<el-card class="mt-5" v-if="storageConfigStore.config.showDocument && storageConfig.readmeDisplayMode === 'bottom'">
-			<v-md-preview :text="storageConfig.readmeText"></v-md-preview>
-		</el-card>
+      <!-- 底部文档 -->
+      <el-card class="mt-5" v-if="storageConfigStore.globalConfig.showDocument && storageConfigStore.folderConfig.readmeDisplayMode === 'bottom'">
+        <v-md-preview :text="storageConfigStore.folderConfig.readmeText"></v-md-preview>
+      </el-card>
 
-		<!-- 悬浮菜单 -->
-		<transition enter-active-class="animate__animated animate__fadeInUp animate__faster"
-		            leave-active-class="animate__animated animate__fadeOutDown animate__faster">
-			<div v-show="selectRows.length > 0 && storageKey && !fileDataStore.imgMode && linkVisible === false"
-			     class="zfile-index-hover-tools">
-				<div class="zfile-index-hover-body">
+      <!-- 悬浮菜单 -->
+      <transition enter-active-class="animate__animated animate__fadeInUp animate__faster"
+                  leave-active-class="animate__animated animate__fadeOutDown animate__faster">
+        <div v-show="selectRows.length > 0 && route.params.storageKey && !fileDataStore.imgMode && linkVisible === false"
+             class="zfile-index-hover-tools">
+          <div class="zfile-index-hover-body">
+            <template v-if="storageConfigStore.permission.preview">
+              <el-tooltip
+                :show-arrow="false"
+                :offset="15"
+                effect="dark"
+                content="预览"
+                placement="top">
+                <svg-icon @click="openRow(selectRow)" name="tool-preview"></svg-icon>
+              </el-tooltip>
+            </template>
 
-					<el-tooltip
-						:show-arrow="false"
-						:offset="15"
-						v-if="selectStatistics.isAllFile && selectStatistics.isSingleSelect"
-						effect="dark"
-						content="预览"
-						placement="top">
-						<svg-icon v-if="selectStatistics.isAllFile && selectStatistics.isSingleSelect"
-						          @click="openRow(selectRow)" name="tool-preview"></svg-icon>
-					</el-tooltip>
-					<el-tooltip
-						:show-arrow="false"
-						:offset="15"
-						v-if="selectStatistics.isAllFile"
-						effect="dark"
-						content="下载"
-						placement="top">
-						<svg-icon v-if="selectStatistics.isAllFile" @click="batchDownloadFile" name="tool-download"></svg-icon>
-					</el-tooltip>
+            <template v-if="storageConfigStore.permission.download">
+              <el-tooltip
+                :show-arrow="false"
+                :offset="15"
+                effect="dark"
+                content="下载"
+                placement="top">
+                <svg-icon @click="batchDownloadFile" name="tool-download"></svg-icon>
+              </el-tooltip>
+            </template>
 
-          <el-tooltip
-            :show-arrow="false"
-            :offset="15"
-            effect="dark"
-            content="生成直链"
-            placement="top">
-            <svg-icon v-if="selectStatistics.isAllFile && selectStatistics.isAllFile &&
-(storageConfigStore.config.showLinkBtn && (storageConfigStore.config.showShortLink || storageConfigStore.config.showPathLink))" @click="openLinkDialog" name="tool-link"></svg-icon>
-          </el-tooltip>
+            <template v-if="storageConfigStore.permission.link">
+              <el-tooltip
+                :show-arrow="false"
+                :offset="15"
+                effect="dark"
+                content="生成直链"
+                placement="top">
+                <svg-icon @click="openLinkDialog" name="tool-link"></svg-icon>
+              </el-tooltip>
+            </template>
 
-					<template v-if="storageConfig.enableFileOperator !== false">
-						<el-tooltip
-							:show-arrow="false"
-							:offset="15"
-							effect="dark"
-							v-if="selectStatistics.isSingleSelect"
-							content="重命名"
-							placement="top">
-							<svg-icon v-if="selectStatistics.isSingleSelect" @click="rename" name="tool-edit"></svg-icon>
-						</el-tooltip>
-						<!--<el-tooltip-->
-						<!--	:show-arrow="false"-->
-						<!--	:offset="15"-->
-						<!--	effect="dark"-->
-						<!--	content="移动"-->
-						<!--	placement="top">-->
-						<!--	<svg-icon @click="moveTo" name="tool-move"></svg-icon>-->
-						<!--</el-tooltip>-->
-						<el-tooltip
-							:show-arrow="false"
-							:offset="15"
-							effect="dark"
-							content="删除"
-							placement="top">
-							<svg-icon @click="batchDelete" name="tool-delete"></svg-icon>
-						</el-tooltip>
-					</template>
+            <template v-if="storageConfigStore.permission.rename">
+              <el-tooltip
+                :show-arrow="false"
+                :offset="15"
+                effect="dark"
+                content="重命名"
+                placement="top">
+                <svg-icon @click="rename" name="tool-edit"></svg-icon>
+              </el-tooltip>
+            </template>
+            <!--<el-tooltip-->
+            <!--	:show-arrow="false"-->
+            <!--	:offset="15"-->
+            <!--	effect="dark"-->
+            <!--	content="移动"-->
+            <!--	placement="top">-->
+            <!--	<svg-icon @click="moveTo" name="tool-move"></svg-icon>-->
+            <!--</el-tooltip>-->
+            <template v-if="storageConfigStore.permission.delete">
+              <el-tooltip
+                :show-arrow="false"
+                :offset="15"
+                effect="dark"
+                content="删除"
+                placement="top">
+                <svg-icon @click="batchDelete" name="tool-delete"></svg-icon>
+              </el-tooltip>
+            </template>
 
-					<el-tooltip
-						:show-arrow="false"
-						:offset="15"
-						:disabled="selectRows.length === 0"
-						effect="dark"
-						content="取消选择"
-						placement="top">
-						<svg-icon @click="clearSelection" name="tool-close"></svg-icon>
-					</el-tooltip>
-				</div>
-			</div>
-		</transition>
-	</div>
+            <el-tooltip
+              :show-arrow="false"
+              :offset="15"
+              :disabled="selectRows.length === 0"
+              effect="dark"
+              content="取消选择"
+              placement="top">
+              <svg-icon @click="clearSelection" name="tool-close"></svg-icon>
+            </el-tooltip>
+          </div>
+        </div>
+      </transition>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -439,8 +443,7 @@ import useTableOperator from "~/composables/file/useTableOperator";
 import useFilePreview from '~/composables/file/useFilePreview';
 // 文件操作相关
 import useFileOperator from '~/composables/file/useFileOperator';
-// element table ref 相关操作
-import useFileRef from "~/composables/file/useFileRef";
+
 
 import useCommon from "~/composables/useCommon";
 const { isNotMobile } = useCommon();
@@ -452,295 +455,247 @@ let fileDataStore = useFileDataStore();
 let storageConfigStore = useStorageConfigStore();
 let globalConfigStore = useGlobalConfigStore();
 
-// 初始化 tableRef
-const fileTableRef = ref();
-const contextmenu = ref();
-const rootRef = ref();
-const { clearSelection } = useFileRef(fileTableRef, rootRef);
-
 const currentInstance = getCurrentInstance();
-const { showMenu, visible:contextMenuVisible } = useFileContextMenu(router, route, currentInstance);
+const { showFileMenu, contextMenuTargetFile } = useFileContextMenu(currentInstance);
+
+import useFileSelect from "~/composables/file/useFileSelect";
+let { checkSelectable, selectRowsChange, selectRow, selectRows, selectStatistics, tableRowClassName, clearSelection } = useFileSelect(currentInstance);
+
 
 // 初始化时，加载文件列表
 onBeforeMount(() => {
-	loadFileAndConfig();
+  loadFileAndConfig();
 })
 
 const loadFileAndConfig = () => {
-	if (route.params.storageKey) {
-		loadFile();
-		loadFileConfig();
-	}
+  if (route.params.storageKey) {
+    loadFile();
+    loadFileConfig();
+  }
 }
 
 // 切换存储源或路径时，重新加载文件列表
 watch(() => [route.params.storageKey, route.params.fullpath], () => {
-	loadFileAndConfig();
+  loadFileAndConfig();
 })
 
-const { currentPath, storageKey,
-	openRow, sortChangeMethod, checkSelectable,
-	selectRowsChange, selectRow, selectRows,
-	basicLoading, skeletonLoading, skeletonData, loadFile, tableRowClassName,
-	selectStatistics, storageConfig, loadFileConfig } = useFileData(router, route);
-
+const {
+  openRow, sortChangeMethod,
+  basicLoading, skeletonLoading, skeletonData, loadFile,
+  loadFileConfig } = useFileData();
 
 // 直链打开
 const { openLinkDialog, visible:linkVisible } = useFileLink();
 
-const { tableClickRow, tableDbClickRow, tableHoverRow, tableLeaveRow } = useTableOperator(router, route);
+const { tableClickRow, tableDbClickRow, tableHoverRow, tableLeaveRow } = useTableOperator();
 
-const { dialogVideoVisible, dialogTextVisible, dialogOfficeVisible } = useFilePreview();
+const { dialogVideoVisible, dialogTextVisible, dialogPdfVisible, dialogOfficeVisible } = useFilePreview();
 
 const {rename, batchDownloadFile, moveTo, copyTo, newFolder,
-	batchDelete, batchDeleteResult, batchDeleteDialogShow, batchDeleteCloseAction, batchDeletePercentage
-} = useFileOperator(router, route);
+  batchDelete, batchDeleteResult, batchDeleteDialogShow, batchDeleteCloseAction, batchDeletePercentage
+} = useFileOperator();
 
 // 文件上传相关
 import useFileUpload from "~/composables/file/useFileUpload";
-const { openUploadDialog, openUploadFolderDialog } = useFileUpload(router, route);
+const { openUploadDialog, openUploadFolderDialog } = useFileUpload();
+
+
+const reload = () => {
+  window.location.reload()
+}
 </script>
 
 <style lang="scss" scoped>
+
 // 最外层边框
+.zfile-index-body-wrapper {
+  @apply h-full;
+}
+
 .zfile-index-body {
+  @apply h-full md:px-4;
+}
 
-	height: 100%;
-	//overflow: hidden;
-	padding: 0 15px;
-
-	// 移动端去除边框
-	@media (max-device-width: 768px) {
-		padding: 0;
-	}
-
+// 居中模式
+.zfile-index-table-center {
+  @apply w-[80%] ml-[10%];
 }
 
 // 文件列表主体
 .el-table {
-	// 全局 -- 隐藏自带的纵向滚动条
-	overflow-y: hidden;
+  // 隐藏横向滚动条
+  @apply overflow-y-hidden;
 
-	// 移动端 -- 去除边框
-	@media (max-device-width: 768px) {
-		margin: 0 0 0 0;
-		padding-right: 0;
-	}
 
-	/* 表头 -- icon 位置 */
-	.el-table__header-wrapper .el-icon {
-		margin-right: 12px;
-		top: 1.5px;
-		font-size: 13px;
-	}
-
-	/* 表身 -- 文件名列 icon 位置 */
-	.el-table__body-wrapper .zfile-table-col-name svg {
-		@apply relative -top-[1.5px] align-middle text-xl mr-1.5 inline;
-	}
-
-	// 表身 -- 操作列图标布局位置
-	.operator-btn {
-		margin-right: 20px;
-		display: inline-block;
-	}
-
-	// 表身 -- 操作列图标大小和颜色
-	.operator-btn svg {
-		color: #1E9FFF;
-		font-size: 16px;
-	}
-
-	/* 表身 -- 每行悬浮小手 不支持文字选中 */
-	:deep(tr) {
-		//cursor: pointer;
-		user-select: none;
-	}
-
-}
-
-// table default 模式样式
-.el-table.el-table--default {
-	/* 表身 -- 文件名列 icon 位置 */
-	.el-table__body-wrapper .zfile-table-col-name svg {
-		@apply text-2xl;
-	}
-}
-
-// table large 模式样式
-.el-table.el-table--large {
-	/* 表身 -- 文件名列 icon 位置 */
-	.el-table__body-wrapper .zfile-table-col-name svg {
-		@apply text-3xl;
-	}
-}
-
-// dialog 相关
-.zfile-index-body {
-	/* 所有弹窗 -- 标题居中, 高度减少 */
-	:deep(.el-dialog__header) {
-		margin-bottom: -10px;
-		padding: 5px 0 5px 0;
-		@apply line-clamp-1 text-center ml-2;
-	}
-
-  /* 视频弹窗样式 -- 修正去除边框后关闭按钮错位的问题 */
-  :deep(.el-dialog__header .el-dialog__headerbtn) {
-    top: -6px;
-  }
-
-	/* 所有弹窗 -- 去除 dialog 打开后滚动条 */
-	:deep(.el-overlay-dialog) {
-		overflow: hidden;
-	}
-
-	/* 视频弹窗样式 -- 去除内容边框 */
-	:deep(.zfile-video-dialog .el-dialog__body) {
-		padding: 10px 0 0 0;
-	}
-
-  // 移动端视频宽屏显示
-  @media screen and (max-device-width: 769px) {
-    :deep(.zfile-video-dialog) {
-      margin-top: 3vh !important;
-      width: 90% !important;
-    }
-  }
-}
-
-// 右键菜单
-.v-contextmenu-item {
-	// 文字和图标的距离
-	:deep(label) {
-		margin-left: 10px;
-	}
-
-	// 图标位置修正为居中
-	:deep(.contextmenu-icon) {
-		top: 1px;
-		padding-top: 1px;
-	}
-}
-
-// 直链结果弹窗
-.zfile-dialog-link-result-info {
-	.el-form-item {
-		margin-bottom: 10px;
-	}
-}
-
-#batchCopyLinkDialog >>> thead {
-	cursor: pointer;
-}
-
-#ListTable {
   :deep(.el-table__inner-wrapper) {
     height: 100%;
   }
   :deep(.el-table__body-wrapper) {
     height: 100%;
   }
+
+	/* 表头 -- icon 位置和大小 */
+  .el-table__header-wrapper .el-icon {
+    @apply mr-4 top-0.5 text-sm;
+  }
+
+  /* 表身 -- 文件名列 icon 位置 */
+  .el-table__body-wrapper .zfile-table-col-name svg {
+    @apply relative -top-[1.5px] align-middle text-xl mr-1.5 inline;
+  }
+
+	/* 表身 -- 不支持文字选中 */
+  :deep(tr) {
+    @apply select-none;
+  }
+
 }
 
+// table default 模式样式
+.el-table.el-table--default {
 
-.zfile-index-table-center {
-  @apply w-[80%] ml-[10%];
+  /* 表头 -- icon 位置和大小 */
+  .el-table__header-wrapper .el-icon {
+    @apply text-base;
+  }
+
+  /* 表身 -- 文件名列 icon 位置 */
+  .el-table__body-wrapper .zfile-table-col-name svg {
+    @apply text-2xl;
+  }
 }
 
+// table large 模式样式
+.el-table.el-table--large {
 
-// 文件选中效果
+  /* 表头 -- icon 位置和大小 */
+  .el-table__header-wrapper .el-icon {
+    @apply text-xl;
+  }
+
+  /* 表身 -- 文件名列 icon 位置 */
+  .el-table__body-wrapper .zfile-table-col-name svg {
+    @apply text-3xl;
+  }
+}
+
+// dialog 相关
 .zfile-index-body {
-	:deep(.select-row) {
-		background-color: #F4F5F6;
-		//color: white;
-	}
 
-	:deep(.select-row:hover) {
-		--el-table-row-hover-bg-color: #F4F5F6;
-		//color: white;
-	}
-}
-
-.zfile-index-body {
-	:deep(.el-table__body-wrapper .el-scrollbar__view) {
-		height: 100%;
-	}
-
-	:deep(.empty-icon) {
-		display: initial;
-		@apply h-80 w-80;
-	}
-}
-
-
-.zfile-index-body {
-	:deep(.v-md-editor-preview .github-markdown-body) {
-		padding: unset;
-	}
-}
-
-.zfile-index-announcement {
-	margin: 10px 0;
-}
-
-
-.zfile-index-body {
-	:deep(.zfile-readme-dialog .el-dialog__header) {
-		margin-bottom: unset;
-		padding: var(--el-dialog-padding-primary);
-		padding-bottom: 10px;
-	}
-
-	:deep(.zfile-readme-dialog .el-dialog__header .el-dialog__title) {
-		display: none;
-	}
-
-	:deep(.zfile-index-operator svg) {
-		//font-size: 20px;
-	}
-}
-
-.zfile-index-body {
-	.zfile-index-hover-tools {
-		@apply absolute z-10 bottom-0 sm:bottom-10 left-0 right-0 mx-auto w-fit;
-
-		.zfile-index-hover-body {
-			@apply bg-[#313136] w-fit px-5 h-12 py-2 text-white rounded mx-auto space-x-6 text-2xl;
-
-			svg {
-				@apply inline text-white cursor-pointer outline-none;
-				&:hover {
-					@apply text-blue-400;
-				}
-			}
-		}
-	}
-}
-
-
-.zfile-index-body {
-	:deep(.zfile-text-dialog) {
-
-		width: 90%;
-		.el-dialog__body {
-			padding: 15px 5px;
-		}
-	}
-}
-
-
-.zfile-index-body {
+  // 空白页
   :deep(.el-table__empty-block) {
-    @apply -mt-10;
+    @apply -mt-10 mb-10;
   }
   :deep(.el-table__empty-text) {
     @apply w-full;
   }
+  :deep(.empty-icon) {
+    display: initial;
+    @apply h-80 w-80;
+  }
+
+	/* 所有弹窗 -- 标题居中, 高度减少, 最高 */
+  :deep(.el-dialog__header) {
+		@apply -mt-3 py-1 text-center ml-2;
+	}
+
+  // 弹窗标题最多一行
+  :deep(.el-dialog__title) {
+    @apply line-clamp-1;
+  }
+
+  /* 修正去除边框后关闭按钮错位的问题 */
+  :deep(.el-dialog__header .el-dialog__headerbtn) {
+    @apply -mt-3;
+  }
+
+	/* 去除 dialog 打开后滚动条 */
+  :deep(.el-overlay-dialog) {
+    @apply overflow-hidden;
+  }
+
+  // dialog 距离顶部的高度
+  :deep(.el-dialog) {
+    @apply mt-6 sm:mt-8 #{!important};
+  }
+
+  // 视频弹窗样式
+    :deep(.zfile-video-dialog) {
+    @apply w-11/12;
+    .el-dialog__body {
+      @apply p-0 sm:pt-2;
+    }
+    }
+
+  // 文本弹窗
+  :deep(.zfile-text-dialog) {
+    @apply w-11/12;
+    .el-dialog__body {
+      @apply py-4 px-1;
+    }
+  }
+
+  // pdf 弹窗
+  :deep(.zfile-pdf-dialog) {
+    .el-dialog__body {
+      @apply h-[80vh] sm:h-[85vh] overflow-auto;
+    }
+  }
+
+
+  // 文件选中效果
+  :deep(.select-row) {
+    background-color: var(--el-table-row-hover-bg-color);
+  }
+
 }
+
+// 右键菜单
+.v-contextmenu-item {
+  // 文字和图标的距离
+  :deep(label) {
+    @apply ml-2.5;
+  }
+
+  // 图标位置修正为居中
+  :deep(.contextmenu-icon) {
+    @apply top-[1px] pt-[1px];
+  }
+}
+
+.zfile-index-body {
+  :deep(.v-md-editor-preview .github-markdown-body) {
+    padding: unset;
+  }
+}
+
+.zfile-index-announcement {
+  margin: 10px 0;
+}
+
+
+.zfile-index-body {
+  // 工具条
+  .zfile-index-hover-tools {
+    @apply absolute z-10 bottom-0 sm:bottom-10 left-0 right-0 mx-auto w-fit;
+
+    .zfile-index-hover-body {
+      @apply bg-[#313136] w-fit px-5 h-12 py-2 text-white rounded mx-auto space-x-6 text-2xl;
+
+      svg {
+        @apply inline text-white cursor-pointer outline-none;
+        &:hover {
+          @apply text-blue-400;
+        }
+      }
+    }
+  }
+}
+
 
 </style>
 
 <route lang="yaml">
 meta:
-  layout: file
+layout: file
 </route>

@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<a target="_blank" class="text-gray-500" href="https://beian.miit.gov.cn/">
-			{{ storageConfigStore.config?.icp }}
+			{{ storageConfigStore.globalConfig?.icp }}
 		</a>
 	</div>
 </template>
