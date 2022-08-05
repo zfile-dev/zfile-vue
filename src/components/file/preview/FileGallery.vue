@@ -35,7 +35,7 @@
     </div>
     <div v-else class="h-full">
       <el-empty class="h-full" description="当前文件夹无图片">
-        <el-button type="primary" @click="imgModel = false">退出画廊模式</el-button>
+        <el-button type="primary" @click="fileDataStore.imgMode = false">退出画廊模式</el-button>
       </el-empty>
     </div>
   </div>
@@ -126,9 +126,6 @@ const loadImg = (e) => {
   loadedList.push(e.currentTarget.alt);
 }
 
-// 获取图片模式是否开启
-import useHeaderImgMode from "~/composables/header/useHeaderImgMode";
-const { imgModel } = useHeaderImgMode();
 </script>
 
 <style lang="scss" scoped>

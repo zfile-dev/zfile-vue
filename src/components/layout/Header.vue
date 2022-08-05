@@ -138,10 +138,6 @@ let route = useRoute();
 import useHeaderDebugMode from "~/composables/header/useHeaderDebugMode";
 const { resetAdminPwd } = useHeaderDebugMode();
 
-// 图片模式
-import useHeaderImgMode from "~/composables/header/useHeaderImgMode";
-const { imgModel } = useHeaderImgMode();
-
 // 存储源列表.
 import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
 const { loadStorageSourceList, currentStorageKey, storageList } = useHeaderStorageList();
@@ -186,10 +182,14 @@ import useFileData from "~/composables/file/useFileData";
 let { initStorageConfig } = useFileData();
 
 // 监听存储源设置 -> 默认打开图片模式, 如果为是, 则打开图片模式.
-watchOnce(() => storageConfig.value.defaultSwitchToImgMode, (val) => {
-  if (val === true) {
-    imgModel.value = val;
-  }
+watch(() => [storageConfigStore.folderConfig.defaultSwitchToImgMode, fileDataStore.oldStorageKey], (val, oldValue) => {
+  let defaultSwitchToImgMode = val[0];
+  let storageKey = val[1];
+  let oldStorageKey = oldValue[1];
+
+  if (storageKey !== oldStorageKey) {
+    fileDataStore.imgMode = defaultSwitchToImgMode;
+	}
 })
 
 const toLoginView = () => {
