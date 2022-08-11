@@ -24,6 +24,12 @@ export default function useAdminLayout(router, route) {
      * 日志下载
      */
     const logDownload = () => {
+        const loading = ElLoading.service({
+            fullscreen: true,
+            lock: true,
+            text: '下载中...',
+            background: 'rgba(0, 0, 0, 0.5)',
+        });
         downloadLogReq().then((res) => {
             const { data, headers } = res;
             const fileName = `ZFile 诊断日志 - ${dayjs().format('YYYY-MM-DD HH:mm:ss')}.zip`;
@@ -41,6 +47,8 @@ export default function useAdminLayout(router, route) {
             window.URL.revokeObjectURL(url);
         }).catch((res) => {
             ElMessage.error('下载日志失败.');
+        }).finally(() => {
+            loading.close();
         });
     }
 
