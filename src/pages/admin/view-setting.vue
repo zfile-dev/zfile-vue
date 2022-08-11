@@ -81,7 +81,7 @@
 		<z-form-item label="自定义 CSS">
 			<el-input
 				type="textarea"
-				:rows="3"
+        :autosize="{ minRows: 3 }"
 				placeholder="请输入自定义 CSS 内容"
 				v-model="data.customCss">
 			</el-input>
@@ -93,12 +93,12 @@
 		<z-form-item label="自定义 JS">
 			<el-input
 				type="textarea"
-				:rows="3"
+        :autosize="{ minRows: 3 }"
 				placeholder="请输入自定义 JS 内容"
 				v-model="data.customJs">
 			</el-input>
 			<template #tips>
-					自定义 JS 脚本, 无须写 &#60;script&#62;&#60;/script&#62; 标签
+					自定义 JS 脚本, &#60;script&#62;&#60;/script&#62; 可写可不写，会自动兼容.
 			</template>
 		</z-form-item>
 
