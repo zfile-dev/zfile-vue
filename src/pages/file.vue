@@ -151,9 +151,12 @@
           <ContextmenuItem v-show="storageConfigStore.permission.download"
                            @click="batchDownloadFile">
             <el-icon class="contextmenu-icon">
-              <i-custom-download/>
+              <i-custom-download class="font-bold" v-if="selectStatistics.isSingleSelect"/>
+              <i-custom-download-mult v-else/>
             </el-icon>
-            <label>下载</label>
+            <label>
+              {{ selectStatistics.isSingleSelect ? '下载' : '批量下载' }}
+            </label>
           </ContextmenuItem>
           <ContextmenuItem v-show="storageConfigStore.permission.link"
                            @click="openLinkDialog">
