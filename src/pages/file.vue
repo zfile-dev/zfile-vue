@@ -554,6 +554,7 @@ const reload = () => {
   }
   :deep(.el-table__body-wrapper) {
     height: 100%;
+    font-weight: 450;
   }
 
 	/* 表头 -- icon 位置和大小 */
