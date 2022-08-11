@@ -9,7 +9,10 @@
       </el-alert>
 
       <!-- 文档模式显示 -->
-      <el-card v-if="storageConfigStore.globalConfig.showDocument && route.params.storageKey && storageConfigStore.folderConfig.readmeDisplayMode === 'top'" class="my-3" >
+      <el-card v-if="storageConfigStore.globalConfig.showDocument
+                && route.params.storageKey
+                && storageConfigStore.folderConfig.readmeDisplayMode === 'top'
+                && storageConfigStore.folderConfig.readmeText" class="my-3" >
         <v-md-preview :text="storageConfigStore.folderConfig.readmeText"></v-md-preview>
       </el-card>
 
@@ -282,12 +285,16 @@
       <!-- 弹窗文档 -->
       <el-dialog draggable
                  custom-class="zfile-readme-dialog"
-                 v-if="storageConfigStore.globalConfig.showDocument && storageConfigStore.folderConfig.readmeDisplayMode === 'dialog'" :model-value="true">
+                 v-if="storageConfigStore.globalConfig.showDocument
+                 && storageConfigStore.folderConfig.readmeText
+                 && storageConfigStore.folderConfig.readmeDisplayMode === 'dialog'" :model-value="true">
         <v-md-preview :text="storageConfigStore.folderConfig.readmeText"></v-md-preview>
       </el-dialog>
 
       <!-- 底部文档 -->
-      <el-card class="mt-5" v-if="storageConfigStore.globalConfig.showDocument && storageConfigStore.folderConfig.readmeDisplayMode === 'bottom'">
+      <el-card class="mt-5" v-if="storageConfigStore.globalConfig.showDocument
+                  && storageConfigStore.folderConfig.readmeText
+                  && storageConfigStore.folderConfig.readmeDisplayMode === 'bottom'">
         <v-md-preview :text="storageConfigStore.folderConfig.readmeText"></v-md-preview>
       </el-card>
 
