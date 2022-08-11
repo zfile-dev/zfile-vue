@@ -6,10 +6,6 @@
 					<h3 class="text-lg leading-6 font-medium text-gray-900">
 						存储源信息
 					</h3>
-					<div class="hidden flex space-x-1.5 justify-center items-center cursor-pointer">
-						<span :class="layout === 'card' ? 'current-layout' : ''" @click="changeLayout('card')"><i-custom-card-layout></i-custom-card-layout></span>
-						<span :class="layout === 'table' ? 'current-layout' : ''" @click="changeLayout('table')"><i-custom-table-layout></i-custom-table-layout></span>
-					</div>
 				</div>
 				<div class="my-2 text-sm text-gray-500 flex justify-between flex-wrap">
 					<div>
@@ -21,13 +17,15 @@
 					</div>
 				</div>
 			</div>
-			<ul v-if="layout === 'card'" role="list" class="storage-container grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+			<ul role="list" class="storage-container grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 				<li v-for="storage in storageListSearchResult" :key="storage.id"
 				    @dblclick="editStorage(storage)"
-				    class="storage-item col-span-1 flex flex-col text-center bg-white rounded-lg border hover:shadow">
+				    class="storage-item group col-span-1 flex flex-col text-center bg-white rounded-lg border hover:shadow">
 					<div class="flex-1 flex flex-col p-8 pb-4 relative">
-						<svg-icon @click="deleteStorage(storage)" name="delete" class="absolute right-3 top-3 cursor-pointer"></svg-icon>
-						<img class="w-20 h-20 flex-shrink-0 mx-auto" :src="getImg(storage.type.key)"/>
+						<svg-icon @click="deleteStorage(storage)" name="delete" class="absolute right-3 top-3 cursor-pointer group-hover:text-red-500"></svg-icon>
+            <div class="rounded-full bg-blue-50 w-fit mx-auto">
+						  <img class="w-20 h-20 flex-shrink-0 mx-auto p-4" :src="getImg(storage.type.key)"/>
+            </div>
 						<h3 class="mt-2 text-gray-900 text-sm font-medium">{{ storage.name }}</h3>
 						<dl class="mt-1 flex-grow flex flex-col justify-between">
 							<dd class="text-gray-500 text-sm line-clamp-1">
@@ -41,12 +39,15 @@
 
 								<el-popover
 									placement="top"
-									title="刷新令牌成功"
-									:width="200"
+									:width="250"
 									trigger="hover"
 								>
 									<div>
-										<div>上次刷新时间: {{storage?.refreshTokenInfo?.lastRefreshTime}}</div>
+                    <div class="text-sm font-medium">
+                      <svg-icon name="check" class="inline text-green-500"/>
+                      刷新令牌成功
+                    </div>
+										<div class="text-xs text-gray-500">上次刷新时间: {{storage?.refreshTokenInfo?.lastRefreshTime}}</div>
 									</div>
 									<template #reference>
 										<el-tag type="success" v-show="storage?.refreshTokenInfo?.success">刷新令牌成功</el-tag>
@@ -54,13 +55,16 @@
 								</el-popover>
 								<el-popover
 									placement="top"
-									title="刷新令牌失败"
-									:width="200"
+                  :width="250"
 									trigger="hover"
 								>
 									<div>
-										<div>上次刷新时间: {{storage?.refreshTokenInfo?.lastRefreshTime}}</div>
-										<div>失败信息: {{storage?.refreshTokenInfo?.msg}}</div>
+                    <div class="text-sm font-medium">
+                      <svg-icon name="error" class="inline text-red-500"/>
+                      刷新令牌失败
+                    </div>
+                    <div class="text-xs text-gray-500">上次刷新时间: {{storage?.refreshTokenInfo?.lastRefreshTime}}</div>
+                    <div class="text-xs text-red-500">失败信息: {{storage?.refreshTokenInfo?.msg}}</div>
 									</div>
 									<template #reference>
 										<el-tag type="danger" v-show="storage?.refreshTokenInfo?.success === false">刷新令牌失败</el-tag>
@@ -70,14 +74,27 @@
 							</dd>
 						</dl>
 					</div>
-					<div class="mr-3 mb-3 flex  justify-end">
-						<el-dropdown @command="handleOperator" class="cursor-pointer">
-							<span class="text-sm font-medium text-blue-500">
-								操作
-						      <el-icon class="top-[2px] el-icon--right">
-	                            <arrow-down />
+          <div class="-mt-px border-t flex divide-x divide-gray-200">
+            <div @click="editStorage(storage)" class="w-0 flex-1 flex cursor-pointer">
+              <span class="hover:text-blue-500 relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-2 text-sm text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500 ml-3">
+                <el-icon class="mr-2">
+                  <Edit/>
 						      </el-icon>
+                编辑
+              </span>
+            </div>
+            <el-dropdown @command="handleOperator" class="cursor-pointer flex-1">
+              <div class="w-0 flex-1 flex cursor-pointer">
+                <span class="hover:text-blue-500 relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-2 text-sm text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500 ml-3">
+                    <span class="text-sm font-medium">
+                      <el-icon class="mr-2">
+                        <MoreFilled/>
+                      </el-icon>
+                      <span>更多</span>
+                    </span>
 						    </span>
+              </div>
+
 							<template #dropdown>
 								<el-dropdown-menu>
 									<el-dropdown-item :icon="Edit" :command="{operator: 'edit', storage}">编辑</el-dropdown-item>
@@ -94,73 +111,24 @@
 						</el-dropdown>
 					</div>
 				</li>
-				<el-popover
-					placement="right"
-					:width="200"
-					trigger="hover"
-					content="点击添加存储源">
-					<template #reference>
 						<li @click="addStorage" class="add-storage-btn cursor-pointer col-span-1 flex flex-col text-center bg-white rounded-lg border hover:shadow">
 							<div class="flex-1 flex flex-col p-8 mx-auto justify-center">
-								<el-icon size="150">
-									<i-ep-plus class="text-gray-300"></i-ep-plus>
-								</el-icon>
+            <Plus class="h-20 text-gray-300" />
 							</div>
 						</li>
-					</template>
-				</el-popover>
 			</ul>
-
-			<el-table v-if="layout === 'table'" :data="storageListSearchResult">
-				<el-table-column type="index" width="50"/>
-				<el-table-column prop="name" label="名称"/>
-				<el-table-column prop="key" label="别名"/>
-				<el-table-column label="类型">
-					<template #default="scope">
-						{{ scope.row.type.description }}
-					</template>
-				</el-table-column>
-				<el-table-column label="状态">
-					<template #default="scope">
-						<el-tag type="success" @click="switchEnableStatus(scope.row)" v-show="scope.row.enable">启用</el-tag>
-						<el-tag type="danger" @click="switchEnableStatus(scope.row)" v-show="!scope.row.enable">停用</el-tag>
-					</template>
-				</el-table-column>
-				<el-table-column label="操作">
-					<template #default="scope">
-						<el-dropdown @command="handleOperator" class="cursor-pointer">
-							<el-button size="small" type="primary">
-								操作<el-icon class="el-icon--right"><arrow-down /></el-icon>
-							</el-button>
-							<template #dropdown>
-								<el-dropdown-menu>
-									<el-dropdown-item :icon="Edit" :command="{operator: 'edit', storage: scope.row}">编辑</el-dropdown-item>
-									<el-dropdown-item v-if="!scope.row.enable" :icon="VideoPlay" :command="{operator: 'enable', storage: scope.row}">启用</el-dropdown-item>
-									<el-dropdown-item v-else :icon="VideoPause" :command="{operator: 'enable', storage: scope.row}">停用</el-dropdown-item>
-									<div class="divider"></div>
-									<el-dropdown-item :icon="Document" :command="{operator: 'readmeManager', storage: scope.row}">目录文档</el-dropdown-item>
-									<el-dropdown-item :icon="View" :command="{operator: 'filterManager', storage: scope.row}">文件过滤</el-dropdown-item>
-									<el-dropdown-item :icon="Key" :command="{operator: 'pwdManager', storage: scope.row}">密码设置</el-dropdown-item>
-									<div class="divider"></div>
-									<el-dropdown-item :icon="Delete" :command="{operator: 'delete', storage: scope.row}">删除</el-dropdown-item>
-								</el-dropdown-menu>
-							</template>
-						</el-dropdown>
-					</template>
-				</el-table-column>
-			</el-table>
 		</el-card>
 
 	</div>
 </template>
 
 <script setup>
-import {Search, ArrowDown, Delete, Edit, Key, Lock, Operation, VideoPause, VideoPlay, View, Document} from '@element-plus/icons-vue'
+import {Search, Delete, Edit, Key, Lock, VideoPause, VideoPlay, View, Document, Plus, MoreFilled} from '@element-plus/icons-vue'
 let router = useRouter();
 
 import useStorageList from "~/composables/admin/storage/storage-list";
 const {
-	init, loading, layout, changeLayout,
+	init, loading,
 	searchKey, storageListSearchResult,
 	handleOperator, editStorage,
 	addStorage, deleteStorage,
