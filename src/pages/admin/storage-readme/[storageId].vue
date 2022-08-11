@@ -3,13 +3,23 @@
 	        class="zfile-admin-readme-form"
 	        v-loading="loading">
 		<template #form-title>
-			<div class="flex">
+			<div class="flex justify-between">
 				<div>
 					<router-link to="/admin/storage-list">
 						<svg-icon class="inline mr-2 cursor-pointer" name="file-type-back"></svg-icon>
 					</router-link>
 					<span>目录文档</span>
 				</div>
+        <el-tooltip placement="top" content="启用后下发的规则设置会失效，仅会为读取目录下的 readme.md 文件来渲染文档, 且固定在底部显示.">
+          <div>
+            <span class="mr-4 text-sm text-gray-500">兼容为读取 readme.md</span>
+            <el-switch @change="changeCompatibilityReadmeStatus"
+                       active-text="是"
+                       inline-prompt
+                       inactive-text="否"
+                       v-model="compatibilityReadme"></el-switch>
+          </div>
+        </el-tooltip>
 			</div>
 		</template>
 		<template #form-sub-title>
@@ -75,6 +85,7 @@ let router = useRouter();
 import useStorageReadme from "~/composables/admin/storage/storage-readme.js";
 
 import ReadmeEditorDialog from "./readme-editor-dialog.vue";
+import { changeCompatibilityReadmeEnableReq, loadStorageItemReq } from "~/api/admin-storage";
 const { loading, loadReadmeData, readmeList,
 	addReadmeItem, deleteReadmeItem,
 	saveReadmeData } = useStorageReadme(router, route);
@@ -82,6 +93,18 @@ const { loading, loadReadmeData, readmeList,
 onMounted(() => {
 	loadReadmeData();
 })
+
+
+let compatibilityReadme = ref(false);
+loadStorageItemReq(route.params.storageId).then((res) => {
+  compatibilityReadme.value = res.data.compatibilityReadme || false;
+})
+
+const changeCompatibilityReadmeStatus = () => {
+  changeCompatibilityReadmeEnableReq(route.params.storageId, compatibilityReadme.value).then((res) => {
+    ElMessage.success("保存成功");
+  })
+}
 
 let currentEditorRow = ref({});
 let editorVisible = ref(false);

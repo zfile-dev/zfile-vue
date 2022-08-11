@@ -158,3 +158,11 @@ export const saveStorageReadmeReq = (storageKey, data) => {
         data
     })
 }
+
+// 启用/关闭存储源兼容 readme 模式
+export const changeCompatibilityReadmeEnableReq = (id, action) => {
+    return axios({
+        url: `/admin/storage/${id}/compatibility_readme/${action}`,
+        method: "post",
+    })
+}
