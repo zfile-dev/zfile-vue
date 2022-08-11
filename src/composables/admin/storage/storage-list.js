@@ -8,9 +8,6 @@ import {
 } from "~/api/admin-storage";
 import Sortable from "sortablejs";
 
-
-let layout = ref('card');
-
 let cacheManageVisible = ref(false);
 let currentCacheManageId = ref();
 
@@ -180,12 +177,9 @@ export default function useStorageList(router) {
         });
     })
 
-    const changeLayout = (val) => {
-        layout.value = val;
-    }
 
     return {
-        init, loading, layout, changeLayout,
+        init, loading,
         searchKey, storageListSearchResult,
         handleOperator,
         addStorage, editStorage, deleteStorage, handleClose,

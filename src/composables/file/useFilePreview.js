@@ -1,4 +1,3 @@
-import common from "~/common";
 import { v3ImgPreviewFn } from 'v3-img-preview'
 
 // 基础依赖引入
