@@ -4,13 +4,6 @@ import axios from "axios";
 import common from "~/common";
 import {removeDuplicateSlashes} from "fast-glob/out/managers/patterns";
 
-const visible = ref(false);
-const uploadMode = ref('');
-const uploadProgressInfo = reactive([]);
-const cancelTokenSourceMap = new Map();
-const uploadProgressInfoMap = new Map();
-let uploadIndex = 0;
-
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
 
@@ -21,12 +14,46 @@ import {hasDialog} from "~/composables/file/useTableOperator";
 
 // 拖拽上传状态, true 表示正有文件拖拽悬浮在上传框上
 let dropState = ref(false);
-
 import useRouterData from "~/composables/useRouterData";
+
+
+// 是否已经初始化监听 watch, 防止重复引用该文件导致的重复 watch
+let isInitWatch = false;
+
+// 是否显示上传框.
+const visible = ref(false);
+
+// 当前上传模式, 'file' or 'folder'
+const uploadMode = ref('');
+
+// 正在上传或已完成文件列表
+const uploadingFileList = reactive([
+]);
+
+// 等待上传文件列表
+const waitingFileList = reactive([]);
+
+// 取消上传文件的 cancelTokenSource 映射表
+const cancelTokenSourceMap = new Map();
+
+// 正在上传或已完成文件映射表 key: fileInfo.index value: fileInfo
+const uploadingFileMap = new Map();
+
+// 文件上传 index
+let uploadIndex = 0;
+
+// 文件上传状态顺序
+const uploadFileTypeSortMap = {
+    "error": 1,
+    "uploading": 2,
+    "waiting": 3,
+    "finished": 4,
+};
 
 export default function useFileUpload() {
 
     let { storageKey, currentPath } = useRouterData();
+    const maxFileUploads = storageConfigStore.globalConfig.maxFileUploads;
 
     // 监听文件拖拽上传事件
     const listenDropFile = (dropArea) => {
@@ -88,7 +115,7 @@ export default function useFileUpload() {
                     }
                 })
 
-                const uploadFile = () => {
+                const uploadFileAction = () => {
                     visible.value = true;
                     fileList.forEach((item) => {
                         beforeUpload({
@@ -109,7 +136,7 @@ export default function useFileUpload() {
                                     fileList.splice(index, 1);
                                 }
                             }
-                            uploadFile();
+                            uploadFileAction();
                         }
                     });
                 } else {
@@ -121,12 +148,12 @@ export default function useFileUpload() {
                             type: 'success',
                             callback: (action) => {
                                 if (action === 'confirm') {
-                                    uploadFile();
+                                    uploadFileAction();
                                 }
                             }
                         });
                     } else {
-                        uploadFile();
+                        uploadFileAction();
                     }
                 }
 
@@ -338,12 +365,39 @@ export default function useFileUpload() {
         })
     }
 
+    // 上传前的检查
+    const beforeUpload = (param) => {
+        let findResult = fileDataStore.fileList.find((value) => {
+            if (value.name === param.file.name) {
+                return value;
+            }
+        })
+
+        if (findResult) {
+            ElNotification({
+                zIndex: 9999,
+                title: '提示',
+                message: `当前目录已存在文件 ${findResult.name}, 跳过上传.`,
+                type: 'warning',
+            })
+            return;
+        }
+
+        uploadFile(param.file);
+    }
+
+    // 文件上传操作.
     const uploadFile = (file) => {
+        const fileIndex = uploadIndex++;
         let uploadToPath = currentPath.value;
 
         // 如果包含 webkitRelativePath, 则表示是文件夹上传, 需要获取文件完整路径
         if (file.webkitRelativePath || file.dropUploadPath) {
-            let pathList = (file.webkitRelativePath || file.dropUploadPath).split('/');
+            let pathStr = file.webkitRelativePath || file.dropUploadPath;
+            if (!pathStr.startsWith('/')) {
+                pathStr = '/' + pathStr;
+            }
+            let pathList = pathStr.split('/');
             pathList.forEach((item, index) => {
                 let isFirstItem = 0 === index;
                 let isLastItem = pathList.length - 1 === index;
@@ -365,31 +419,41 @@ export default function useFileUpload() {
             size: file.size
         }
 
-        uploadFileReq(param).then((res) => {
-            const fileIndex = uploadIndex++;
-            let uploadFileInfo = {
-                name: file.name,
-                size: file.size,
-                speed: '-',
-                progress: 0,
-                loaded: 0,
-                status: 'uploading',
-                startTime: Date.now(),
-                index: fileIndex
-            }
-            uploadProgressInfo.push(uploadFileInfo);
-            cancelTokenSourceMap.set(fileIndex, axios.CancelToken.source());
-            uploadProgressInfoMap.set(fileIndex, uploadProgressInfo[uploadProgressInfo.length - 1]);
+        console.log('当前上传信息:', param, ', 当前同时上传文件数:',uploadProgressInfoStatistics.value.totalUploading, '限制同时上传文件数:', maxFileUploads);
+        if (uploadProgressInfoStatistics.value.totalUploading >= maxFileUploads) {
+            console.log(`上传文件数超出 ${maxFileUploads}, 等待上传`);
+            waitingFileList.push({
+                index: fileIndex,
+                file: file,
+            });
+            return;
+        }
 
+        let uploadFileInfo = {
+            name: file.name,
+            size: file.size,
+            speed: '-',
+            progress: 0,
+            loaded: 0,
+            status: 'uploading',
+            startTime: Date.now(),
+            file: file,
+            index: fileIndex
+        }
+        uploadingFileList.push(uploadFileInfo);
+        cancelTokenSourceMap.set(fileIndex, axios.CancelToken.source());
+        uploadingFileMap.set(fileIndex, uploadingFileList[uploadingFileList.length - 1]);
+
+        uploadFileReq(param).then((res) => {
             const { on } = useEventBus(`cancel-upload-${fileIndex}`);
             on(() => {
                 let cancelTokenSource = cancelTokenSourceMap.get(fileIndex);
                 if (cancelTokenSource) {
                     cancelTokenSource.cancel();
-                    uploadProgressInfo.find((item, index) => {
+                    uploadingFileList.find((item, index) => {
                         let b = item.name === file.name;
                         if (b) {
-                            uploadProgressInfo.splice(index, 1);
+                            uploadingFileList.splice(index, 1);
                         }
                         return b;
                     });
@@ -413,17 +477,23 @@ export default function useFileUpload() {
         })
     }
 
+    // 服务器代理上传
     const fileProxyUpload = (file, uploadUrl, fileIndex) => {
         let formData = new FormData();
         formData.append("file", file);
         axios.post(uploadUrl, formData, {
             cancelToken: cancelTokenSourceMap.get(fileIndex).token,
             onUploadProgress: (progressEvent) => {
-                baseOnUploadProgress(progressEvent, fileIndex);
-            }
+                baseOnUploadProgress(progressEvent, fileIndex, true);
+            },
+        }).then(() => {
+            baseOnUploadFinish(fileIndex);
+        }).catch((err) => {
+            baseOnUploadError(fileIndex, err);
         });
     }
 
+    // s3 通用上传
     const s3FileUpload = (file, uploadUrl, fileIndex) => {
         axios.put(uploadUrl, file, {
             withCredentials: false,
@@ -431,21 +501,14 @@ export default function useFileUpload() {
             onUploadProgress: (progressEvent) => {
                 baseOnUploadProgress(progressEvent, fileIndex);
             }
+        }).then(() => {
+            baseOnUploadFinish(fileIndex);
+        }).catch((err) => {
+            baseOnUploadError(fileIndex, err);
         });
     }
 
-    const baseOnUploadProgress = (progressEvent, fileIndex) => {
-        let uploadFileInfo = uploadProgressInfoMap.get(fileIndex);
-        uploadFileInfo.size = progressEvent.total;
-        uploadFileInfo.loaded = progressEvent.loaded;
-        uploadFileInfo.progress = Math.round(progressEvent.loaded / progressEvent.total * 100);
-        uploadFileInfo.speed = common.fileSizeFormat(Math.round(progressEvent.loaded / (Date.now() - uploadFileInfo.startTime) * 1000));
-        if (uploadFileInfo.progress === 100) {
-            uploadFileInfo.status = 'finished';
-            uploadFileInfo.endTime = Date.now();
-        }
-    }
-
+    // OneDrive SharePoint 上传
     const onedriveUpload = (file, uploadUrl, fileIndex) => {
         let index = 1;  // 当前块数
         let start = 0;  // 开始字节数
@@ -480,7 +543,7 @@ export default function useFileUpload() {
                 withCredentials: false,
                 onUploadProgress: progressEvent => {
                     if (progressEvent.lengthComputable) {
-                        let uploadFileInfo = uploadProgressInfoMap.get(fileIndex);
+                        let uploadFileInfo = uploadingFileMap.get(fileIndex);
 
                         const realLoaded = progressEvent.loaded + start;
 
@@ -488,10 +551,6 @@ export default function useFileUpload() {
                         uploadFileInfo.loaded = realLoaded;
                         uploadFileInfo.progress = Math.round(realLoaded / fileSize * 100);
                         uploadFileInfo.speed = common.fileSizeFormat(Math.round(realLoaded / (Date.now() - uploadFileInfo.startTime) * 1000));
-                        if (uploadFileInfo.progress === 100) {
-                            uploadFileInfo.status = 'finished';
-                            uploadFileInfo.endTime = Date.now();
-                        }
                     }
                 }
             }).then((response) => {
@@ -501,14 +560,17 @@ export default function useFileUpload() {
                     uploadBlock();
                 } else if (response.status === 201) {
                     // console.log('file upload full success.', start, end);
+                    baseOnUploadFinish(fileIndex);
                 }
             }).catch((e) => {
+                baseOnUploadError(fileIndex, e)
             });
         }
 
         uploadBlock();
     }
 
+    // 又拍云上传
     const upyunFileUpload = (file, uploadUrl, fileIndex) => {
         let uploadInfo = JSON.parse(uploadUrl);
         let formData = new FormData();
@@ -523,73 +585,45 @@ export default function useFileUpload() {
             onUploadProgress: (progressEvent) => {
                 baseOnUploadProgress(progressEvent, fileIndex);
             }
+        }).then(() => {
+            baseOnUploadFinish(fileIndex);
+        }).catch((err) => {
+            baseOnUploadError(fileIndex, err);
         });
     }
 
-    const uploadProgressInfoStatistics = computed(() => {
-        let totalSize = uploadProgressInfo.length;
-        let totalUploading = 0;
-        let totalFinish = 0;
-        uploadProgressInfo.forEach((item) => {
-            if (item.status === 'uploading') {
-                totalUploading++;
-            } else if (item.status === 'finished') {
-                totalFinish++;
-            }
-        })
-
-        return {
-            totalSize,
-            totalUploading,
-            totalFinish
-        };
-    })
-
-    const uploadProgressInfoSorted = computed(() => {
-        return uploadProgressInfo.sort((a, b) => {
-            let aIsUploading = a.status === 'uploading';
-            let bIsUploading = b.status === 'uploading';
-
-            // 如果未上传完成, 则按照上传时间排序.
-            if (!aIsUploading && !bIsUploading) {
-                return a.startTime - b.startTime;
-            }
-
-            if (aIsUploading && !bIsUploading) {
-                return -1;
-            }
-
-            if (!aIsUploading && bIsUploading) {
-                return 1;
-            }
-
-            // 如果都上传完成，则先结束的在上面
-            if (aIsUploading && bIsUploading) {
-                return a.endTime - b.endTime;
-            }
-        })
-    })
-
-    const beforeUpload = (param) => {
-        let findResult = fileDataStore.fileList.find((value) => {
-            if (value.name === param.file.name) {
-                return value;
-            }
-        })
-
-        if (findResult) {
-            ElNotification({
-                zIndex: 9999,
-                title: '提示',
-                message: `当前目录已存在文件 ${findResult.name}, 跳过上传.`,
-                type: 'warning',
-            })
-            return;
-        }
-
-        uploadFile(param.file);
+    // 通用上传结束设置.
+    const baseOnUploadError = (fileIndex, err) => {
+        let uploadFileInfo = uploadingFileMap.get(fileIndex);
+        uploadFileInfo.status = 'error';
+        uploadFileInfo.endTime = Date.now();
+        uploadFileInfo.msg = err?.response?.data || err;
     }
 
+    // 通用上传结束设置.
+    const baseOnUploadFinish = (fileIndex) => {
+        let uploadFileInfo = uploadingFileMap.get(fileIndex);
+        uploadFileInfo.progress = 100;
+        uploadFileInfo.status = 'finished';
+        uploadFileInfo.endTime = Date.now();
+        uploadFileInfo.msg = '上传成功';
+    }
+
+    // 通用上传进度条处理
+    const baseOnUploadProgress = (progressEvent, fileIndex, isProxyUpload) => {
+        let uploadFileInfo = uploadingFileMap.get(fileIndex);
+        uploadFileInfo.size = progressEvent.total;
+        uploadFileInfo.loaded = progressEvent.loaded;
+        uploadFileInfo.progress = Math.round(progressEvent.loaded / progressEvent.total * 100);
+        uploadFileInfo.speed = common.fileSizeFormat(Math.round(progressEvent.loaded / (Date.now() - uploadFileInfo.startTime) * 1000));
+
+        console.log('uploadFileInfo', uploadFileInfo, isProxyUpload);
+        if (isProxyUpload && uploadFileInfo.progress === 100) {
+            uploadFileInfo.msg = '上传完成, 服务器中转中...';
+        }
+    }
+
+    // 取消上传请求
     const cancelUpload = (item) => {
         ElMessageBox.confirm(`是否确定取消文件 ${item.name} 上传？`, '提示', {
             confirmButtonText: '确定',
@@ -603,8 +637,130 @@ export default function useFileUpload() {
         });
     }
 
+    // 上传文件信息
+    const uploadProgressInfoStatistics = computed(() => {
+        let totalSize = uploadingFileList.length;
+        let totalUploading = 0;
+        let totalFinish = 0;
+        uploadingFileList.forEach((item) => {
+            if (item.status === 'uploading') {
+                totalUploading++;
+            } else if (item.status === 'finished') {
+                totalFinish++;
+            }
+        })
+
+        let totalUploadingAndWaiting = totalUploading + waitingFileList.length;
+
+
+        return {
+            totalSize,
+            totalUploading,
+            totalFinish,
+            totalUploadingAndWaiting
+        };
+    })
+
+    // 上传文件排序结果
+    const uploadProgressInfoSorted = computed(() => {
+        let result = [];
+        result.push(...uploadingFileList);
+        waitingFileList.forEach((item) => {
+            result.push({
+                name: item.file.name,
+                size: item.file.size,
+                status: 'waiting',
+                msg: '排队中...',
+                index: item.index
+            })
+        })
+
+        result.sort((a, b) => {
+            let aStatus = a.status;
+            let bStatus = b.status;
+            if (aStatus !== bStatus) {
+                return uploadFileTypeSortMap[aStatus] - uploadFileTypeSortMap[bStatus];
+            }
+
+            if (a.startTime !== b.startTime) {
+                return a.startTime - b.startTime;
+            }
+
+            // 如果状态一样，则按照开始时间排序
+            return a.endTime - b.endTime;
+        });
+        console.log('uploadProgressInfoSorted', result);
+        return result;
+    })
+
+    if (!isInitWatch) {
+        watch(() => uploadProgressInfoStatistics.value.totalUploading, (newValue) => {
+            if (newValue < maxFileUploads) {
+                console.log('检测到上传中的文件个数小于最大上传限制.');
+                if (waitingFileList.length === 0) {
+                    console.log('等待上传的文件数为 0, 无需继续上传.');
+                } else {
+                    let spliceList = waitingFileList.splice(0, 1);
+                    let fileItem = spliceList[0];
+                    beforeUpload({
+                        file: fileItem.file
+                    });
+                    console.log('开始从等待队列中获取上传文件: ', fileItem.file.name);
+                }
+            }
+        });
+        isInitWatch = true;
+    }
+
+    const removeUploadFileByIndex = (fileIndex) => {
+        if (fileIndex === null || fileIndex === undefined) {
+            return;
+        }
+
+        let removeIndex = uploadingFileList.findIndex((item, index) => {
+            if (item.index === fileIndex) {
+                uploadingFileList.splice(index, 1);
+                return true;
+            }
+        })
+
+        if (removeIndex === -1) {
+            removeIndex = waitingFileList.findIndex((item, index) => {
+                if (item.index === fileIndex) {
+                    waitingFileList.splice(index, 1);
+                    return true;
+                }
+            })
+        }
+
+        if (removeIndex !== -1) {
+            uploadingFileMap.delete(fileIndex)
+            cancelTokenSourceMap.delete(fileIndex);
+        }
+    }
+
+    const clearALlFinishedUploadFile = () => {
+        let deleteCount = 0;
+        for (let i = uploadingFileList.length - 1; i >= 0; i--) {
+            let item = uploadingFileList[i];
+            if (item.status === 'finished') {
+                deleteCount++;
+                uploadingFileList.splice(i, 1);
+                uploadingFileMap.delete(item.index)
+                cancelTokenSourceMap.delete(item.index);
+            }
+        }
+    }
+
+    const retryUpload = (item) => {
+        console.log('重新上传文件', item);
+        removeUploadFileByIndex(item.index);
+        uploadFile(item.file);
+    }
+
     return {
         visible, uploadMode, openUploadDialog, openUploadFolderDialog, cancelUpload, dropState, listenDropFile,
-        beforeUpload, uploadFile, uploadProgressInfoSorted, uploadProgressInfoStatistics
+        beforeUpload, uploadFile, uploadProgressInfoSorted, uploadProgressInfoStatistics,
+        clearALlFinishedUploadFile, removeUploadFileByIndex, retryUpload
     }
 }

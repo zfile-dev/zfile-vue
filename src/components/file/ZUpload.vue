@@ -28,32 +28,47 @@
 				</div>
 			</el-upload>
 			<div class="mt-5 space-y-2.5">
-				<div class="flex flex-row w-full relative" v-for="item in uploadProgressInfoSorted" :key="item.index">
+				<div class="flex flex-row w-full relative rounded-lg" v-for="item in uploadProgressInfoSorted" :key="item.index">
+
 					<div class="mr-2 p-1.5">
-						<svg-icon class="text-5xl" :name="'file-type-' + common.getFileIconName(item)">
+						<svg-icon class="text-5xl mt-1 py-1.5 sm:py-1" :name="'file-type-' + common.getFileIconName(item)">
 						</svg-icon>
 					</div>
-					<div class="space-y-3 p-1.5">
-						<div class="font-medium text-sm">{{ item.name }}</div>
-						<div class="text-xs text-gray-400">
-							<span>{{ common.fileSizeFormat(item.loaded) }}</span>
-							<span>/</span>
-							<span>{{ common.fileSizeFormat(item.size) }}</span>
-							<span> - </span>
-							<span class="text-green-500" v-if="item.status === 'finished'">
-								完成
-							</span>
-							<span v-else class="text-blue-400">{{ item.speed }} / 秒</span>
-						</div>
-					</div>
-					<div v-show="item.status === 'uploading'" class="absolute left-0 border-b-2 border-b-blue-300 h-full"
-					     :style="{ width: item.progress + '%' }"
-					     style="background: rgba(132, 133, 141, 0.08);">
-					</div>
-					<div v-show="item.status === 'uploading'"
-					     class="absolute w-full h-full hover:opacity-100 opacity-0 transition-opacity duration-300">
-						<SvgIcon @click="cancelUpload(item)" class="text-2xl absolute right-5 top-0 bottom-0 my-auto
-									cursor-pointer rounded-full hover:bg-gray-200" name="tool-close2"></SvgIcon>
+
+					<div class="p-1.5 py-2.5 sm:py-3 w-full flex flex-col justify-between">
+						<div class="flex justify-between">
+              <div class="flex sm:space-x-5 flex-col sm:flex-row">
+                <div class="font-medium text-sm max-w-[80%] line-clamp-1">{{ item.name }}</div>
+                <div class="text-gray-400 text-xs leading-5 line-clamp-1 active:line-clamp-none">
+                  <span class="mr-4 box animate__animated animate__fadeIn"> {{ common.fileSizeFormat(item.size) }} </span>
+                  <span v-if="item.status === 'uploading' && !item.msg" class="text-blue-500 box animate__animated animate__fadeIn">{{ item.speed }} / 秒</span>
+                  <span v-if="item.status === 'uploading' && item.msg" class="text-blue-500 box animate__animated animate__fadeIn">{{ item.msg }}</span>
+                  <svg-icon v-else-if="item.status === 'finished'" name="check" class="inline text-green-500 box animate__animated animate__fadeIn"/>
+                  <span v-else-if="item.status === 'waiting'" class="text-yellow-500 box animate__animated animate__fadeIn">{{ item.msg }}</span>
+                  <span v-else-if="item.status === 'error'" class="text-red-500 box animate__animated animate__fadeIn">{{ item.msg }}</span>
+                </div>
+              </div>
+              <div>
+                <div v-if="item.status === 'uploading'">
+                  <svg-icon @click="cancelUpload(item)" name="tool-close2" class="inline text-gray-500 mr-1 text-lg cursor-pointer rounded-full hover:bg-gray-200 box animate__animated animate__fadeIn"/>
+                </div>
+                <div v-else-if="item.status === 'finished'">
+                  <svg-icon @click="removeUploadFileByIndex(item.index)" name="delete" class="inline text-red-400 mr-1 text-base cursor-pointer rounded-full hover:bg-gray-200 box animate__animated animate__fadeIn"/>
+                </div>
+                <div v-else-if="item.status === 'error'">
+                  <svg-icon @click="retryUpload(item)" name="refresh" class="inline text-red-500 mr-1 text-base cursor-pointer rounded-full hover:bg-gray-200 box animate__animated animate__fadeIn"/>
+                </div>
+                <div v-else-if="item.status === 'waiting'">
+                  <svg-icon @click="removeUploadFileByIndex(item.index)" name="delete" class="inline text-red-400 mr-1 text-base cursor-pointer rounded-full hover:bg-gray-200 box animate__animated animate__fadeIn"/>
+                </div>
+              </div>
+            </div>
+            <div>
+              <el-progress v-if="item.status === 'finished'" :show-text="false" :percentage="item.progress" status="success"></el-progress>
+              <el-progress v-else-if="item.status === 'uploading'" :show-text="false" :percentage="item.progress"></el-progress>
+              <el-progress v-else-if="item.status === 'error'" :show-text="false" :percentage="100" status="exception"></el-progress>
+              <el-progress v-else-if="item.status === 'waiting'" :show-text="false" :percentage="0"></el-progress>
+            </div>
 					</div>
 				</div>
 			</div>
@@ -79,22 +94,20 @@ let { currentPath } = useFileSelect();
 
 import useFileUpload from "~/composables/file/useFileUpload";
 const { visible, uploadMode, cancelUpload, beforeUpload, uploadProgressInfoSorted,
-	dropState, listenDropFile} = useFileUpload();
+	dropState, listenDropFile,
+  clearALlFinishedUploadFile, removeUploadFileByIndex, retryUpload} = useFileUpload();
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
+import useFileDataStore from "~/stores/file-data";
+let fileDataStore = useFileDataStore();
+
 // 如果有上传完成的文件，关闭对话框时调用 close 方法刷新文件列表
 const emit = defineEmits()
 const closeDialog = () => {
-	let hasFinished = false;
-	for (let i = uploadProgressInfoSorted.value.length - 1; i >= 0; i--) {
-		if (uploadProgressInfoSorted.value[i].status === 'finished') {
-			hasFinished = true;
-			uploadProgressInfoSorted.value.splice(i, 1);
-		}
-	}
-	if (hasFinished) {
+  let deleteCount = clearALlFinishedUploadFile();
+	if (deleteCount > 0) {
 		emit('close');
 	}
 }
@@ -118,6 +131,10 @@ onMounted(() => {
 		max-height: 80vh;
 		overflow-y: auto;
 	}
+
+  :deep(.el-upload-dragger) {
+    @apply border-dashed border-2;
+  }
 
 	.drop-view {
 		@apply fixed w-full h-full z-10

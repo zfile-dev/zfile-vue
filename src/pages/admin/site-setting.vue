@@ -33,6 +33,10 @@
 			<el-input id="icp" :prefix-icon="ShieldCheckIcon" v-model="data.icp"/>
 		</z-form-item>
 
+    <z-form-item label="最大同时上传文件数">
+      <el-input-number id="maxFileUploads" v-model="data.maxFileUploads" :min="1" :max="99" />
+    </z-form-item>
+
 		<template #footer>
 			<el-button type="primary" size="default" :icon="BadgeCheckIcon" @click="saveForm">保存设置</el-button>
 		</template>
