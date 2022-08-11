@@ -2,6 +2,12 @@
 	"name": "zfile",
 	"version": "4.0.8",
 	"description": "ZFile 文件管理",
+	"author": "Zhao Jun",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/zfile-dev/zfile-vue.git"
+	},
+	"license": "MIT",
 	"scripts": {
 		"dev": "vite",
 		"test": "vitest",
@@ -53,6 +59,7 @@
 		"prismjs": "^1.28.0",
 		"script-loader": "^0.7.2",
 		"sortablejs": "^1.15.0",
+		"ua-browser": "^0.1.4",
 		"v-contextmenu": "^3.0.0",
 		"v3-img-preview": "^1.1.16",
 		"vue": "^3.2.37",

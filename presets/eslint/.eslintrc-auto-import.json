@@ -1,6 +1,7 @@
 {
   "globals": {
     "EffectScope": true,
+    "ElLoading": true,
     "ElMessage": true,
     "ElMessageBox": true,
     "ElNotification": true,
@@ -206,6 +207,7 @@
     "useResizeObserver": true,
     "useRoute": true,
     "useRouter": true,
+    "useRouterData": true,
     "useScreenOrientation": true,
     "useScreenSafeArea": true,
     "useScriptTag": true,

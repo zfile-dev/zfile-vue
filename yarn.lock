@@ -6793,6 +6793,11 @@ typescript@^4.7.4:
   resolved "https://registry.npmmirror.com/typescript/-/typescript-4.7.4.tgz"
   integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
 
+ua-browser@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.npmmirror.com/ua-browser/-/ua-browser-0.1.4.tgz#a3fa84e398e4ad6064c6964299741792ec324f8c"
+  integrity sha512-g19Qiqj8h5DdIVnu3/IPeDnKotVLgxA3FWpmCTPvNLx2EkAKAxaeck5Q2BVu7OvdYeNWL0ptEmH/XwyfAEWOdA==
+
 uc.micro@^1.0.1, uc.micro@^1.0.5:
   version "1.0.6"
   resolved "https://registry.npmmirror.com/uc.micro/-/uc.micro-1.0.6.tgz"
