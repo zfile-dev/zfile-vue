@@ -176,7 +176,13 @@
 			<template #tips>
 				<!-- 通用链接 -->
 				<div v-if="item.link">
-					<el-link target="_blank" :icon="Link" :href="item.link">{{ item.linkName }}</el-link>
+					<el-link v-if="item.key === 'accessToken'" target="_blank" :icon="Link"
+                   :href="item.link + '?clientId=' + storageItem.storageSourceAllParam['clientId']
+                                    + '&clientSecret=' + storageItem.storageSourceAllParam['clientSecret']
+                                    + '&redirectUri=' + storageItem.storageSourceAllParam['redirectUri']">
+            {{ item.linkName }}
+          </el-link>
+          <el-link v-else target="_blank" :icon="Link" :href="item.link">{{ item.linkName }}</el-link>
 				</div>
 
 				<!-- 通用描述信息 -->
@@ -278,6 +284,7 @@ let useInitData = () => {
 			basePath: "",
 			domain: "",
 			listId: "",
+      redirectUri: "",
 			siteId: "",
 			proxyDomain: '',
 			downloadLinkType: '',
@@ -328,7 +335,7 @@ let useInitData = () => {
             return;
 					}
 
-					let systemNames = ['admin', 'file', 'login', 'install'];
+					let systemNames = ['admin', 'file', 'login', 'install', 's', 'onedrive', 'api', 'sharepoint', 's3'];
 					if (systemNames.includes(value)) {
 						callback(new Error('不可占用系统级名称，请修改。'));
 						return;
@@ -497,6 +504,8 @@ let useLoadStorageSourceParamList = () => {
 					} else if (storageSourceParam.defaultValue === 'false') {
 						storageSourceParam.defaultValue = false;
 					}
+					storageItem.value.storageSourceAllParam[storageSourceParam.key] = storageSourceParam.defaultValue;
+				} else if (storageSourceParam.key === 'redirectUri' && !storageItem.value.storageSourceAllParam[storageSourceParam.key]) {
 					storageItem.value.storageSourceAllParam[storageSourceParam.key] = storageSourceParam.defaultValue;
 				}
 			}
