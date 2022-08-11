@@ -89,7 +89,7 @@
 					</el-table-column>
 					<el-table-column width="180" prop="createTime" label="创建时间">
 					</el-table-column>
-					<el-table-column width="100" label="操作">
+					<el-table-column width="120" label="操作">
 						<template #default="scope">
 							<el-popconfirm title="是否确认删除?" @confirm="deleteLink(scope.row.id)">
 								<template #reference>
@@ -204,7 +204,7 @@ const batchDeleteLink = () => {
 		type: 'warning'
 	}).then(() => {
 		let ids = selectionRows.map(item => item.id);
-		batchDeleteDownloadLog({id: ids}).then(res => {
+		batchDeleteDownloadLog({ids: ids}).then(res => {
 			ElMessage.success('删除成功');
 			init();
 		});

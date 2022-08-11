@@ -22,7 +22,7 @@ export const deleteShortLink = (id) => {
 export const batchDeleteShortLink = (data) => {
     return axios({
         url: `/admin/link/delete/batch`,
-        method: "delete",
+        method: "post",
         data
     })
 }
@@ -50,7 +50,7 @@ export const deleteDownloadLog = (id) => {
 export const batchDeleteDownloadLog = (data) => {
     return axios({
         url: `/admin/download/log/delete/batch`,
-        method: "delete",
+        method: "post",
         data
     })
 }
