@@ -23,50 +23,97 @@ const batchDeleteDialogShow = ref(false);
 import useFileSelect from "~/composables/file/useFileSelect";
 let { selectRows, selectRow, selectFolders, selectFiles } = useFileSelect();
 
+// 检测浏览器类型
+import uaBrowser from 'ua-browser'
+const browserInfo = uaBrowser();
+
 export default function useFileOperator() {
 
     const { loadFile } = useFileData();
 
-    // 批量下载已选择的所有文件
+    /**
+     * 批量下载已选择的所有文件
+     * @param {Object} row 已选择的文件
+     */
     const batchDownloadFile = (row) => {
         if (!selectRows.value && selectRows.value.length === 0) {
             ElMessage.warning("请至少选择一个文件");
             return;
         }
+
         let confirmMsg;
 
-        if (row.name) {
-            confirmMsg = `是否确认下载文件 ${row.name}？`;
+        const checkBrowser = () => {
+            let result = {
+                isChrome: false,
+                tips: ''
+            }
+
+            let currentBrowser = browserInfo.browser;
+            let currentBrowserVersion = browserInfo.version;
+
+            if (currentBrowser === 'Chrome') {
+                result.isChrome = true;
+            } else {
+                result.tips = `<br><span class="text-gray-500 text-xs">检测到当前浏览器为 <b>${currentBrowser}-${currentBrowserVersion}</b>, 可能不支持此功能，建议使用谷歌浏览器!</span>`;
+            }
+            return result;
+        }
+
+        const checkBrowserResult = checkBrowser();
+
+        if (row?.name) {
+            confirmMsg = `是否确认下载文件 <span class="text-blue-500">${row.name}</span> ？`;
         } else if (selectRows.value.length === 1) {
-            confirmMsg = `是否确认下载文件 ${selectRows.value[0].name}？`;
+            confirmMsg = `是否确认下载文件 <span class="text-blue-500">${selectRows.value[0].name}</span> ？`;
+            row = selectRows.value[0];
         } else if (selectRows.value.length > 1) {
             confirmMsg = `是否确认批量下载 ${selectRows.value.length} 个文件？`;
+            if (!checkBrowserResult.isChrome) {
+                confirmMsg += checkBrowserResult.tips;
+            }
         }
 
         ElMessageBox.confirm(confirmMsg, '提示', {
+            dangerouslyUseHTMLString: true,
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'info',
-            callback: action => {
+            callback: (action) => {
                 if (action === 'confirm') {
-                    if (row.name) {
-                        downloadFileFromUrl(row.url)
+                    // 单个文件下载, 直接下载
+                    if (row?.name) {
+                        console.log('进行指定文件下载, 文件:', row);
+                        downloadFileUseWindowOpenMode(row.url)
                     } else {
+                        // 批量下载
                         selectRows.value.forEach((item) => {
                             if (item.type === 'FILE') {
-                                downloadFileFromUrl(item.url);
+                                console.log('批量选中文件下载, 文件:', item);
+                                downloadFileUseIframeMode(item.url);
                             }
                         })
                     }
                 }
             }
-        });
-
-
+        })
     }
 
-    // 根据 URL 下载
-    const downloadFileFromUrl = (url) => {
+    /**
+     * 使用 windows.open 模式下载文件
+     *
+     * @param url   下载文件 url
+     */
+    const downloadFileUseWindowOpenMode = (url) => {
+        window.open(url);
+    }
+
+    /**
+     * 使用 iframe 模式下载文件
+     *
+     * @param url   下载文件 url
+     */
+    const downloadFileUseIframeMode = (url) => {
         const iframe = document.createElement("iframe");
         iframe.style.display = "none";  // 防止影响页面
         iframe.style.height = 0;  // 防止影响页面
