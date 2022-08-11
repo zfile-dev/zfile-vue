@@ -6,29 +6,26 @@ const useGlobalConfigStore = defineStore('globalConfigStore', {
     return {
       zfileConfig: {
         baseUrl: "",
-        fileList: {
-          defaultSize: "small",
-          emptyText: "数据为空，请先上传或添加文件"
-        },
         router: {
           mode: "history"
         },
         skeleton: {
           enable: true,
           show: "always",
-          size: 30
+          size: 20
         },
         gallery: {
-          column: 5,
+          mobileColumn: 5,
+          column: 3,
           columnSpacing: 50,
           rowSpacing: 10,
-          showInfo: false,
+          showInfo: true,
           showInfoMode: "hover",
           roundedBorder: true,
           showBackTop: true,
         },
         imagePreview: {
-          mode: "only",
+          mode: "full",
           gallery: true
         },
         officePreview: {}

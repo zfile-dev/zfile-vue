@@ -3,23 +3,27 @@ const visible = ref(false);
 import useCommon from "~/composables/useCommon";
 const { isMobile } = useCommon();
 
+// 获取默认值
+import useGlobalConfigStore from "~/stores/global-config";
+let globalConfigStore = useGlobalConfigStore();
+let zfileConfig = globalConfigStore.zfileConfig;
+
 let baseData = {
     view: {
         size: 2
     },
     gallery: {
-        column: isMobile.value ? 1 : 3,
-        mobileColumn: 1,
-        columnSpacing: 50,
-        rowSpacing: 10,
-        showInfo: true,
-        showInfoMode: 'hover',
-        roundedBorder: true,
-        showBackTop: true
+        column: isMobile.value ? zfileConfig.gallery.mobileColumn : zfileConfig.gallery.column,
+        columnSpacing: zfileConfig.gallery.columnSpacing,
+        rowSpacing: zfileConfig.gallery.rowSpacing,
+        showInfo: zfileConfig.gallery.showInfo,
+        showInfoMode: zfileConfig.gallery.showInfoMode,
+        roundedBorder: zfileConfig.gallery.roundedBorder,
+        showBackTop: zfileConfig.gallery.showBackTop
     },
     imagePreview: {
-        mode: "full",
-        gallery: true
+        mode: zfileConfig.imagePreview.mode,
+        gallery: zfileConfig.imagePreview.gallery
     }
 };
 

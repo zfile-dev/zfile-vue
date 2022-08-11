@@ -136,14 +136,10 @@ const viewSizeMap = {
 };
 
 watch(() => zfileSettingCache.value, (value) => {
-	globalConfigStore.zfileConfig.gallery.column = value.gallery.column;
-	globalConfigStore.zfileConfig.gallery.columnSpacing = value.gallery.columnSpacing;
-	globalConfigStore.zfileConfig.gallery.rowSpacing = value.gallery.rowSpacing;
-	globalConfigStore.zfileConfig.gallery.showInfo = value.gallery.showInfo;
-	globalConfigStore.zfileConfig.gallery.showInfoMode = value.gallery.showInfoMode;
-	globalConfigStore.zfileConfig.gallery.roundedBorder = value.gallery.roundedBorder;
-  globalConfigStore.zfileConfig.gallery.showBackTop = value.gallery.showBackTop;
+	globalConfigStore.zfileConfig.gallery = value.gallery;
+  globalConfigStore.zfileConfig.imagePreview = value.imagePreview;
 
+  // 赋予表格大小默认值
 	if (value?.view?.size) {
 		storageConfigStore.globalConfig.tableSize = viewSizeMap[value.view.size];
 	}
@@ -151,11 +147,6 @@ watch(() => zfileSettingCache.value, (value) => {
 	if (!storageConfigStore.globalConfig.tableSize) {
 		storageConfigStore.globalConfig.tableSize = 'defualt';
 	}
-
-	if (value?.imagePreview?.mode) {
-		globalConfigStore.zfileConfig.imagePreview.mode = value.imagePreview.mode;
-	}
-  globalConfigStore.zfileConfig.imagePreview.gallery = value.imagePreview.gallery;
 }, {
 	immediate: true,
 	deep: true

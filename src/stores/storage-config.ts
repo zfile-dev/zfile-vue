@@ -23,7 +23,7 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
         showDocument: false,
         debugMode: false,
         domain: '',
-        icp: '123',
+        icp: '',
         avatar: '',
         announcement: '',
         layout: 'full',
