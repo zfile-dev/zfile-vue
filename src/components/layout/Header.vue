@@ -28,7 +28,7 @@
           </el-tooltip>
         </template>
 
-        <el-tooltip placement="bottom" v-if="storageConfigStore.globalConfig.showLogin">
+				<el-tooltip placement="bottom" v-if="storageConfigStore.globalConfig.showLogin">
 					<template #content>
 						后台管理
 					</template>
@@ -40,7 +40,12 @@
 				<el-dropdown v-if="storageConfigStore.permission.upload || storageConfigStore.permission.newFolder" trigger="click"
                      popper-class="zfile-header-dropdown">
 					<div v-show="route.params.storageKey">
-						<svg-icon class="text-2xl text-gray-500 hover:text-blue-500" name="add"></svg-icon>
+            <el-badge :value="uploadProgressInfoStatistics.totalUploadingAndWaiting"
+                      :hidden="uploadProgressInfoStatistics.totalUploadingAndWaiting === 0"
+                      :max="99"
+                      class="!block">
+						  <svg-icon class="text-2xl text-gray-500 hover:text-blue-500" name="add"></svg-icon>
+            </el-badge>
 					</div>
 					<template #dropdown>
 						<el-dropdown-menu class="font-medium">
@@ -170,7 +175,7 @@ import useFileOperator from '~/composables/file/useFileOperator';
 const { newFolder } = useFileOperator();
 
 import useFileUpload from "~/composables/file/useFileUpload";
-const { openUploadDialog, openUploadFolderDialog } = useFileUpload();
+const { openUploadDialog, openUploadFolderDialog, uploadProgressInfoStatistics } = useFileUpload();
 
 import useSetting from "~/composables/header/useSetting";
 const { openSettingVisible } = useSetting();
@@ -189,7 +194,7 @@ watch(() => [storageConfigStore.folderConfig.defaultSwitchToImgMode, fileDataSto
 
   if (storageKey !== oldStorageKey) {
     fileDataStore.imgMode = defaultSwitchToImgMode;
-	}
+  }
 })
 
 const toLoginView = () => {
@@ -215,8 +220,10 @@ if (storageConfigStore.globalConfig.customJs) {
   } catch (e) {
     console.log('加载自定义 js 失败: ', storageConfigStore.globalConfig.customJs, e);
   }
-
 }
+
+
+
 </script>
 
 <style scoped lang="scss">
