@@ -176,10 +176,10 @@
 			<template #tips>
 				<!-- 通用链接 -->
 				<div v-if="item.link">
-					<el-link v-if="item.key === 'accessToken'" target="_blank" :icon="Link"
-                   :href="item.link + '?clientId=' + storageItem.storageSourceAllParam['clientId']
-                                    + '&clientSecret=' + storageItem.storageSourceAllParam['clientSecret']
-                                    + '&redirectUri=' + storageItem.storageSourceAllParam['redirectUri']">
+          <el-link v-if="item.key === 'accessToken'" target="_blank" :icon="Link"
+                   :href="item.link + '?clientId=' + encodeURIComponent(storageItem.storageSourceAllParam['clientId'])
+                                    + '&clientSecret=' + encodeURIComponent(storageItem.storageSourceAllParam['clientSecret'])
+                                    + '&redirectUri=' + encodeURIComponent(storageItem.storageSourceAllParam['redirectUri'])">
             {{ item.linkName }}
           </el-link>
           <el-link v-else target="_blank" :icon="Link" :href="item.link">{{ item.linkName }}</el-link>
