@@ -10,7 +10,7 @@
     <el-main>
       <router-view />
     </el-main>
-    <el-footer>
+    <el-footer v-if="storageConfigStore.globalConfig?.icp">
       <Footer></Footer>
     </el-footer>
   </el-container>
