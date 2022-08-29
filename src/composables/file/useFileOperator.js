@@ -1,6 +1,5 @@
 import {
-    deleteFileReq,
-    deleteFolderReq,
+    batchDeleteReq,
     newFolderReq,
     renameFileReq,
     renameFolderReq,
@@ -16,15 +15,12 @@ import useFileData from "~/composables/file/useFileData";
 import useRouterData from "~/composables/useRouterData";
 let { storageKey, currentPath } = useRouterData();
 
-// 删除相关
-const batchDeleteResult = ref([]);
-const batchDeleteDialogShow = ref(false);
-
 import useFileSelect from "~/composables/file/useFileSelect";
 let { selectRows, selectRow, selectFolders, selectFiles } = useFileSelect();
 
 // 检测浏览器类型
 import uaBrowser from 'ua-browser'
+import { ElLoading } from "element-plus";
 const browserInfo = uaBrowser();
 
 export default function useFileOperator() {
@@ -186,9 +182,16 @@ export default function useFileOperator() {
                 reqMethod = renameFolderReq;
             }
 
+            const renameLoadingInstance = ElLoading.service({
+                fullscreen: true,
+                text: '重命名中...',
+                background: 'rgba(255, 255, 255, 0.6)'
+            })
+
             reqMethod(param).then(() => {
                 ElMessage.success('重命名成功');
             }).finally(() => {
+                renameLoadingInstance.close();
                 loadFile();
             });
 
@@ -240,57 +243,41 @@ export default function useFileOperator() {
 
         deleteConfirmMsg += "?"
 
-        batchDeleteResult.value = [];
         ElMessageBox.confirm(deleteConfirmMsg, '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             draggable: true,
             callback: action => {
                 if (action === 'confirm') {
-                    if (selectRows.value.length > 1) {
-                        batchDeleteDialogShow.value = true;
-                        selectRows.value.forEach((item) => {
-                            deleteFileOrFolder(item).then(() => {
-                                batchDeleteResult.value.push({name: item.name, status: true})
-                            }).catch(() => {
-                                batchDeleteResult.value.push({name: item.name, status: false})
-                            });
-                        })
-                    } else {
-                        deleteFileOrFolder(selectRow.value).then((res) => {
-                            ElMessage.success('删除成功');
-                            loadFile();
-                        });
-                    }
+            let param = {
+                storageKey: storageKey.value,
+                        deleteItems: []
+                    };
+
+                    selectRows.value.forEach((item) => {
+                        param.deleteItems.push(item);
+                    })
+
+                    // 打开全屏 loading
+                    const loadingInstance = ElLoading.service({
+                        text: '删除中...',
+                        background: 'rgba(0, 0, 0, .3)'
+                    })
+
+                    batchDeleteReq(param).then((res) => {
+                        ElMessage.success(res.msg);
+        loadFile();
+                    }).finally(() => {
+                        loadingInstance.close();
+                    });
                 }
             }
         });
-
-        const deleteFileOrFolder = (item) => {
-            let param = {
-                storageKey: storageKey.value,
-                path: currentPath.value,
-                name: item.name
-            }
-
-            if (item.type === 'FOLDER') {
-                return deleteFolderReq(param)
-            } else {
-                return deleteFileReq(param)
-            }
-        }
     }
-    const batchDeleteCloseAction = () => {
-        batchDeleteResult.value = [];
-        loadFile();
-    };
-    const batchDeletePercentage= computed(() => {
-        return Math.floor(batchDeleteResult.value.length / selectRows.value.length * 100);
-    })
     // 删除相关 end
 
     return {
         batchDownloadFile, rename, newFolder, moveTo, copyTo,
-        batchDelete, batchDeleteResult, batchDeleteDialogShow, batchDeleteCloseAction, batchDeletePercentage
+        batchDelete
     }
 }

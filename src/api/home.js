@@ -44,11 +44,11 @@ export const loadStorageConfigReq = (data) => {
     })
 }
 
-// 生成短链
-export const shortLinkReq = (data) => {
+// 批量生成直/短链
+export const batchGenerateShortLinkReq = (data) => {
     return axios({
-        url: `/api/short-link`,
-        method: "get",
+        url: `/api/short-link/batch/generate`,
+        method: "post",
         data
     })
 }

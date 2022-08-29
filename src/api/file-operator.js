@@ -9,19 +9,10 @@ export const newFolderReq = (data) => {
     })
 
 }
-// 删除文件
-export const deleteFileReq = (data) => {
+// 批量删除文件/文件夹
+export const batchDeleteReq = (data) => {
     return axios({
-        url: `/api/file/operator/delete/file`,
-        method: "post",
-        data
-    })
-}
-
-// 删除文件夹
-export const deleteFolderReq = (data) => {
-    return axios({
-        url: `/api/file/operator/delete/folder`,
+        url: `/api/file/operator/delete/batch`,
         method: "post",
         data
     })

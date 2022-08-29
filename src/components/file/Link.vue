@@ -7,19 +7,32 @@
 		           draggable
 		           top="5vh">
 
-			<el-table class="zfile-download-link-table" :max-height="height * 0.7" :data="datas" v-if="selectFiles.length > 1">
 
-				<el-table-column
-				                 show-tooltip-when-overflow
-				                 label="文件名">
+			<el-table v-loading="loading"
+                element-loading-text="生成中..."
+                class="zfile-download-link-table"
+                @cell-click="handleCellClick"
+                :max-height="height * 0.7"
+                :data="datas"
+                v-if="selectFiles.length > 1">
+				<el-table-column prop="name" show-tooltip-when-overflow>
+          <template #header="scope">
+            文件名
+            <el-tooltip
+              :show-arrow="false"
+              :offset="15"
+              effect="dark"
+              content="批量复制到剪贴板"
+              placement="top">
+              <svg-icon @click="batchCopyLinkField('name')" class="inline cursor-pointer l-5" name="copy"></svg-icon>
+            </el-tooltip>
+          </template>
 					<template #default="scope">
-						{{ scope.row.row.name }}
+						{{ scope.row.name }}
 					</template>
 				</el-table-column>
 
-				<el-table-column
-					v-if="storageConfigStore.permission.pathLink"
-					show-overflow-tooltip>
+				<el-table-column prop="pathLink" v-if="storageConfigStore.permission.pathLink" show-overflow-tooltip>
 					<template #header="scope">
 						直链
 						<el-tooltip
@@ -28,17 +41,15 @@
 							effect="dark"
 							content="批量复制到剪贴板"
 							placement="top">
-							<svg-icon @click="batchCopyLink" class="inline cursor-pointer l-5" name="copy"></svg-icon>
+							<svg-icon @click="batchCopyLinkField('pathLink')" class="inline cursor-pointer l-5" name="copy"></svg-icon>
 						</el-tooltip>
 					</template>
 					<template #default="scope">
-						{{ scope.row.directlink }}
+						{{ scope.row.pathLink }}
 					</template>
 				</el-table-column>
 
-				<el-table-column
-          v-if="storageConfigStore.permission.shortLink"
-          show-overflow-tooltip width="250">
+				<el-table-column prop="shortLink" v-if="storageConfigStore.permission.shortLink" show-overflow-tooltip width="250">
 					<template #header="scope">
 						短链
 						<el-tooltip
@@ -47,43 +58,43 @@
 							effect="dark"
 							content="批量复制到剪贴板"
 							placement="top">
-							<svg-icon @click="batchCopyShortLink" class="inline cursor-pointer l-5" name="copy"></svg-icon>
+							<svg-icon @click="batchCopyLinkField('shortLink')" class="inline cursor-pointer l-5" name="copy"></svg-icon>
 						</el-tooltip>
 					</template>
 					<template #default="scope">
-						{{ scope.row.link }}
+						{{ scope.row.shortLink }}
 					</template>
 				</el-table-column>
 
 			</el-table>
-      <el-row class="md:space-y-6" v-if="selectFiles.length === 1 && data">
+			<el-row class="md:space-y-6" v-if="selectFiles.length === 1 && data">
 				<div class="flex flex-row space-x-10 w-full">
 					<el-image ref="qrcodeRef" class="w-3/4" :src="data.currentImg"/>
 					<div class="flex flex-col mt-3 space-y-3.5 overflow-y-auto">
 						<div class="border w-10 h-10 p-1 rounded-md cursor-pointer"
-						     @click="data.currentImg = data.img.a1"
-						     :class="data.currentImg === data.img.a1 ? 'border-blue-400' : ''">
-							<el-image class="w-full h-full" :src="data.img.a1"/>
+						     @click="data.currentImg = data.qrcode.a1"
+						     :class="data.currentImg === data.qrcode.a1 ? 'border-blue-400' : ''">
+							<el-image class="w-full h-full" :src="data.qrcode.a1"/>
 						</div>
 						<div class="border w-10 h-10 p-1 rounded-md cursor-pointer"
-						     @click="data.currentImg = data.img.a2"
-						     :class="data.currentImg === data.img.a2 ? 'border-blue-400' : ''">
-							<el-image class="w-full h-full" :src="data.img.a2"/>
+						     @click="data.currentImg = data.qrcode.a2"
+						     :class="data.currentImg === data.qrcode.a2 ? 'border-blue-400' : ''">
+							<el-image class="w-full h-full" :src="data.qrcode.a2"/>
 						</div>
 						<div class="border w-10 h-10 p-1 rounded-md cursor-pointer"
-						     @click="data.currentImg = data.img.sp1"
-						     :class="data.currentImg === data.img.sp1 ? 'border-blue-400' : ''">
-							<el-image class="w-full h-full" :src="data.img.sp1"/>
+						     @click="data.currentImg = data.qrcode.sp1"
+						     :class="data.currentImg === data.qrcode.sp1 ? 'border-blue-400' : ''">
+							<el-image class="w-full h-full" :src="data.qrcode.sp1"/>
 						</div>
 						<div class="border w-10 h-10 p-1 rounded-md cursor-pointer"
-						     @click="data.currentImg = data.img.aa1"
-						     :class="data.currentImg === data.img.aa1 ? 'border-blue-400' : ''">
-							<el-image class="w-full h-full" :src="data.img.aa1"/>
+						     @click="data.currentImg = data.qrcode.aa1"
+						     :class="data.currentImg === data.qrcode.aa1 ? 'border-blue-400' : ''">
+							<el-image class="w-full h-full" :src="data.qrcode.aa1"/>
 						</div>
 						<div class="border w-10 h-10 p-1 rounded-md cursor-pointer"
-						     @click="data.currentImg = data.img.ab2"
-						     :class="data.currentImg === data.img.ab2 ? 'border-blue-400' : ''">
-							<el-image class="w-full h-full" :src="data.img.ab2"/>
+						     @click="data.currentImg = data.qrcode.ab2"
+						     :class="data.currentImg === data.qrcode.ab2 ? 'border-blue-400' : ''">
+							<el-image class="w-full h-full" :src="data.qrcode.ab2"/>
 						</div>
 					</div>
 				</div>
@@ -102,7 +113,7 @@
 							<el-tooltip append-to=".zfile-file-download-link-body"
 							            popper-class="zfile-link-tips"
 							            placement="left" content="路径直链地址，包含文件完整路径.">
-								<el-input @click="copyText(data.directlink)" :prefix-icon="Link" type="small" v-model="data.directlink">
+								<el-input @click="copyText(data.pathLink)" :prefix-icon="Link" type="small" v-model="data.pathLink">
 								</el-input>
 							</el-tooltip>
 						</el-form-item>
@@ -110,7 +121,7 @@
 							<el-tooltip append-to=".zfile-file-download-link-body"
 							            popper-class="zfile-link-tips"
 							            placement="left" content="缩短版直链地址，便于复制分发.">
-								<el-input @click="copyText(data.link)" :prefix-icon="Link" type="small" v-model="data.link">
+								<el-input @click="copyText(data.shortLink)" :prefix-icon="Link" type="small" v-model="data.shortLink">
 								</el-input>
 							</el-tooltip>
 						</el-form-item>
@@ -146,7 +157,7 @@ import useFileSelect from "~/composables/file/useFileSelect";
 let { selectFiles } = useFileSelect();
 
 import useFileLink from "~/composables/file/useFileLink";
-let { visible, copyText, data, datas, loadRowLinkData } = useFileLink();
+let { visible, loading, copyText, data, datas, generateALlLink } = useFileLink();
 
 watch(() => visible.value, (value) => {
 	if (value) {
@@ -157,9 +168,7 @@ watch(() => visible.value, (value) => {
         ElMessage.error('没有权限生成直链或短链');
         return;
       }
-			selectFiles.value.forEach((item) => {
-				loadRowLinkData(item, storageConfigStore.permission);
-			})
+      generateALlLink(selectFiles.value);
 		}
 	} else {
 		datas.value = [];
@@ -167,18 +176,15 @@ watch(() => visible.value, (value) => {
 })
 
 
-const batchCopyShortLink = () => {
+const batchCopyLinkField = (filed) => {
 	let links = [];
-	datas.value.forEach((item) => {
-		links.push(item.link);
-	})
-	copyText(links.join('\n'));
-}
-
-const batchCopyLink = () => {
-	let links = [];
-	datas.value.forEach((item) => {
-		links.push(item.directlink);
+  let fields = filed.split('.');
+  datas.value.forEach((row) => {
+    let value = row;
+    fields.forEach((item) => {
+      value = value[item];
+    })
+		links.push(value);
 	})
 	copyText(links.join('\n'));
 }
@@ -203,9 +209,9 @@ const exportExcel = () => {
 
 	let colsWidth = [{ wch: 50 }, { wch: 50 }, { wch: 50 }];
 	datas.value.forEach((item) => {
-		let col1Length = item.row.name.length;
-		let col2Length = item.directlink.length;
-		let col3Length = item.link.length;
+		let col1Length = item.name.length;
+		let col2Length = item.pathLink.length;
+		let col3Length = item.shortLink.length;
 
 		if (col1Length > colsWidth[0].wch) {
 			colsWidth[0].wch = col1Length;
@@ -238,6 +244,10 @@ const exportExcel = () => {
 		}
 	}
 	return wbout
+}
+
+const handleCellClick = (row, column, cell, event) => {
+  copyText(row[column.property]);
 }
 
 </script>

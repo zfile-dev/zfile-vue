@@ -3,10 +3,8 @@ import { encodeData, rendererRect, rendererRound,
     rendererDSJ, rendererLine, rendererFuncB } from 'beautify-qrcode';
 
 import common from "~/common";
-import useCommon from "../useCommon";
-const { encodeAllIgnoreSlashes } = useCommon();
 
-import { shortLinkReq } from "~/api/home";
+import { batchGenerateShortLinkReq } from "~/api/home";
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
@@ -20,8 +18,13 @@ let data = computed(() => {
 
 const datas = ref([]);
 let visible = ref(false);
+let loading = ref(false);
 
 export default function useFileLink() {
+
+    /**
+     * 打开直链 dialog
+     */
     const openLinkDialog = () => {
         visible.value = true;
     }
@@ -35,6 +38,11 @@ export default function useFileLink() {
         });
     }
 
+    /**
+     * svg 转为 src data uri
+     * @param   svgText     svg 文本
+     * @returns {string}    src data uri
+     */
     const svgToDataUri = (svgText) => {
         let xmlElement = document.createElement("xml")
         xmlElement.innerHTML = svgText;
@@ -50,55 +58,56 @@ export default function useFileLink() {
         return 'data:image/svg+xml;utf8,' + encodeURIComponent(xmlElement.innerHTML);
     }
 
-    const loadRowLinkData = (row, permission) => {
-        let pathDownloadLink = common.removeDuplicateSeparator("/" + row.path
-            + "/" + row.name);
-        shortLinkReq({storageKey: storageKey.value, path: pathDownloadLink}).then((response) => {
-            let item = {
-                row: null,
-                currentImg: '',
-                img: {
-                    a1: '',
-                    a2: '',
-                    sp2: '',
-                    b1: '',
-                    c1: '',
-                    sp3: '',
-                    aa1: '',
-                    aa2: '',
-                    ab1: '',
-                    ab2: ''
-                },
-                link: ''
-            };
-            item.row = JSON.parse(JSON.stringify(row));
-            item.row.size = common.fileSizeFormat(row.size);
-            item.link = response.data;
-            let pathAndName = encodeAllIgnoreSlashes(row.path + "/" + row.name);
-            pathDownloadLink = common.removeDuplicateSeparator(storageConfigStore.globalConfig.domain + "/" +
-              storageConfigStore.globalConfig.directLinkPrefix + "/" +
-              storageKey.value + "/" +
-              pathAndName);
-            item.directlink = pathDownloadLink;
 
-            const qrcode = encodeData({
-                text: permission.shortLink ? item.link : item.directlink,
-                correctLevel: 2,
-                isSpace: false
-            });
+    /**
+     * 生成直链
+     *
+     * @param files          要生成的直链列表
+     */
+    const generateALlLink = (files) => {
+        loading.value = true;
 
-            item.img.a1 = svgToDataUri(rendererRect(qrcode));
-            item.img.a2 = svgToDataUri(rendererRound(qrcode));
-            item.img.sp1 = svgToDataUri(rendererDSJ(qrcode));
-            item.img.aa1 = svgToDataUri(rendererLine(qrcode));
-            item.img.ab2 = svgToDataUri(rendererFuncB(qrcode));
-            item.currentImg = item.img.a1;
-            datas.value.push(item);
-        });
+        let param = {
+            storageKey: storageKey.value,
+            paths: []
+        }
+
+        files.forEach((row) => {
+            let pathAndName = common.removeDuplicateSeparator("/" + row.path + "/" + row.name);
+            param.paths.push(pathAndName);
+        })
+
+        batchGenerateShortLinkReq(param).then((res) => {
+            let size = res.data.length;
+            res.data.forEach((item, index) => {
+                // 生成二维码
+                const qrcode = encodeData({
+                    text: storageConfigStore.permission.shortLink ? item.shortLink : item.pathLink,
+                    correctLevel: 2,
+                    isSpace: false
+                });
+                if (size === 1) {
+                    item.row = files[index];
+                    item.qrcode = {
+                        a1: svgToDataUri(rendererRect(qrcode)),
+                        a2: svgToDataUri(rendererRound(qrcode)),
+                        sp1: svgToDataUri(rendererDSJ(qrcode)),
+                        aa1: svgToDataUri(rendererLine(qrcode)),
+                        ab2: svgToDataUri(rendererFuncB(qrcode)),
+                    }
+                    item.currentImg = item.qrcode.a1;
+                } else {
+                    item.name = files[index].name
+                }
+                datas.value.push(item);
+            })
+        }).finally(() => {
+            loading.value = false;
+        })
     }
 
     return {
-        visible, openLinkDialog, copyText, data, datas, loadRowLinkData
+        visible, loading, openLinkDialog, copyText, data, datas, generateALlLink
     }
 
 }

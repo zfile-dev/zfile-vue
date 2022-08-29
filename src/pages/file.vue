@@ -254,28 +254,6 @@
       <!-- 生成直链 -->
       <Link></Link>
 
-      <!-- 批量删除结果 -->
-      <el-dialog draggable :destroy-on-close="true"
-                 width="40%"
-                 title="操作结果"
-                 @close="batchDeleteCloseAction"
-                 v-model="batchDeleteDialogShow">
-        <el-progress
-          :text-inside="true"
-          :stroke-width="26"
-          :percentage="batchDeletePercentage"
-          :status="batchDeletePercentage === 100 ? 'success' : ''" />
-        <el-table :data="batchDeleteResult" height="60vh" style="width: 100%">
-          <el-table-column show-overflow-tooltip prop="name" label="文件名" />
-          <el-table-column prop="status" label="状态" width="150">
-            <template #default="scope">
-              <span v-if="scope.row.status" class="text-green-500">成功</span>
-              <span v-else class="text-red-500">失败</span>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-dialog>
-
       <!-- 上传框 -->
       <ZUpload @close="loadFileAndConfig"></ZUpload>
 
@@ -513,9 +491,7 @@ const { tableClickRow, tableDbClickRow, tableHoverRow, tableLeaveRow } = useTabl
 
 const { dialogVideoVisible, dialogTextVisible, dialogPdfVisible, dialogOfficeVisible } = useFilePreview();
 
-const {rename, batchDownloadFile, moveTo, copyTo, newFolder,
-  batchDelete, batchDeleteResult, batchDeleteDialogShow, batchDeleteCloseAction, batchDeletePercentage
-} = useFileOperator();
+const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = useFileOperator();
 
 // 文件上传相关
 import useFileUpload from "~/composables/file/useFileUpload";
