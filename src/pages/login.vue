@@ -47,7 +47,7 @@
 								<el-tooltip class="item" effect="dark" placement="left">
 									<template #content>
 										将配置文件 application.properties 中 zfile.debug 修改为 true, 重启后访问首页即可重置密码 <br>
-										<a target="_blank" class="text-blue-400" href="https://docs.zfile.vip/#/question?id=reset-pwd">点击可前往文档查看操作方式</a>
+										<a target="_blank" class="text-blue-400" href="https://docs.zfile.vip/question#reset-pwd">点击可前往文档查看操作方式</a>
 									</template>
 									<el-link :icon="QuestionFilled" :underline="false" class="zfile-float-right">忘记密码</el-link>
 								</el-tooltip>
