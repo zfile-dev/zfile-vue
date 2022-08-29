@@ -8,7 +8,7 @@
 					<router-link to="/admin/storage-list">
 						<svg-icon class="inline mr-2 cursor-pointer" name="file-type-back"></svg-icon>
 					</router-link>
-					<span>目录文档</span>
+					<span>目录文档（{{storageItem?.name}}）</span>
 				</div>
         <el-tooltip placement="top" content="启用后下发的规则设置会失效，仅会为读取目录下的 readme.md 文件来渲染文档, 且固定在底部显示.">
           <div>
@@ -81,6 +81,7 @@ import ZFormItem from "/src/components/form/ZFormItem.vue";
 
 let route = useRoute();
 let router = useRouter();
+let currentStorageId = route.params.storageId;
 
 import useStorageReadme from "~/composables/admin/storage/storage-readme.js";
 
@@ -92,8 +93,17 @@ const { loading, loadReadmeData, readmeList,
 
 onMounted(() => {
 	loadReadmeData();
+  loadStorageItem();
 })
 
+const storageItem = ref();
+// 加载指定存储源的数据
+const loadStorageItem = () => {
+  loadStorageItemReq(currentStorageId).then((res) => {
+    res.data.type = res.data.type.key;
+    storageItem.value = res.data;
+  })
+}
 
 let compatibilityReadme = ref(false);
 loadStorageItemReq(route.params.storageId).then((res) => {

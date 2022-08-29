@@ -7,7 +7,7 @@
 				<router-link to="/admin/storage-list">
 					<svg-icon class="inline mr-2 cursor-pointer" name="file-type-back"></svg-icon>
 				</router-link>
-				<span>过滤文件</span>
+				<span>过滤文件（{{storageItem?.name}}）</span>
 			</div>
 		</template>
 		<template #form-sub-title>
@@ -62,15 +62,28 @@ import ZFormItem from "/src/components/form/ZFormItem.vue";
 
 let route = useRoute();
 let router = useRouter();
+let currentStorageId = route.params.storageId;
 
 import useStorageFilter from "~/composables/admin/storage/storage-filter.js";
+import { loadStorageItemReq } from "~/api/admin-storage";
 const { loading, loadFilterData, filterList,
 		addFilterItem, deleteFilterItem,
 		saveFilterData } = useStorageFilter(router, route);
 
 onMounted(() => {
 	loadFilterData();
+  loadStorageItem();
 })
+
+const storageItem = ref();
+// 加载指定存储源的数据
+const loadStorageItem = () => {
+  loadStorageItemReq(currentStorageId).then((res) => {
+    res.data.type = res.data.type.key;
+    storageItem.value = res.data;
+  })
+}
+
 </script>
 
 <style lang="scss" scoped>

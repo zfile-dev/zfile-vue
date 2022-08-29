@@ -7,17 +7,17 @@
 				<router-link to="/admin/storage-list">
 					<svg-icon class="inline mr-2 cursor-pointer" name="file-type-back"></svg-icon>
 				</router-link>
-				<span>密码文件夹</span>
+				<span>密码文件夹（{{storageItem?.name}}）</span>
 			</div>
 		</template>
 		<template #form-sub-title>
 			<el-alert :closable="false" type="info">
 				<div class="rules-tips">Glob 表达式规则：</div>
-				<div class="rules-tips"><b>/</b>: 单层根目录加密, 如 /, 表示根路径下需要密码访问.</div>
+        <div class="rules-tips"><b>/</b>: 单层根目录加密, 如 /, 表示根路径下需要密码访问.</div>
         <div class="rules-tips"><b>/music*</b>: 单层子目录加密, 如 /music*, 表示根目录下的 music 文件夹需要密码访问, 子文件夹不加密.</div>
         <div class="rules-tips"><b>/music**</b>: 嵌套子目录加密, 如 /music**, 表示根目录下的 music 文件夹及其所有子文件夹都需要密码访问.</div>
-				<div class="rules-tips">注：系统匹配到第一个符合的规则就会取密码进行校验，并返回结果，所以请调整好规则顺序，下方规则可进行拖拽排序。</div>
-				<div class="rules-tips-link">
+        <div class="rules-tips">注：系统匹配到第一个符合的规则就会取密码进行校验，并返回结果，所以请调整好规则顺序，下方规则可进行拖拽排序。</div>
+        <div class="rules-tips-link">
 					<a target="_blank" class="link" href="http://www.ruanyifeng.com/blog/2018/09/bash-wildcards.html"><Collection class="inline mr-1"></Collection><span>参考文章 (Wikipedia)</span></a>
 					<a target="_blank" class="link" href="http://www.ruanyifeng.com/blog/2018/09/bash-wildcards.html"><Collection class="inline mr-1"></Collection>参考文章 (阮一峰)</a>
 					<a target="_blank" class="link" href="https://github.com/whinc/blog/issues/18"><Collection class="inline mr-1"></Collection>参考文章 (Github)</a>
@@ -58,15 +58,29 @@ import ZFormItem from "/src/components/form/ZFormItem.vue";
 
 let route = useRoute();
 let router = useRouter();
+let currentStorageId = route.params.storageId;
 
 import useStoragePassword from "~/composables/admin/storage/storage-password.js";
+import { loadStorageItemReq } from "~/api/admin-storage";
 const { loading, loadPasswordData, passwordList,
 		addPasswordItem, deletePasswordItem,
 		savePasswordData } = useStoragePassword(router, route);
 
 onMounted(() => {
 	loadPasswordData();
+  loadStorageItem();
 })
+
+const storageItem = ref();
+// 加载指定存储源的数据
+const loadStorageItem = () => {
+  loadStorageItemReq(currentStorageId).then((res) => {
+    res.data.type = res.data.type.key;
+    storageItem.value = res.data;
+  })
+}
+
+
 </script>
 
 <style lang="scss" scoped>
