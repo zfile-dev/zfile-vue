@@ -50,7 +50,8 @@
               </div>
               <div>
                 <div v-if="item.status === 'uploading'">
-                  <svg-icon @click="cancelUpload(item)" name="tool-close2" class="inline text-gray-500 mr-1 text-lg cursor-pointer rounded-full hover:bg-gray-200 box animate__animated animate__fadeIn"/>
+                  <span class="text-gray-500 text-xs mr-2">{{ common.fileSizeFormat(item.loaded) }} / {{ common.fileSizeFormat(item.size) }}</span>
+                  <svg-icon @click="cancelUpload(item)" name="tool-close2" class="top-0.5 relative inline text-gray-500 mr-1 text-lg cursor-pointer rounded-full hover:bg-gray-200 box animate__animated animate__fadeIn"/>
                 </div>
                 <div v-else-if="item.status === 'finished'">
                   <svg-icon @click="removeUploadFileByIndex(item.index)" name="delete" class="inline text-red-400 mr-1 text-base cursor-pointer rounded-full hover:bg-gray-200 box animate__animated animate__fadeIn"/>
