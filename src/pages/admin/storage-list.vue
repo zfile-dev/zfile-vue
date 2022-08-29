@@ -10,7 +10,7 @@
 				<div class="my-2 text-sm text-gray-500 flex justify-between flex-wrap">
 					<div>
 						此页可以维护您的存储源信息，可以拖动交换存储源之间的顺序. 配置示例可参考：
-						<a class="link" target="_blank" href="https://docs.zfile.vip/#/example">ZFile 存储源配置文档</a>
+						<a class="link" target="_blank" href="https://docs.zfile.vip/example">ZFile 存储源配置文档</a>
 					</div>
 					<div>
 						<el-input placeholder="请输入搜索内容" v-model="searchKey" :prefix-icon="Search"></el-input>
@@ -22,6 +22,7 @@
 				    @dblclick="editStorage(storage)"
 				    class="storage-item group col-span-1 flex flex-col text-center bg-white rounded-lg border hover:shadow">
 					<div class="flex-1 flex flex-col p-8 pb-4 relative">
+            <svg-icon @click="openStorage(storage.key)" name="target" class="absolute left-3 top-3 text-sm cursor-pointer text-blue-500 opacity-0 group-hover:opacity-100"></svg-icon>
 						<svg-icon @click="deleteStorage(storage)" name="delete" class="absolute right-3 top-3 cursor-pointer group-hover:text-red-500"></svg-icon>
             <div class="rounded-full bg-blue-50 w-fit mx-auto">
 						  <img class="w-20 h-20 flex-shrink-0 mx-auto p-4" :src="getImg(storage.type.key)"/>
@@ -138,6 +139,10 @@ const {
 onMounted(() => {
 	init();
 })
+
+const openStorage = (key) => {
+  window.open(`/${key}`);
+}
 
 const getImg = (name) => {
   const path = `/src/assets/icons/${name}.svg`;
