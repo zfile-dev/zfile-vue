@@ -461,9 +461,9 @@ export default function useFileUpload() {
             });
 
 
-            let proxyUploadType = ['local', 'webdav', 'ftp', 'sftp'];
-            let s3UploadType = ['s3', 'tencent', 'aliyun', 'qiniu', 'minio', 'huawei'];
-            let onedriveUploadType = ['sharepoint', 'sharepoint-china', 'onedrive', 'onedrive-china'];
+            let proxyUploadType = common.storageType.proxyType;
+            let s3UploadType = common.storageType.s3Type;
+            let onedriveUploadType = common.storageType.micrsoftType;
 
             if (proxyUploadType.includes(fileDataStore.currentStorageSource.type.key)) {
                 fileProxyUpload(file, res.data, fileIndex);
@@ -750,6 +750,7 @@ export default function useFileUpload() {
                 cancelTokenSourceMap.delete(item.index);
             }
         }
+        return deleteCount;
     }
 
     const retryUpload = (item) => {
