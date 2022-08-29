@@ -22,7 +22,11 @@ export default function useLinkSetting() {
     })
 
     const saveData = () => {
+        if (!data.value.directLinkPrefix) {
+            ElMessage.warning('直链前缀不能为空');
+        } else {
         run(data.value);
+    }
     }
 
     return {
