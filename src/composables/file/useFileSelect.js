@@ -1,8 +1,5 @@
 const selectRows = ref([]);
 let vueInstance = null;
-let tableRef = computed(() => {
-    return vueInstance.proxy.$refs.fileTableRef;
-});
 
 export default function useFileSelect(currentInstance) {
 
@@ -11,18 +8,18 @@ export default function useFileSelect(currentInstance) {
   }
 
   const clearSelection = () => {
-    tableRef.value.clearSelection();
+    vueInstance.proxy.$refs.fileTableRef.clearSelection();
   }
 
   const toggleRowSelection = (row, selected) => {
     if (row?.type === 'BACK') {
       return;
     }
-    tableRef.value.toggleRowSelection(row, selected);
+    vueInstance.proxy.$refs.fileTableRef.toggleRowSelection(row, selected);
   }
 
   const toggleAllSelection = () => {
-    tableRef.value.toggleAllSelection();
+    vueInstance.proxy.$refs.fileTableRef.toggleAllSelection();
   }
 
 
@@ -89,6 +86,6 @@ export default function useFileSelect(currentInstance) {
     selectRow, selectRows,
     selectFiles, selectFolders,
     selectStatistics,
-    tableRef, clearSelection, toggleRowSelection, toggleAllSelection
+    clearSelection, toggleRowSelection, toggleAllSelection
   };
 }
