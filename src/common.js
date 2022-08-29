@@ -8,11 +8,12 @@ const fileTypeMap = {
     archive: ['7z', 'zip', 'rar', 'tar', 'gz'],
     pdf: ['pdf'],
     office: ['doc', 'docx', 'csv', 'xls', 'xlsx', "ppt", 'pptx'],
+    three3d: ['dae', 'fbx', 'gltf', 'glb', 'obj', 'ply', 'stl'],
     document: ['txt', 'pages', 'epub', 'numbers', 'keynote']
 };
 
 // 可预览的文件类型
-const previewFileType = ['image', 'video', 'audio', 'text', 'office', 'pdf'];
+const previewFileType = ['image', 'video', 'audio', 'text', 'office', 'pdf', 'three3d'];
 
 import config from '/package.json'
 
@@ -30,6 +31,11 @@ let common = {
         REQUIRED_PASSWORD: 405,
         INVALID_PASSWORD: 406
     },
+    storageType: {
+        s3Type: ['s3', 'tencent', 'aliyun', 'qiniu', 'minio', 'huawei'],
+        proxyType: ['local', 'webdav', 'ftp', 'sftp', 'google-drive'],
+        micrsoftType: ['sharepoint', 'sharepoint-china', 'onedrive', 'onedrive-china']
+    },
     version: config.version,
     constant: {
         fileTypeMap,
@@ -40,7 +46,8 @@ let common = {
         window.open(url);
     },
     fileSizeFormat: (bytes) => {
-        if (bytes === 0) return '0 B';
+        if (bytes === 0) return '-';
+        if (bytes === -1) return '未知';
         let k = 1024;
         let sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         let i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -50,6 +57,7 @@ let common = {
         if (row.type === "BACK") return '';
         if (row.type === "FOLDER") return '-';
         if (bytes === 0) return '0 B';
+        if (bytes === -1) return '未知';
         let k = 1024;
         let sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         let i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -78,7 +86,14 @@ let common = {
         if (lastIndex === -1) {
             return 'other';
         }
-        return name.substr(lastIndex + 1).toLowerCase();
+        return name.substring(lastIndex + 1).toLowerCase();
+    },
+    getFileName(name) {
+        let lastIndex = name.lastIndexOf('.');
+        if (lastIndex === -1) {
+            return '';
+        }
+        return name.substring(0, lastIndex);
     },
     getFileType(name) {
         let fileType;
