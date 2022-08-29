@@ -65,7 +65,14 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column width="110" prop="shortKey" label="短链 Key">
+					<el-table-column width="150" prop="shortKey" label="短链 Key">
+            <template #default="scope">
+              <div class="space-x-2">
+                <span>{{scope.row.shortKey}}</span>
+                <svg-icon @click="copyText(scope.row.shortKey)" class="inline cursor-pointer" name="copy"></svg-icon>
+                <svg-icon @click="openLink(scope.row.shortKey)" class="inline cursor-pointer text-blue-500 text-sm" name="target"></svg-icon>
+              </div>
+            </template>
 					</el-table-column>
 					<el-table-column show-tooltip-when-overflow prop="url" label="路径">
 					</el-table-column>
@@ -115,6 +122,8 @@ import zhCn from 'element-plus/lib/locale/lang/zh-cn'
 
 import { Search, Delete } from "@element-plus/icons-vue";
 import {loadStorageListReq} from "~/api/admin-storage";
+import { toClipboard } from "@soerenmartius/vue3-clipboard";
+import { loadConfigReq } from "~/api/admin-setting";
 
 const settingVisible = ref(false);
 const openSettingVisible = () => {
@@ -163,6 +172,7 @@ const init = () => {
 onMounted(() => {
 	init();
 	loadSourceList();
+  loadSystemConfig();
 })
 
 
@@ -181,6 +191,12 @@ const deleteLink = (id) => {
 	});
 }
 
+const systemConfig = ref();
+const loadSystemConfig = () => {
+  loadConfigReq().then(res => {
+    systemConfig.value = res.data;
+  })
+}
 
 const linkTableRef = ref();
 
@@ -200,6 +216,23 @@ const batchDeleteLink = () => {
 			init();
 		});
 	});
+}
+
+
+/**
+ *  复制直链
+ */
+let copyText = (text) => {
+  toClipboard(text).then(() => {
+    ElMessage.success('复制成功');
+  });
+}
+
+/**
+ * 打开短链
+ */
+let openLink = (shortLink) => {
+  window.open(`${systemConfig.value.domain}/s/${shortLink}`);
 }
 
 </script>
