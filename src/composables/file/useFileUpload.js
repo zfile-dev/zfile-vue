@@ -250,6 +250,13 @@ export default function useFileUpload() {
                     // 兼容不同内核的浏览器
                     if (e.webkitGetAsEntry) {
                         item = e.webkitGetAsEntry();
+                        if (!item) {
+                            item = e.getAsFile();
+                            if (item) {
+                                fileList.push(item);
+                                continue;
+                            }
+                        }
                     } else if (e.getAsEntry) {
                         item = e.getAsEntry();
                     } else {
