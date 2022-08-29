@@ -1,4 +1,4 @@
-import { v3ImgPreviewFn } from 'v3-img-preview'
+import { v3ImgPreviewFn } from 'v3-img-preview-enhance'
 
 // 基础依赖引入
 import useGlobalConfigStore from "~/stores/global-config";
@@ -15,6 +15,8 @@ export let dialogTextVisible = ref(false);
 export let dialogOfficeVisible = ref(false);
 // pdf 预览
 export let dialogPdfVisible = ref(false);
+// 3d 预览
+export let dialog3dVisible = ref(false);
 
 export default function useFilePreview() {
 
@@ -52,13 +54,16 @@ export default function useFilePreview() {
         dialogTextVisible.value = true;
     }
 
-    const openOffice = (row) => {
-        let previewUrl = globalConfigStore.zfileConfig.officePreview.previewUrl(row.url);
-        window.open(previewUrl);
+    const openOffice = () => {
+        dialogOfficeVisible.value = true;
     }
 
     const openPdf = () => {
         dialogPdfVisible.value = true;
+    }
+
+    const open3d = () => {
+        dialog3dVisible.value = true;
     }
 
     return {
@@ -67,7 +72,8 @@ export default function useFilePreview() {
         openOffice, dialogOfficeVisible,
         openImage,
         openAudio,
-        openPdf, dialogPdfVisible
+        openPdf, dialogPdfVisible,
+        open3d, dialog3dVisible
     }
 
 }

@@ -180,7 +180,7 @@ export default function useFileData() {
                 case 'image': openImage(row); break;
                 case 'text': openText(); break;
                 case 'audio': openAudio(row); break;
-                // case 'office': openOffice(row); break;
+                case 'office': openOffice(row); break;
                 case 'pdf': openPdf(row); break;
                 default: batchDownloadFile(row);
             }

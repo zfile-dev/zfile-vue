@@ -251,6 +251,26 @@
                    v-if="dialogPdfVisible"/>
       </el-dialog>
 
+      <!-- office 在线预览 -->
+      <el-dialog draggable custom-class="zfile-office-dialog"
+                 :title="fileDataStore.currentClickRow.name"
+                 v-model="dialogOfficeVisible">
+        <OfficeViewer
+          :file-name="fileDataStore.currentClickRow.name"
+          :file-url="fileDataStore.currentClickRow.url"
+          v-if="dialogOfficeVisible"/>
+      </el-dialog>
+
+      <!-- 3d 在线预览 -->
+      <el-dialog draggable custom-class="zfile-3d-dialog"
+                 :title="fileDataStore.currentClickRow.name"
+                 v-model="dialog3dVisible">
+        <Three3dPreview
+          :file-name="fileDataStore.currentClickRow.name"
+          :file-url="fileDataStore.currentClickRow.url"
+           v-if="dialog3dVisible"/>
+      </el-dialog>
+
       <!-- 生成直链 -->
       <Link></Link>
 
@@ -412,6 +432,14 @@ const PdfViewer = defineAsyncComponent({
   loader: () => import("~/components/file/preview/PdfViewer.vue"),
   loadingComponent: MarkdownViewerDialogAsyncLoading
 })
+const OfficeViewer = defineAsyncComponent({
+  loader: () => import("~/components/file/preview/OfficeViewer.vue"),
+  loadingComponent: MarkdownViewerDialogAsyncLoading
+})
+const Three3dPreview = defineAsyncComponent({
+  loader: () => import("~/components/file/preview/Three3dPreview.vue"),
+  loadingComponent: MarkdownViewerDialogAsyncLoading
+})
 
 import AudioPlayer from '~/components/file/preview/AudioPlayer.vue'
 const FileGallery = defineAsyncComponent(() => import("~/components/file/preview/FileGallery.vue"))
@@ -489,7 +517,7 @@ const { openLinkDialog, visible:linkVisible } = useFileLink();
 
 const { tableClickRow, tableDbClickRow, tableHoverRow, tableLeaveRow } = useTableOperator();
 
-const { dialogVideoVisible, dialogTextVisible, dialogPdfVisible, dialogOfficeVisible } = useFilePreview();
+const { dialogVideoVisible, dialogTextVisible, dialogPdfVisible, dialogOfficeVisible, dialog3dVisible } = useFilePreview();
 
 const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = useFileOperator();
 
@@ -638,6 +666,32 @@ const reload = () => {
   :deep(.zfile-pdf-dialog) {
     .el-dialog__body {
       @apply h-[80vh] sm:h-[85vh] overflow-auto;
+    }
+  }
+
+  // office 弹窗
+  :deep(.zfile-office-dialog) {
+     @apply w-11/12;
+    .el-dialog__body {
+      @apply h-[80vh] sm:h-[85vh] overflow-auto p-0;
+    }
+    .el-dialog__header {
+      @apply p-0;
+    }
+    .el-dialog__header .el-icon {
+      @apply text-white;
+    }
+    .el-dialog__title {
+      @apply hidden;
+    }
+    .el-dialog__headerbtn {
+      @apply mt-0 -right-3 -top-3 h-5 w-5
+      bg-gray-600 hover:bg-blue-500
+      rounded-full box-content border-2 border-solid border-white;
+
+      :deep(svg) {
+        @apply text-white font-bold;
+      }
     }
   }
 
