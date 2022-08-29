@@ -552,6 +552,9 @@ const reload = () => {
   // 隐藏横向滚动条
   @apply overflow-y-hidden;
 
+  :deep(.el-checkbox) {
+    margin-right: 30px;
+  }
 
   :deep(.el-table__inner-wrapper) {
     height: 100%;
