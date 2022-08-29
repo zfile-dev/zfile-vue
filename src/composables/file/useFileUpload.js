@@ -61,6 +61,8 @@ export default function useFileUpload() {
         dropArea = document.querySelector('body');
 
         const dropOrPasteUpload = (e) => {
+            let isDrop = e.dataTransfer?.files?.length > 0;
+
             // 关闭提示
             removeDragClass();
             dropState.value = false;
@@ -69,11 +71,12 @@ export default function useFileUpload() {
                 return;
             }
 
-            if (!storageKey.value) {
+            // 如果是拖拽上传，但已经打开了 dialog，则不处理上传.
+            if (hasDialog() && isDrop) {
                 return;
             }
 
-            if (visible.value) {
+            if (!storageKey.value) {
                 return;
             }
 
