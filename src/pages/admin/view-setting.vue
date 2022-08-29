@@ -51,6 +51,15 @@
 			<el-input v-model="data.customTextSuffix"></el-input>
 		</z-form-item>
 
+    <z-form-item label="OnlyOffice 服务地址">
+      <el-input v-model="data.onlyOfficeUrl"></el-input>
+      <template #tips>
+        <div>OnlyOffice 服务地址，默认的公共服务不保证稳定性，推荐自行部署 OnlyOffice 服务. 部署教程：<a class="link" href="https://docs.zfile.vip/advanced#only-office" target="_blank">https://docs.zfile.vip/advanced#only-office</a></div>
+        <div>提示：进行预览的文件需 OnlyOffice 服务器可访问，如您的 OnlyOffice 在公网，要预览的文件在内网，则无法正常预览。</div>
+        <div>提示：根据浏览器安全规范，如您的 ZFile 是 https 协议的，OnlyOffice 服务也必须是 https 协议的，否则无法正常使用。</div>
+      </template>
+    </z-form-item>
+
 		<z-form-item label="显示文档区">
 			<el-switch v-model="data.showDocument"/>
 			<el-tooltip placement="right">
