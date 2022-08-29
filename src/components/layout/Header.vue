@@ -211,19 +211,22 @@ if (storageConfigStore.globalConfig.customCss) {
   }
 }
 
-if (storageConfigStore.globalConfig.customJs) {
-  try {
-    let clearCustomJs = storageConfigStore.globalConfig.customJs.replace(/<script.*?>|<\/script>/ig, "");
-    console.log('加载自定义 js:', clearCustomJs);
-    let script = document.createElement("script");
-    script.type = "text/javascript";
-    script.text = clearCustomJs;
-    document.getElementsByTagName('head')[0].appendChild(script);
-  } catch (e) {
-    console.log('加载自定义 js 失败: ', storageConfigStore.globalConfig.customJs, e);
-  }
-}
-
+onMounted(() => {
+  nextTick(()=>{
+    if (storageConfigStore.globalConfig.customJs) {
+      try {
+        let clearCustomJs = storageConfigStore.globalConfig.customJs.replace(/<script.*?>|<\/script>/ig, "");
+        console.log('加载自定义 js:', clearCustomJs);
+        let script = document.createElement("script");
+        script.type = "text/javascript";
+        script.text = clearCustomJs;
+        document.getElementsByTagName('head')[0].appendChild(script);
+      } catch (e) {
+        console.log('加载自定义 js 失败: ', storageConfigStore.globalConfig.customJs, e);
+      }
+    }
+  })
+})
 
 
 </script>
