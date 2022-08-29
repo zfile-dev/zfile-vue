@@ -13,7 +13,7 @@
 		</template>
 		<template #form-sub-title>
 			请维护您的存储源信息，可参考
-			<a class="link" target="_blank" href="https://docs.zfile.vip/#/example">ZFile 存储源配置文档</a>
+			<a class="link" target="_blank" href="https://docs.zfile.vip/example">ZFile 存储源配置文档</a>
 		</template>
 
 		<z-form-item label="存储源名称" prop="name">
@@ -23,7 +23,7 @@
 		<z-form-item label="存储源别名" prop="key">
 			<el-input v-model="storageItem.key"/>
 			<template #tips>
-				存储源别名，用于 URL 中展示, 如 http://ip:port/{存储源别名}
+				存储源别名，用于 URL 中展示, 如 {{systemConfig?.domain}}{{storageItem.key || "{存储源别名}"}}
 			</template>
 		</z-form-item>
 
@@ -137,6 +137,40 @@
 				</el-option>
 			</el-select>
 
+      <!-- gd 网盘选择 -->
+      <el-select filterable
+                 v-else-if="item.key === 'driveId' && drivesList?.length > 0"
+                 placeholder="请选择驱动器列表"
+                 v-model="storageItem.storageSourceAllParam.driveId" class="input-with-select">
+        <el-option value="" label="默认空间">
+					<span class="float-left">
+            默认空间
+					</span>
+          <span class="float-right">
+            <el-tag type="primary" class="float-right">
+              个人盘
+            </el-tag>
+          </span>
+        </el-option>
+        <el-option v-for="option in drivesList" :key="option.id" :label="option.name" :value="option.id">
+					<span class="float-left">
+						{{ option.name }}
+					</span>
+          <el-popover
+            placement="left"
+            width="400"
+            trigger="hover"
+            :content="option.id"
+          >
+            <template #reference>
+                <el-tag type="success" class="float-right">
+                  团队盘
+                </el-tag>
+            </template>
+          </el-popover>
+        </el-option>
+      </el-select>
+
 			<!-- s3 存储器列表 -->
 			<el-select
         filterable
@@ -145,7 +179,7 @@
 				v-model="storageItem.storageSourceAllParam.bucketName" class="input-with-select">
 				<el-option v-for="option in bucketList" :key="option.name"
 				           :label="option.name" :value="option.name">
-					<span style="float: left">
+					<span class="float-left">
 						{{ option.name }}
 					</span>
 					<span class="float-right">{{ option.date }}</span>
@@ -176,17 +210,36 @@
 			<template #tips>
 				<!-- 通用链接 -->
 				<div v-if="item.link">
-          <el-link v-if="item.key === 'accessToken'" target="_blank" :icon="Link"
+          <span v-if="item.key === 'accessToken'">
+            <el-link target="_blank" :icon="Link"
                    :href="item.link + '?clientId=' + encodeURIComponent(storageItem.storageSourceAllParam['clientId'])
                                     + '&clientSecret=' + encodeURIComponent(storageItem.storageSourceAllParam['clientSecret'])
                                     + '&redirectUri=' + encodeURIComponent(storageItem.storageSourceAllParam['redirectUri'])">
             {{ item.linkName }}
           </el-link>
+            <svg-icon @click="copyText(item.link + '?clientId=' + encodeURIComponent(storageItem.storageSourceAllParam['clientId'])
+                                    + '&clientSecret=' + encodeURIComponent(storageItem.storageSourceAllParam['clientSecret'])
+                                    + '&redirectUri=' + encodeURIComponent(storageItem.storageSourceAllParam['redirectUri']))"
+                      class="inline cursor-pointer ml-2 text-lg relative top-0.5" name="copy"></svg-icon>
+          </span>
           <el-link v-else target="_blank" :icon="Link" :href="item.link">{{ item.linkName }}</el-link>
 				</div>
 
 				<!-- 通用描述信息 -->
 				<div v-if="item.description" v-html="item.description">
+				</div>
+        <!--  onedrive 动态地址提示 -->
+        <div v-if="item.key === 'redirectUri' && item.description && ['onedrive', 'sharepoint'].includes(storageItem.type)">
+          如：{{ systemConfig.domain }}onedrive/callback
+          <svg-icon @click="copyText(systemConfig.domain + 'onedrive/callback')" class="inline cursor-pointer ml-1" name="copy"></svg-icon>
+        </div>
+        <div v-if="item.key === 'redirectUri' && item.description && ['onedrive-china', 'sharepoint-china'].includes(storageItem.type)">
+          如：{{ systemConfig.domain }}onedrive/china-callback
+          <svg-icon @click="copyText(systemConfig.domain + 'onedrive/china-callback')" class="inline cursor-pointer ml-1" name="copy"></svg-icon>
+        </div>
+        <div v-if="item.key === 'redirectUri' && item.description && storageItem.type === 'google-drive'">
+          如：{{ systemConfig.domain }}gd/callback
+          <svg-icon @click="copyText(systemConfig.domain + 'gd/callback')" class="inline cursor-pointer ml-1" name="copy"></svg-icon>
 				</div>
 			</template>
 		</z-form-item>
@@ -198,6 +251,8 @@
 </template>
 
 <script setup>
+import common from "~/common";
+
 import {Link} from '@element-plus/icons-vue'
 import {BadgeCheckIcon} from '@heroicons/vue/solid'
 
@@ -215,6 +270,11 @@ import {
 import {ElMessageBox} from "element-plus";
 import {loadSharePointSiteListsReq, loadSharePointSitesReq} from "~/api/sharepoint";
 import {loadS3BucketsReq} from "~/api/s3";
+import { loadGDDrivesReq } from "~/api/gd";
+import { loadConfigReq } from "~/api/admin-setting";
+import { toClipboard } from "@soerenmartius/vue3-clipboard";
+
+const systemConfig = ref();
 
 let router = useRouter();
 let route = useRoute();
@@ -292,6 +352,7 @@ let useInitData = () => {
 			clientSecret: '',
 			region: '',
 			autoConfigCors: false,
+      driveId: ''
 		},
 	});
 
@@ -313,6 +374,14 @@ let useInitData = () => {
 		loadSupportStorageReq().then((response) => {
 			supportStorageType.value = response.data;
 		});
+
+    loadConfigReq().then(res => {
+      systemConfig.value = res.data;
+      if (!systemConfig.value.domain.endsWith('/')) {
+        systemConfig.value.domain += '/';
+      }
+    })
+
 
 		// 获取 url 参数中的存储源 id, 如果没 id, 表示是新增, 不初始化加载数据
 		let storageId = route.params.storageId;
@@ -401,6 +470,9 @@ let useS3Util = () => {
 	})
 
 	watch(() => s3Credentials.value, (val) => {
+    if (!common.storageType.s3Type.includes(storageItem.value.type)) {
+      return;
+    }
 		if (val.accessKey && val.secretKey && val.endPoint) {
 			loadSharePointSites(val);
 		}
@@ -418,6 +490,36 @@ let useS3Util = () => {
 }
 
 let { bucketList } = useS3Util();
+
+
+let useGDUtil = () => {
+  let drivesList = ref([]);
+
+  let param = computed(() => {
+    return {
+      accessToken: storageItem.value.storageSourceAllParam.accessToken,
+    }
+  })
+
+  watch(() => param.value, (val) => {
+    if (storageItem.value.type !== 'google-drive') {
+      return;
+    }
+    loadDrives(val);
+  })
+
+  const loadDrives = (param) => {
+    loadGDDrivesReq(param).then((res) => {
+      drivesList.value = res.data;
+    }).catch((e) => {
+      drivesList.value = [];
+    })
+  }
+
+  return { drivesList }
+}
+
+let { drivesList } = useGDUtil();
 
 
 /**
@@ -515,6 +617,16 @@ let useLoadStorageSourceParamList = () => {
 	return {storageSourceParamList}
 }
 let { storageSourceParamList } = useLoadStorageSourceParamList();
+
+
+/**
+ *  复制
+ */
+let copyText = (text) => {
+  toClipboard(text).then(() => {
+    ElMessage.success('复制成功');
+  });
+}
 
 
 </script>
