@@ -75,11 +75,6 @@ body,
 }
 
 
-#v3-img-preview-container-id .img-container {
-	height: 95vh;
-	top: 2.5vh !important;
-}
-
 #v3-img-preview-container-id .img-container .img-content {
 	max-width: 95%;
 }

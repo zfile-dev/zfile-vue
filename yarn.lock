@@ -6996,10 +6996,10 @@ v-contextmenu@^3.0.0:
   resolved "https://registry.npmmirror.com/v-contextmenu/-/v-contextmenu-3.0.0.tgz"
   integrity sha512-zi38JxmTt66TmljgV1JbfEa9WvoQkpzRuEwZK7Tjb2XoRejbWLozQtkyTWXJa6x6Y3FrVDfgT36w01gpTpo41A==
 
-v3-img-preview@^1.1.16:
-  version "1.1.16"
-  resolved "https://registry.npmmirror.com/v3-img-preview/-/v3-img-preview-1.1.16.tgz#e970faa1eb93f353ee66f5d5722561f5a6e41170"
-  integrity sha512-7w1YeQKW+2r5ezm1cAw93EvV0GUwqozT/YxlgbJhdLSZyhYT7TtUShFwGfTzqf2pcjnsHHSoLVZlBg2ePTZSKw==
+v3-img-preview-enhance@^1.1.18:
+  version "1.1.18"
+  resolved "https://registry.npmjs.org/v3-img-preview-enhance/-/v3-img-preview-enhance-1.1.18.tgz#81fda1aa48df31a71970df53658948e82b5aec78"
+  integrity sha512-axowrwDculmYivlXacVeA46+QekxP7NTJTRGs2k1ACf9wZntStmVH1dmbwEp8PYR98lX1QHa7GHg0f7B4yUQtQ==
   dependencies:
     "@vueuse/core" "^8.1.1"
 

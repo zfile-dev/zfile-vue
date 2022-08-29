@@ -61,7 +61,7 @@
 		"sortablejs": "^1.15.0",
 		"ua-browser": "^0.1.4",
 		"v-contextmenu": "^3.0.0",
-		"v3-img-preview": "^1.1.16",
+		"v3-img-preview-enhance": "^1.1.18",
 		"vue": "^3.2.37",
 		"vue-pdf-embed": "^1.1.4",
 		"xlsx": "^0.18.5"
