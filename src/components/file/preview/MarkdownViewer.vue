@@ -6,8 +6,11 @@
 
 <script setup>
 import {marked} from 'marked';
+import { computed, onMounted, onUpdated, ref } from "vue";
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
 import 'github-markdown-css';
-import {computed, onMounted, ref} from "vue";
+
 
 import {getFileTextFromServerReq, getFileTextReq} from "~/api/common";
 
@@ -44,13 +47,31 @@ let markdownHtml = computed(() => {
 		renderer: renderer
 	});
 
-	return marked(fileContent.value);
+	return marked(fileContent.value, {
+		highlight: function(code) {
+			return hljs.highlightAuto(code).value;
+		}
+	});
+})
 
-	// return marked(fileContent, {
-	// 	// highlight: function(code) {
-	// 	// 	return hljs.highlightAuto(code).value;
-	// 	// }
-	// });
+import CodeCopy from '~/components/file/preview/CopyCode.vue';
+import { createVNode, render } from "vue";
+
+onUpdated(() => {
+  document.querySelectorAll('pre').forEach(el => {
+    if (el.classList.contains('code-copy-added')) return
+    //   https://cn.vuejs.org/v2/api/index.html#Vue-extend
+    /* 使用基础 Vue 构造器，创建一个“子类”。参数是一个包含组件选项的对象 */
+
+    let codeCopyVNode = createVNode(CodeCopy, {
+      code: el.innerText,
+    });
+    let mountNode = document.createElement("div");
+    render(codeCopyVNode, mountNode);
+    el.classList.add('code-copy-added')
+    el.classList.add('hljs')
+    el.appendChild(mountNode)
+  })
 })
 
 </script>
@@ -59,14 +80,14 @@ let markdownHtml = computed(() => {
 .content {
   padding: 10px 20px;
 }
-.content >>> img {
-	max-height: 150vh;
-	max-width: 150vh;
-	vertical-align: middle;
-}
 
 .content .markdown-body >>> pre {
 	margin-right: 20px;
+}
+
+
+.content .markdown-body >>> pre:hover .copy-btn {
+  opacity: 1;
 }
 
 .dialog-scroll {
@@ -74,5 +95,9 @@ let markdownHtml = computed(() => {
 	overflow-y: auto;
 	overflow-x: hidden;
 	margin: 0;
+}
+
+.content >>> .code-copy-added {
+  position: relative;
 }
 </style>
