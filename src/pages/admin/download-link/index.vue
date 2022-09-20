@@ -59,7 +59,7 @@
 					<el-table-column width="120" label="存储源名称">
 						<template #default="scope">
 							<el-tooltip
-								:content="scope.row.storageType.description"
+								:content="scope.row.storageType?.description"
 								placement="right">
 								<span>{{ scope.row.storageName }}</span>
 							</el-tooltip>
