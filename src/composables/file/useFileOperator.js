@@ -18,6 +18,9 @@ let { storageKey, currentPath } = useRouterData();
 import useFileSelect from "~/composables/file/useFileSelect";
 let { selectRows, selectRow, selectFolders, selectFiles } = useFileSelect();
 
+import useFilePwd from "~/composables/file/useFilePwd";
+let { getPathPwd } = useFilePwd();
+
 // 检测浏览器类型
 import uaBrowser from 'ua-browser'
 import { ElLoading } from "element-plus";
@@ -170,7 +173,7 @@ export default function useFileOperator() {
         }).then(({value}) => {
             let param = {
                 storageKey: storageKey.value,
-                path: currentPath.value,
+                path: row.path,
                 name: row.name,
                 newName: value,
             }
@@ -255,7 +258,12 @@ export default function useFileOperator() {
                     };
 
                     selectRows.value.forEach((item) => {
-                        param.deleteItems.push(item);
+                        param.deleteItems.push({
+                            path: item.path,
+                            name: item.name,
+                            type: item.type,
+                            password: getPathPwd(item.path)
+                        });
                     })
 
                     // 打开全屏 loading

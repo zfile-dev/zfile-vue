@@ -1,7 +1,10 @@
 import axios from "~/http/request"
+import useFilePwd from "~/composables/file/useFilePwd";
+let { getPathPwd } = useFilePwd();
 
 // 新建文件夹
 export const newFolderReq = (data) => {
+    data.password = getPathPwd(data.path);
     return axios({
         url: `/api/file/operator/mkdir`,
         method: "post",
@@ -21,6 +24,7 @@ export const batchDeleteReq = (data) => {
 
 // 重命名文件
 export const renameFileReq = (data) => {
+    data.password = getPathPwd(data.path);
     return axios({
         url: `/api/file/operator/rename/file`,
         method: "post",
@@ -30,6 +34,7 @@ export const renameFileReq = (data) => {
 
 // 重命名文件夹
 export const renameFolderReq = (data) => {
+    data.password = getPathPwd(data.path);
     return axios({
         url: `/api/file/operator/rename/folder`,
         method: "post",
@@ -39,6 +44,7 @@ export const renameFolderReq = (data) => {
 
 // 获取文件上传链接
 export const uploadFileReq = (data) => {
+    data.password = getPathPwd(data.path);
     return axios({
         url: `/api/file/operator/upload/file`,
         method: "post",
