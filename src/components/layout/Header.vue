@@ -16,18 +16,21 @@
 
 		<div class="zfile-header-right box animate__animated animate__fadeIn">
       <!-- 功能区 -->
-			<div class="zfile-header-btn" v-if="isNotMobile && initStorageConfig">
+			<div class="zfile-header-btn" v-if="isNotMobile">
+
+        <!-- debug 模式 -->
         <template v-if="storageConfigStore.globalConfig.debugMode">
           <el-tooltip placement="bottom">
             <template #content>
               此功能为 DEBUG 模式下重置管理员密码功能, 使用完后请关闭 DEBUG 模式并重启服务.
             </template>
-            <el-button @click="resetAdminPwd" type="danger" >
+            <el-button size="default" @click="resetAdminPwd" type="danger" >
               重置管理员密码
             </el-button>
           </el-tooltip>
         </template>
 
+        <!-- 后台登录 -->
 				<el-tooltip placement="bottom" v-if="storageConfigStore.globalConfig.showLogin">
 					<template #content>
 						后台管理
@@ -37,6 +40,7 @@
 					</div>
 				</el-tooltip>
 
+        <!-- 上传 -->
 				<el-dropdown v-if="storageConfigStore.permission.upload || storageConfigStore.permission.newFolder" trigger="click"
                      popper-class="zfile-header-dropdown">
 					<div v-show="route.params.storageKey">
@@ -70,14 +74,17 @@
 					</template>
 				</el-dropdown>
 
+        <!-- 画廊模式切换 -->
 				<div v-show="route.params.storageKey" @click="fileDataStore.imgMode = !fileDataStore.imgMode">
 					<svg-icon v-if="fileDataStore.imgMode" class="text-4xl" name="img-enable"></svg-icon>
 					<svg-icon v-else class="text-4xl" name="img-disable"></svg-icon>
 				</div>
 
+        <!-- 设置按钮 -->
 				<div @click="openSettingVisible">
 					<i-custom-tool-setting></i-custom-tool-setting>
 				</div>
+
 			</div>
 
       <!-- 存储源选择 -->
