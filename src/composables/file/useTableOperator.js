@@ -64,6 +64,10 @@ export const hasDialog = () => {
     return !!document.querySelector(".el-popup-parent--hidden")
 }
 
+// 当前是否聚焦在密码输入框
+export const hasPasswordInputFocus = () => {
+    return document.querySelector(".is-message-box .el-input__inner") === document.activeElement;
+}
 
 // 拖拽选择相关
 // 开始拖拽的文件行索引

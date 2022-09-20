@@ -10,7 +10,7 @@ let fileDataStore = useFileDataStore();
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
-import {hasDialog} from "~/composables/file/useTableOperator";
+import {hasDialog, hasPasswordInputFocus} from "~/composables/file/useTableOperator";
 
 // 拖拽上传状态, true 表示正有文件拖拽悬浮在上传框上
 let dropState = ref(false);
@@ -67,12 +67,13 @@ export default function useFileUpload() {
             removeDragClass();
             dropState.value = false;
 
-            if (hasDialog()) {
+            // 如果是拖拽上传，但已经打开了 dialog，则不处理上传.
+            if (hasDialog() && isDrop) {
                 return;
             }
 
-            // 如果是拖拽上传，但已经打开了 dialog，则不处理上传.
-            if (hasDialog() && isDrop) {
+            // 如果 focus 在密码输入框，则不处理上传.
+            if (hasPasswordInputFocus()) {
                 return;
             }
 
