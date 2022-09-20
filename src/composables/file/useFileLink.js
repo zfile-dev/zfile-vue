@@ -88,6 +88,7 @@ export default function useFileLink() {
                 });
                 if (size === 1) {
                     item.row = files[index];
+                    item.row.size = common.fileSizeFormat(item.row.size);
                     item.qrcode = {
                         a1: svgToDataUri(rendererRect(qrcode)),
                         a2: svgToDataUri(rendererRound(qrcode)),
