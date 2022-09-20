@@ -46,6 +46,15 @@
 				</template>
 			</z-form-item>
 
+      <z-form-item label="是否允许路径直链可直接访问">
+        <el-switch v-model="data.allowPathLinkAnonAccess"/>
+        <template #tips>
+          <span>是否允许未通过 "生成直链" 功能的直链可访问 (仅表示可访问, 如未开启上方 "是否允许使用直链（路径）" 功能，则即使访问了也不允许下载.)</span>
+          <br><br>
+          <span>因路径直链的格式是文件路径和文件名，所以很容易被猜到并访问, 如您不想未生成直链就可直接访问，可考虑使用此功能控制.</span>
+        </template>
+      </z-form-item>
+
 			<z-form-item label="Referer 防盗链">
 				<el-radio v-model="data.refererType" label="off">不启用 Referer 防盗链</el-radio>
 				<el-radio v-model="data.refererType" label="white_list">启用白名单</el-radio>
