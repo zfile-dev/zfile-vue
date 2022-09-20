@@ -5,7 +5,7 @@
       <el-button :disabled="!getPrevAndNextVideo(currentVideo.name).prev" :icon="IconPrev" @click="playPrevVideo">上一个视频</el-button>
       <el-button :disabled="!getPrevAndNextVideo(currentVideo.name).next" :icon="IconNext" @click="playNextVideo">下一个视频</el-button>
     </div>
-		<div class="zfile-video-tools">
+		<div class="zfile-video-tools" :class="hiddenTools ? 'hidden-important' : ''">
 			<div class="zfile-video-tools-item" @click="openTarget('download')">
 				<el-tooltip placement="top">
 					<template #content>
@@ -79,7 +79,7 @@
 				</el-tooltip>
 			</div>
 		</div>
-		<div class="zfile-video-tools-tips">
+		<div class="zfile-video-tools-tips" :class="hiddenTools ? 'hidden-important' : ''">
 			tips: 可点击上方的软件图标进行下载播放, 本地播放器解码效果更佳.
 		</div>
 	</div>
@@ -215,6 +215,8 @@ const getSubtitles = (currentName) => {
 	return subtitleList;
 }
 
+let hiddenIcon = '<i class="art-icon art-icon-not-hidden"><svg t="1662978336444" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="968" width="128" height="128"><path d="M711.456 377.184c32.736 31.52 60.928 72.256 84.64 122.208a40.64 40.64 0 0 1 0 34.72c-63.776 135.04-160.48 202.528-290.112 202.528-46.752 0-89.248-8.832-127.456-26.464l37.184-37.184c27.52 10.048 57.6 15.104 90.272 15.104 108.864 0 188.48-55.168 244.608-171.296-21.088-43.584-45.44-78.56-73.44-105.28l34.304-34.336z m13.024-122.816l28.768 28.8a5.376 5.376 0 0 1 0 7.616L272.96 771.04a5.408 5.408 0 0 1-7.648 0l-28.8-28.8a5.376 5.376 0 0 1 0-7.616l71.36-71.36c-35.84-32.384-66.56-75.392-92.032-129.088a40.64 40.64 0 0 1 0-34.72C279.68 364.48 376.384 296.96 505.984 296.96c50.752 0 96.448 10.4 137.12 31.168l73.76-73.728a5.376 5.376 0 0 1 7.616 0z m-218.496 91.136c-108.8 0-188.416 55.168-244.608 171.296 22.944 47.36 49.792 84.608 80.928 112.096l56.256-56.256a118.688 118.688 0 0 1 160.576-160.576l47.424-47.424c-30.336-12.832-63.776-19.136-100.576-19.136z m-70.016 137.088a75.616 75.616 0 0 0-4.64 57.28l95.04-95.04a75.616 75.616 0 0 0-90.4 37.76z m60.416 109.504a75.456 75.456 0 0 0 82.144-82.112l35.616-35.616a118.72 118.72 0 0 1-153.376 153.344l35.616-35.616z" p-id="969"></path></svg></i>';
+let notHiddenIcon = '<i class="art-icon art-icon-hidden"><svg t="1662978261880" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4451" width="128" height="128"><path d="M512.032 648a136.128 136.128 0 0 1-136-136c0-74.976 60.992-136 136-136s136 61.024 136 136a136.128 136.128 0 0 1-136 136z m0-224c-48.544 0-88 39.456-88 88s39.456 88 88 88 88-39.456 88-88-39.456-88-88-88z" p-id="4452"></path><path d="M512.032 743.616a327.68 327.68 0 0 1-231.872-95.616L142.88 512l137.28-136a327.68 327.68 0 0 1 231.872-95.584c87.328 0 169.664 33.952 231.872 95.584l137.28 136-137.28 136a327.52 327.52 0 0 1-231.872 95.616zM206.528 512l107.424 101.952c53.152 52.672 123.488 81.696 198.048 81.696s144.896-29.024 198.08-81.696L817.536 512l-107.424-101.952c-53.152-52.672-123.488-81.696-198.048-81.696s-144.896 29.024-198.08 81.696L206.528 512z" p-id="4453"></path></svg></i>';
 let videoListIcon = '<i class="art-icon art-icon-video-list"><svg t="1650551038453" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12028" width="20" height="20"><path d="M111.395066 179.64038l801.208844 0 0 87.866187-801.208844 0 0-87.866187Z" p-id="12029"></path><path d="M111.395066 468.067418l801.208844 0 0 87.866187-801.208844 0 0-87.866187Z" p-id="12030"></path><path d="M111.395066 756.493433l801.208844 0 0 87.866187-801.208844 0 0-87.866187Z" p-id="12031"></path></svg></i>';
 let subtitleIcon = '<i class="art-icon art-icon-subtitle"><svg xmlns="http://www.w3.org/2000/svg" height="22" width="22" viewBox="0 0 48 48">\n' +
 	'    <path d="M0 0h48v48H0z" fill="none"></path>\n' +
@@ -229,6 +231,7 @@ import Hls from 'hls.js';
 
 const autoPlayNextVideo = useStorage('zfile-video-auto-player-next', false);
 const autoPlayVideo = useStorage('zfile-video-auto-player', false);
+const hiddenTools = useStorage('zfile-video-hiddle-tools', false);
 
 let art = null;
 const initArtPlayer = async (name, url) => {
@@ -383,6 +386,14 @@ const initArtPlayer = async (name, url) => {
     ],
     controls: [
       {
+        position: 'right',
+        html: hiddenTools.value ? hiddenIcon : notHiddenIcon,
+        click: function (_, event) {
+          hiddenTools.value = !hiddenTools.value;
+          event.target.parentNode.parentNode.innerHTML = (hiddenTools.value ? hiddenIcon : notHiddenIcon);
+        },
+      },
+      {
         name: 'video-list',
         position: 'right',
         html: videoListIcon,
@@ -503,6 +514,14 @@ onMounted(() => {
 		height: initial;
 		width: initial;
 	}
+
+  :deep(.art-controls .art-control) {
+    min-height: 14px;
+    min-width: 14px;
+    .art-icon {
+      width: 28px;
+    }
+  }
 }
 
 .zfile-video-switch-tools {
