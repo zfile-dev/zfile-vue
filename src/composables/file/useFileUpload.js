@@ -425,7 +425,7 @@ export default function useFileUpload() {
 
         let param = {
             storageKey: storageKey.value,
-            path: removeDuplicateSlashes(uploadToPath),
+            path: common.removeDuplicateSeparator(uploadToPath),
             name: file.name,
             size: file.size
         }
