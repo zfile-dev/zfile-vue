@@ -1,6 +1,7 @@
 // 你自定义的 css
 import './styles/main.css'
 import './styles/tailwind/index.scss'
+import 'babel-polyfill'
 
 import App from './App.vue'
 import axios from "axios";

@@ -8,6 +8,10 @@ export default defineConfig({
 			'~/': `${resolve(__dirname, 'src')}/`,
 		},
 	},
+	build: {
+		target: ['es2015'],
+		cssTarget: ['es2015']
+	},
 	define: {
 		'process.env': {}
 	},

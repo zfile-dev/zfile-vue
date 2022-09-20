@@ -2,8 +2,8 @@
 	"compilerOptions": {
 		"strict": true,
 		"jsx": "preserve",
-		"target": "esnext",
-		"module": "esnext",
+		"target": "es2015",
+		"module": "es2015",
 		"sourceMap": true,
 		"skipLibCheck": true,
 		"isolatedModules": true,
