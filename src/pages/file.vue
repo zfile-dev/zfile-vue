@@ -42,7 +42,7 @@
           </div>
         </template>
 
-        <el-table-column width="45px" type="selection" :selectable="checkSelectable">
+        <el-table-column width="30px" type="selection" :selectable="checkSelectable">
         </el-table-column>
 
         <el-table-column
