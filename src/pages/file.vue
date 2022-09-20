@@ -285,10 +285,12 @@
 
       <!-- 弹窗文档 -->
       <el-dialog draggable
-                 custom-class="zfile-readme-dialog"
+                 @close="readmeDialogClose"
+                 custom-class="zfile-readme-dialog zfile-dialog-mini-close zfile-dialog-hidden-title"
                  v-if="storageConfigStore.globalConfig.showDocument
                  && storageConfigStore.folderConfig.readmeText
-                 && storageConfigStore.folderConfig.readmeDisplayMode === 'dialog'" :model-value="true">
+                 && storageConfigStore.folderConfig.readmeDisplayMode === 'dialog'
+                 && showDialog(storageConfigStore.folderConfig.readmeText)" :model-value="true">
         <v-md-preview :text="storageConfigStore.folderConfig.readmeText"></v-md-preview>
       </el-dialog>
 
@@ -528,6 +530,37 @@ const { openUploadDialog, openUploadFolderDialog } = useFileUpload();
 const reload = () => {
   window.location.reload()
 }
+
+import md5 from "md5";
+let { storageKey, currentPath } = useRouterData();
+
+const readmeDialogCache = useStorage(`zfile-readme-dialog-cache`, {});
+
+const readmeDialogClose = () => {
+  ElMessageBox.confirm('在公告变更前是否不再显示此公告?', '提示', {
+    confirmButtonText: '是',
+    cancelButtonText: '否',
+    draggable: true,
+    callback: action => {
+      if (action === 'confirm') {
+        let key = (storageKey.value + "_" + currentPath.value);
+        readmeDialogCache.value[key] = md5(storageConfigStore.folderConfig.readmeText);
+      }
+    }
+  });
+}
+
+const showDialog = (readmeText) => {
+  for (let key of Object.keys(readmeDialogCache.value)) {
+    if (key === (storageKey.value + "_" + currentPath.value)
+        && readmeDialogCache.value[key] === md5(readmeText)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 </script>
 
 <style lang="scss" scoped>
