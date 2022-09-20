@@ -12,12 +12,12 @@ let { routerRef, fullpath, storageKey } = useRouterData();
 let storageList = ref([]);
 let currentStorageKey = ref();
 
-
 let initialized = false;
 
 export default function useHeaderStorageList() {
 
     let rootShowStorage = storageConfigStore.globalConfig.rootShowStorage;
+
 
     // 加载存储源列表
     let loadStorageSourceList = () => {

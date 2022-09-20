@@ -249,8 +249,8 @@ export default function useFileOperator() {
             draggable: true,
             callback: action => {
                 if (action === 'confirm') {
-            let param = {
-                storageKey: storageKey.value,
+                    let param = {
+                        storageKey: storageKey.value,
                         deleteItems: []
                     };
 
@@ -266,7 +266,7 @@ export default function useFileOperator() {
 
                     batchDeleteReq(param).then((res) => {
                         ElMessage.success(res.msg);
-        loadFile();
+                        loadFile();
                     }).finally(() => {
                         loadingInstance.close();
                     });

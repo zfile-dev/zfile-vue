@@ -171,7 +171,7 @@
         </el-option>
       </el-select>
 
-			<!-- s3 存储器列表 -->
+      <!-- s3 存储器列表 -->
 			<el-select
         filterable
 				v-else-if="item.key === 'bucketName' && bucketList?.length > 0"
@@ -182,7 +182,9 @@
 					<span class="float-left">
 						{{ option.name }}
 					</span>
-					<span class="float-right">{{ option.date }}</span>
+					<span class="float-right">
+            {{ option.date }}
+          </span>
 				</el-option>
 			</el-select>
 
@@ -212,18 +214,18 @@
 				<div v-if="item.link">
           <span v-if="item.key === 'accessToken'">
             <el-link target="_blank" :icon="Link"
-                   :href="item.link + '?clientId=' + encodeURIComponent(storageItem.storageSourceAllParam['clientId'])
-                                    + '&clientSecret=' + encodeURIComponent(storageItem.storageSourceAllParam['clientSecret'])
-                                    + '&redirectUri=' + encodeURIComponent(storageItem.storageSourceAllParam['redirectUri'])">
+                     :href="item.link + '?clientId=' + encodeURIComponent(storageItem.storageSourceAllParam['clientId'])
+                          + '&clientSecret=' + encodeURIComponent(storageItem.storageSourceAllParam['clientSecret'])
+                          + '&redirectUri=' + encodeURIComponent(storageItem.storageSourceAllParam['redirectUri'])">
             {{ item.linkName }}
-          </el-link>
+            </el-link>
             <svg-icon @click="copyText(item.link + '?clientId=' + encodeURIComponent(storageItem.storageSourceAllParam['clientId'])
                                     + '&clientSecret=' + encodeURIComponent(storageItem.storageSourceAllParam['clientSecret'])
                                     + '&redirectUri=' + encodeURIComponent(storageItem.storageSourceAllParam['redirectUri']))"
                       class="inline cursor-pointer ml-2 text-lg relative top-0.5" name="copy"></svg-icon>
           </span>
           <el-link v-else target="_blank" :icon="Link" :href="item.link">{{ item.linkName }}</el-link>
-				</div>
+        </div>
 
 				<!-- 通用描述信息 -->
 				<div v-if="item.description" v-html="item.description">
@@ -240,7 +242,7 @@
         <div v-if="item.key === 'redirectUri' && item.description && storageItem.type === 'google-drive'">
           如：{{ systemConfig.domain }}gd/callback
           <svg-icon @click="copyText(systemConfig.domain + 'gd/callback')" class="inline cursor-pointer ml-1" name="copy"></svg-icon>
-				</div>
+        </div>
 			</template>
 		</z-form-item>
 
@@ -383,7 +385,7 @@ let useInitData = () => {
     })
 
 
-		// 获取 url 参数中的存储源 id, 如果没 id, 表示是新增, 不初始化加载数据
+    // 获取 url 参数中的存储源 id, 如果没 id, 表示是新增, 不初始化加载数据
 		let storageId = route.params.storageId;
 		if (storageId) {
 			isEditMode.value = true;
@@ -430,8 +432,8 @@ let useInitData = () => {
 				},
 			}
 		],
-    type: [{required: true, message: '存储策略不能为空'}],
-    'storageSourceAllParam.domain': [
+		type: [{required: true, message: '存储策略不能为空'}],
+		'storageSourceAllParam.domain': [
       {
         type: 'url', message: '请输入正确的域名，需以 http:// 或 https:// 开头'
       },
@@ -473,7 +475,7 @@ let useS3Util = () => {
     if (!common.storageType.s3Type.includes(storageItem.value.type)) {
       return;
     }
-		if (val.accessKey && val.secretKey && val.endPoint) {
+    if (val.accessKey && val.secretKey && val.endPoint) {
 			loadSharePointSites(val);
 		}
 	})
@@ -608,8 +610,8 @@ let useLoadStorageSourceParamList = () => {
 					}
 					storageItem.value.storageSourceAllParam[storageSourceParam.key] = storageSourceParam.defaultValue;
 				} else if (storageSourceParam.key === 'redirectUri' && !storageItem.value.storageSourceAllParam[storageSourceParam.key]) {
-					storageItem.value.storageSourceAllParam[storageSourceParam.key] = storageSourceParam.defaultValue;
-				}
+          storageItem.value.storageSourceAllParam[storageSourceParam.key] = storageSourceParam.defaultValue;
+        }
 			}
 		})
 	}

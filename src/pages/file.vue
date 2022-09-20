@@ -492,25 +492,25 @@ let { checkSelectable, selectRowsChange, selectRow, selectRows, selectStatistics
 
 // 初始化时，加载文件列表
 onBeforeMount(() => {
-  loadFileAndConfig();
+	loadFileAndConfig();
 })
 
 const loadFileAndConfig = () => {
-  if (route.params.storageKey) {
-    loadFile();
-    loadFileConfig();
-  }
+	if (route.params.storageKey) {
+		loadFile();
+		loadFileConfig();
+	}
 }
 
 // 切换存储源或路径时，重新加载文件列表
 watch(() => [route.params.storageKey, route.params.fullpath], () => {
-  loadFileAndConfig();
+	loadFileAndConfig();
 })
 
 const {
-  openRow, sortChangeMethod,
-  basicLoading, skeletonLoading, skeletonData, loadFile,
-  loadFileConfig } = useFileData();
+	openRow, sortChangeMethod,
+	basicLoading, skeletonLoading, skeletonData, loadFile,
+	loadFileConfig } = useFileData();
 
 // 直链打开
 const { openLinkDialog, visible:linkVisible } = useFileLink();
@@ -524,7 +524,6 @@ const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = us
 // 文件上传相关
 import useFileUpload from "~/composables/file/useFileUpload";
 const { openUploadDialog, openUploadFolderDialog } = useFileUpload();
-
 
 const reload = () => {
   window.location.reload()

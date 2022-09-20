@@ -175,6 +175,7 @@ export default function useFileData() {
             // 获取文件类型
             let fileType = row.fileType;
 
+
             switch (fileType) {
                 case 'video': openVideo(); break;
                 case 'image': openImage(row); break;

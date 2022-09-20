@@ -41,8 +41,7 @@
 								<el-popover
 									placement="top"
 									:width="250"
-									trigger="hover"
-								>
+									trigger="hover">
 									<div>
                     <div class="text-sm font-medium">
                       <svg-icon name="check" class="inline text-green-500"/>
@@ -54,24 +53,22 @@
 										<el-tag type="success" v-show="storage?.refreshTokenInfo?.success">刷新令牌成功</el-tag>
 									</template>
 								</el-popover>
-								<el-popover
-									placement="top"
+                <el-popover
+                  placement="top"
                   :width="250"
-									trigger="hover"
-								>
-									<div>
+                  trigger="hover">
+                  <div>
                     <div class="text-sm font-medium">
                       <svg-icon name="error" class="inline text-red-500"/>
                       刷新令牌失败
                     </div>
                     <div class="text-xs text-gray-500">上次刷新时间: {{storage?.refreshTokenInfo?.lastRefreshTime}}</div>
                     <div class="text-xs text-red-500">失败信息: {{storage?.refreshTokenInfo?.msg}}</div>
-									</div>
-									<template #reference>
+                  </div>
+                  <template #reference>
 										<el-tag type="danger" v-show="storage?.refreshTokenInfo?.success === false">刷新令牌失败</el-tag>
-									</template>
-								</el-popover>
-
+                  </template>
+                </el-popover>
 							</dd>
 						</dl>
 					</div>
@@ -80,7 +77,7 @@
               <span class="hover:text-blue-500 relative -mr-px w-0 flex-1 inline-flex items-center justify-center py-2 text-sm text-gray-700 font-medium border border-transparent rounded-bl-lg hover:text-gray-500 ml-3">
                 <el-icon class="mr-2">
                   <Edit/>
-						      </el-icon>
+                </el-icon>
                 编辑
               </span>
             </div>
@@ -93,7 +90,7 @@
                       </el-icon>
                       <span>更多</span>
                     </span>
-						    </span>
+                </span>
               </div>
 
 							<template #dropdown>
@@ -112,14 +109,13 @@
 						</el-dropdown>
 					</div>
 				</li>
-						<li @click="addStorage" class="add-storage-btn cursor-pointer col-span-1 flex flex-col text-center bg-white rounded-lg border hover:shadow">
-							<div class="flex-1 flex flex-col p-8 mx-auto justify-center">
+        <li @click="addStorage" class="add-storage-btn cursor-pointer col-span-1 flex flex-col text-center bg-white rounded-lg border hover:shadow">
+          <div class="flex-1 flex flex-col p-8 mx-auto justify-center">
             <Plus class="h-20 text-gray-300" />
-							</div>
-						</li>
+          </div>
+        </li>
 			</ul>
 		</el-card>
-
 	</div>
 </template>
 

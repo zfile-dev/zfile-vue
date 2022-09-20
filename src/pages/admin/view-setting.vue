@@ -103,7 +103,7 @@
 			<el-input
 				type="textarea"
         :autosize="{ minRows: 3 }"
-				placeholder="请输入自定义 JS 内容"
+        placeholder="请输入自定义 JS 内容"
 				v-model="data.customJs">
 			</el-input>
 			<template #tips>

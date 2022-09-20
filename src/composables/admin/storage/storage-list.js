@@ -186,6 +186,5 @@ export default function useStorageList(router) {
         showFilterPage, showReadmePage, showPasswordPage,
         switchEnableStatus,
         cacheManageVisible, currentCacheManageId, switchCacheEnableStatus, switchCacheAutoRefreshStatus, cacheManage,
-
     }
 }
