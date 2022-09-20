@@ -485,7 +485,9 @@ export default function useFileUpload() {
             } else if (fileDataStore.currentStorageSource.type.key === 'upyun') {
                 upyunFileUpload(file, res.data, fileIndex);
             }
-        })
+        }).catch((err) => {
+            baseOnUploadError(fileIndex, err)
+        });
     }
 
     // 服务器代理上传
