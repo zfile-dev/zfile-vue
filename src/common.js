@@ -55,7 +55,7 @@ let common = {
     },
     fileSizeFilter: (row, column, bytes) => {
         if (row.type === "BACK") return '';
-        if (row.type === "FOLDER") return '-';
+        if (row.type === "FOLDER" && !row.size) return '-';
         if (bytes === 0) return '0 B';
         if (bytes === -1) return '未知';
         let k = 1024;
