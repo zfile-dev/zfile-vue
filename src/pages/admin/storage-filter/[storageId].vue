@@ -13,9 +13,8 @@
 		<template #form-sub-title>
 			<el-alert :closable="false" type="info">
 				<div class="rules-tips">Glob 表达式规则：</div>
-				<div class="rules-tips"><b>*</b>：单级路径通配符，如表达式 /*.jpg，可以匹配根路径下所有的 jpg 后缀的文件</div>
-				<div class="rules-tips"><b>**</b>：多级路径通配符，如表达式 **.jpg，可以匹配所有路径下的 jpg 后缀的文件</div>
-				<div class="rules-tips">注：<b>/a.png</b> 表示根路径下的 a.png。 <b>/a/b/c.png</b>，表示 /a/b/ 路径下的 c.png。 <b>a.png</b>，什么都不表示，因为未标注路径。</div>
+				<div class="rules-tips"><b>*</b>：单级路径通配符，如表达式 <span class="select-all code">/*.jpg</span> 可以匹配根路径下所有的 jpg 后缀的文件</div>
+				<div class="rules-tips"><b>**</b>：多级路径通配符，如表达式 <span class="select-all code">/**.jpg</span> 可以匹配所有路径下的 jpg 后缀的文件</div>
 				<div class="rules-tips-link">
 					<a target="_blank" class="link" href="http://www.ruanyifeng.com/blog/2018/09/bash-wildcards.html"><Collection class="inline mr-1"></Collection><span>参考文章 (Wikipedia)</span></a>
 					<a target="_blank" class="link" href="http://www.ruanyifeng.com/blog/2018/09/bash-wildcards.html"><Collection class="inline mr-1"></Collection>参考文章 (阮一峰)</a>

@@ -25,9 +25,9 @@
 		<template #form-sub-title>
 			<el-alert :closable="false" type="info">
 				<div class="rules-tips">Glob 表达式规则：</div>
-				<div class="rules-tips"><b>/</b>: 根目录, 如 /, 表示根路径下会加载此文档显示.</div>
-				<div class="rules-tips"><b>*</b>：单级路径通配符，如表达式 /*，表示根路径下的直接子文件夹会加载此文档显示.</div>
-				<div class="rules-tips"><b>**</b>：多级路径通配符，如表达式 /music/**，表示 /music 文件夹及以下所有文件夹都会加载此文档.</div>
+				<div class="rules-tips"><b>/</b>: 根目录, 如 <span class="code select-all">/</span> 表示根路径下会加载此文档显示.</div>
+        <div class="rules-tips"><b>*</b>：单级路径通配符，如表达式 <span class="code select-all">/*</span> 表示根路径下的直接子文件夹会加载此文档显示.</div>
+        <div class="rules-tips"><b>**</b>：多级路径通配符，如表达式 <span class="code select-all">/music/**</span> 表示 /music 文件夹及以下所有文件夹都会加载此文档.</div>
 				<div class="rules-tips">注：系统匹配到第一个符合的规则就会取文档进行显示，所以请调整好规则顺序，下方规则可进行拖拽排序。</div>
 				<div class="rules-tips-link">
 					<a target="_blank" class="link" href="http://www.ruanyifeng.com/blog/2018/09/bash-wildcards.html"><Collection class="inline mr-1"></Collection><span>参考文章 (Wikipedia)</span></a>
