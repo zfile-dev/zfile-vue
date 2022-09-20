@@ -14,7 +14,7 @@
 			<z-form-item label="直链地址前缀">
 				<el-input v-model="data.directLinkPrefix"></el-input>
 				<template #tips>
-					直链地址前缀, 如 http(s)://ip:port/${直链前缀}/path/filename
+					直链地址前缀, 如 http(s)://ip:port/<span class="text-red-400 font-bold">{{data.directLinkPrefix}}</span>/path/filename
 				</template>
 			</z-form-item>
 
