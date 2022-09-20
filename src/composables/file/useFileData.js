@@ -183,6 +183,7 @@ export default function useFileData() {
                 case 'audio': openAudio(row); break;
                 case 'office': openOffice(row); break;
                 case 'pdf': openPdf(row); break;
+                case 'three3d': open3d(row); break;
                 default: batchDownloadFile(row);
             }
 
