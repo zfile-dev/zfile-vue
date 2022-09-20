@@ -11,3 +11,24 @@
 .link {
   @apply text-blue-500 hover:text-blue-600
 }
+
+.code {
+  font-size: 90%;
+  margin: 0 2px;
+  border-radius: 3px;
+  word-break: break-word;
+  background-size: 20px 20px;
+  white-space: pre-wrap;
+  padding: 2px 5px;
+  color: #c0254e;
+  background-color: rgba(27,31,35,.05);
+}
+
+
+.hidden-important {
+  @apply hidden #{!important};
+}
+
+.badge-blue {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-500 text-white;
+}

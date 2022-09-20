@@ -231,7 +231,7 @@
       </el-dialog>
 
       <!-- 文本编辑器 -->
-      <el-dialog draggable custom-class="zfile-text-dialog" :destroy-on-close="true"
+      <el-dialog draggable custom-class="zfile-text-dialog zfile-dialog-mini-close" :destroy-on-close="true"
                  :title="fileDataStore.currentClickRow.name"
                  v-model="dialogTextVisible">
         <TextViewer :file-name="fileDataStore.currentClickRow.name"
@@ -388,10 +388,47 @@
 <script setup>
 import common from "~/common";
 
-import MarkdownViewerAsyncLoading from '~/components/file/preview/MarkdownViewerAsyncLoading.vue'
-import MarkdownViewerDialogAsyncLoading from '~/components/file/preview/MarkdownViewerDialogAsyncLoading.vue'
-import VideoPlayerAsyncLoading from '~/components/file/preview/VideoPlayerAsyncLoading.vue'
-import TextViewerAsyncLoading from '~/components/file/preview/TextViewerAsyncLoading.vue'
+import MarkdownViewerAsyncLoading from "~/components/file/preview/MarkdownViewerAsyncLoading.vue";
+import MarkdownViewerDialogAsyncLoading from "~/components/file/preview/MarkdownViewerDialogAsyncLoading.vue";
+import VideoPlayerAsyncLoading from "~/components/file/preview/VideoPlayerAsyncLoading.vue";
+import TextViewerAsyncLoading from "~/components/file/preview/TextViewerAsyncLoading.vue";
+import AudioPlayer from "~/components/file/preview/AudioPlayer.vue";
+import BackTop from "~/components/BackTop.vue";
+import SvgIcon from "~/components/SvgIcon.vue";
+import Link from "~/components/file/Link.vue";
+import ZUpload from "~/components/file/ZUpload.vue";
+
+import useFileDataStore from "~/stores/file-data";
+import useStorageConfigStore from "~/stores/storage-config";
+import useGlobalConfigStore from "~/stores/global-config";
+// element 弹窗消息提示相关
+// element table 表格加载动画
+import "~/assets/table-animation.less";
+// element 图标
+import { Calendar, Coin, Document, FolderOpened } from "@element-plus/icons-vue";
+
+// 右键菜单
+import { Contextmenu, ContextmenuDivider, ContextmenuItem } from "v-contextmenu";
+import useFileContextMenu from "~/composables/file/useFileContextMenu";
+
+// 文件类别数据相关
+import useFileData from "~/composables/file/useFileData";
+// 直链相关
+import useFileLink from "~/composables/file/useFileLink";
+// 表格相关基础操作
+import useTableOperator from "~/composables/file/useTableOperator";
+// 文件预览相关
+import useFilePreview from "~/composables/file/useFilePreview";
+// 文件操作相关
+import useFileOperator from "~/composables/file/useFileOperator";
+
+
+import useCommon from "~/composables/useCommon";
+import useFileSelect from "~/composables/file/useFileSelect";
+// 文件上传相关
+import useFileUpload from "~/composables/file/useFileUpload";
+import useRouterData from "~/composables/useRouterData";
+
 
 // markdown viewer 组件懒加载, 节约首屏打开时间
 const VMdPreview = defineAsyncComponent({
@@ -443,39 +480,8 @@ const Three3dPreview = defineAsyncComponent({
   loadingComponent: MarkdownViewerDialogAsyncLoading
 })
 
-import AudioPlayer from '~/components/file/preview/AudioPlayer.vue'
 const FileGallery = defineAsyncComponent(() => import("~/components/file/preview/FileGallery.vue"))
-import BackTop from '~/components/BackTop.vue'
-import SvgIcon from '~/components/SvgIcon.vue'
-import Link from '~/components/file/Link.vue'
-import ZUpload from "~/components/file/ZUpload.vue";
 
-import useFileDataStore from "~/stores/file-data";
-import useStorageConfigStore from "~/stores/storage-config";
-import useGlobalConfigStore from "~/stores/global-config";
-// element 弹窗消息提示相关
-// element table 表格加载动画
-import "~/assets/table-animation.less";
-// element 图标
-import {Calendar, Coin, CopyDocument, Document, FolderOpened} from '@element-plus/icons-vue';
-
-// 右键菜单
-import {Contextmenu, ContextmenuItem, ContextmenuDivider } from "v-contextmenu";
-import useFileContextMenu from "~/composables/file/useFileContextMenu";
-
-// 文件类别数据相关
-import useFileData from "~/composables/file/useFileData";
-// 直链相关
-import useFileLink from "~/composables/file/useFileLink";
-// 表格相关基础操作
-import useTableOperator from "~/composables/file/useTableOperator";
-// 文件预览相关
-import useFilePreview from '~/composables/file/useFilePreview';
-// 文件操作相关
-import useFileOperator from '~/composables/file/useFileOperator';
-
-
-import useCommon from "~/composables/useCommon";
 const { isNotMobile } = useCommon();
 
 let route = useRoute();
@@ -488,7 +494,6 @@ let globalConfigStore = useGlobalConfigStore();
 const currentInstance = getCurrentInstance();
 const { showFileMenu, contextMenuTargetFile } = useFileContextMenu(currentInstance);
 
-import useFileSelect from "~/composables/file/useFileSelect";
 let { checkSelectable, selectRowsChange, selectRow, selectRows, selectStatistics, tableRowClassName, clearSelection } = useFileSelect(currentInstance);
 
 
@@ -523,8 +528,6 @@ const { dialogVideoVisible, dialogTextVisible, dialogPdfVisible, dialogOfficeVis
 
 const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = useFileOperator();
 
-// 文件上传相关
-import useFileUpload from "~/composables/file/useFileUpload";
 const { openUploadDialog, openUploadFolderDialog } = useFileUpload();
 
 const reload = () => {
@@ -572,6 +575,33 @@ const showDialog = (readmeText) => {
 
 .zfile-index-body {
   @apply h-full md:px-4;
+
+  // 文件行选中效果
+  :deep(.select-row) {
+    background-color: var(--el-table-row-hover-bg-color);
+  }
+
+  // 空白页样式
+  :deep(.el-table__empty-block) {
+    @apply -mt-10 mb-10;
+  }
+  :deep(.el-table__empty-text) {
+    @apply w-full;
+  }
+  :deep(.empty-icon) {
+    display: initial;
+    @apply h-80 w-80;
+  }
+
+
+  // 公告显示样式
+  .zfile-index-announcement {
+    margin: 10px 0;
+
+    :deep(.github-markdown-body) {
+      padding: unset;
+    }
+  }
 }
 
 // 居中模式
@@ -597,20 +627,19 @@ const showDialog = (readmeText) => {
   }
 
 	/* 表头 -- icon 位置和大小 */
-  .el-table__header-wrapper .el-icon {
+	.el-table__header-wrapper .el-icon {
     @apply mr-4 top-0.5 text-sm;
-  }
+	}
 
-  /* 表身 -- 文件名列 icon 位置 */
-  .el-table__body-wrapper .zfile-table-col-name svg {
-    @apply relative -top-[1.5px] align-middle text-xl mr-1.5 inline;
-  }
+	/* 表身 -- 文件名列 icon 位置 */
+	.el-table__body-wrapper .zfile-table-col-name svg {
+		@apply relative -top-[1.5px] align-middle text-xl mr-1.5 inline;
+	}
 
 	/* 表身 -- 不支持文字选中 */
-  :deep(tr) {
+	:deep(tr) {
     @apply select-none;
-  }
-
+	}
 }
 
 // table default 模式样式
@@ -621,10 +650,10 @@ const showDialog = (readmeText) => {
     @apply text-base;
   }
 
-  /* 表身 -- 文件名列 icon 位置 */
-  .el-table__body-wrapper .zfile-table-col-name svg {
-    @apply text-2xl;
-  }
+	/* 表身 -- 文件名列 icon 位置 */
+	.el-table__body-wrapper .zfile-table-col-name svg {
+		@apply text-2xl;
+	}
 }
 
 // table large 模式样式
@@ -635,92 +664,32 @@ const showDialog = (readmeText) => {
     @apply text-xl;
   }
 
-  /* 表身 -- 文件名列 icon 位置 */
-  .el-table__body-wrapper .zfile-table-col-name svg {
-    @apply text-3xl;
-  }
+	/* 表身 -- 文件名列 icon 位置 */
+	.el-table__body-wrapper .zfile-table-col-name svg {
+		@apply text-3xl;
+	}
 }
 
 // dialog 相关
 .zfile-index-body {
 
-  // 空白页
-  :deep(.el-table__empty-block) {
-    @apply -mt-10 mb-10;
-  }
-  :deep(.el-table__empty-text) {
-    @apply w-full;
-  }
-  :deep(.empty-icon) {
-    display: initial;
-    @apply h-80 w-80;
+  // zfile dialog body 高度
+  .zfile-dialog-body_height {
+    @apply h-[80vh] sm:h-[85vh] overflow-auto;
   }
 
-	/* 所有弹窗 -- 标题居中, 高度减少, 最高 */
-  :deep(.el-dialog__header) {
-		@apply -mt-3 py-1 text-center ml-2;
-	}
-
-  // 弹窗标题最多一行
-  :deep(.el-dialog__title) {
-    @apply line-clamp-1;
-  }
-
-  /* 修正去除边框后关闭按钮错位的问题 */
-  :deep(.el-dialog__header .el-dialog__headerbtn) {
-    @apply -mt-3;
-  }
-
-	/* 去除 dialog 打开后滚动条 */
-  :deep(.el-overlay-dialog) {
-    @apply overflow-hidden;
-  }
-
-  // dialog 距离顶部的高度
-  :deep(.el-dialog) {
-    @apply mt-6 sm:mt-8 #{!important};
-  }
-
-  // 视频弹窗样式
-    :deep(.zfile-video-dialog) {
+  // zfile dialog 宽度大屏
+  .zfile-dialog-wide-screen {
     @apply w-11/12;
-    .el-dialog__body {
-      @apply p-0 sm:pt-2;
-    }
-    }
-
-  // 文本弹窗
-  :deep(.zfile-text-dialog) {
-    @apply w-11/12;
-    .el-dialog__body {
-      @apply py-4 px-1;
-    }
   }
 
-  // pdf 弹窗
-  :deep(.zfile-pdf-dialog) {
-    .el-dialog__body {
-      @apply h-[80vh] sm:h-[85vh] overflow-auto;
-    }
-  }
-
-  // office 弹窗
-  :deep(.zfile-office-dialog) {
-     @apply w-11/12;
-    .el-dialog__body {
-      @apply h-[80vh] sm:h-[85vh] overflow-auto p-0;
-    }
-    .el-dialog__header {
-      @apply p-0;
-    }
+  // 迷你关闭模式
+  :deep(.zfile-dialog-mini-close) {
     .el-dialog__header .el-icon {
       @apply text-white;
     }
-    .el-dialog__title {
-      @apply hidden;
-    }
     .el-dialog__headerbtn {
-      @apply mt-0 -right-3 -top-3 h-5 w-5
+      @apply mt-0 -right-3 -top-0.5 h-5 w-5
       bg-gray-600 hover:bg-blue-500
       rounded-full box-content border-2 border-solid border-white;
 
@@ -730,60 +699,115 @@ const showDialog = (readmeText) => {
     }
   }
 
+  // 隐藏标题模式
+  :deep(.zfile-dialog-hidden-title) {
+    .el-dialog__header {
+      @apply p-0;
+    }
+    .el-dialog__title {
+      @apply hidden #{'!important'};
+    }
+  }
 
-  // 文件选中效果
-  :deep(.select-row) {
-    background-color: var(--el-table-row-hover-bg-color);
+  /* dialog 高度减少，标题居中 */
+	:deep(.el-dialog__header) {
+		@apply -mt-3 py-1 text-center ml-2;
+
+    /* 修正去除边框后关闭按钮错位的问题 */
+    .el-dialog__headerbtn {
+      @apply -mt-3.5;
+    }
+
+    // 弹窗标题最多一行
+    .el-dialog__title {
+      @apply line-clamp-1;
+    }
+  }
+
+	/* 去除 dialog 打开后默认滚动条 */
+	:deep(.el-overlay-dialog) {
+    @apply overflow-hidden;
+	}
+
+  // dialog 距离顶部的高度
+  :deep(.el-dialog) {
+    @apply mt-8 sm:mt-10 #{!important};
+  }
+
+  // 视频弹窗样式
+  :deep(.zfile-video-dialog) {
+    @extend .zfile-dialog-wide-screen;
+    .el-dialog__body {
+      @apply p-0; // 去除所有间距
+    }
+  }
+
+  // 文本弹窗
+  :deep(.zfile-text-dialog) {
+    @extend .zfile-dialog-wide-screen;
+    .el-dialog__body {
+      @apply py-4 px-1; // 左右间距和上下间距
+    }
+  }
+
+  // pdf 弹窗
+  :deep(.zfile-pdf-dialog) {
+    .el-dialog__body {
+      @extend .zfile-dialog-body_height;
+    }
+  }
+
+  // readme 弹窗
+  :deep(.zfile-readme-dialog) {
+    .el-dialog__body {
+      @extend .zfile-dialog-body_height;
+    }
+  }
+
+  // office 弹窗
+  :deep(.zfile-office-dialog) {
+    @extend .zfile-dialog-wide-screen;
+    .el-dialog__body {
+      @extend .zfile-dialog-body_height;
+      @apply p-0;
+    }
   }
 
 }
 
 // 右键菜单
 .v-contextmenu-item {
-  // 文字和图标的距离
-  :deep(label) {
+	// 文字和图标的距离
+	:deep(label) {
     @apply ml-2.5;
-  }
+	}
 
-  // 图标位置修正为居中
-  :deep(.contextmenu-icon) {
+	// 图标位置修正为居中
+	:deep(.contextmenu-icon) {
     @apply top-[1px] pt-[1px];
-  }
+	}
 }
-
-.zfile-index-body {
-  :deep(.v-md-editor-preview .github-markdown-body) {
-    padding: unset;
-  }
-}
-
-.zfile-index-announcement {
-  margin: 10px 0;
-}
-
 
 .zfile-index-body {
   // 工具条
-  .zfile-index-hover-tools {
-    @apply absolute z-10 bottom-0 sm:bottom-10 left-0 right-0 mx-auto w-fit;
+	.zfile-index-hover-tools {
+		@apply absolute z-10 bottom-0 sm:bottom-10 left-0 right-0 mx-auto w-fit;
 
-    .zfile-index-hover-body {
-      @apply bg-[#313136] w-fit px-5 h-12 py-2 text-white rounded mx-auto space-x-6 text-2xl;
+		.zfile-index-hover-body {
+			@apply bg-[#313136] w-fit px-5 h-12 py-2 text-white rounded mx-auto space-x-6 text-2xl;
 
-      svg {
-        @apply inline text-white cursor-pointer outline-none;
-        &:hover {
-          @apply text-blue-400;
-        }
-      }
-    }
-  }
+			svg {
+				@apply inline text-white cursor-pointer outline-none;
+				&:hover {
+					@apply text-blue-400;
+				}
+			}
+		}
+	}
 }
-
-
 </style>
 
 <route lang="yaml">
 meta:
-layout: file
+  layout: file
 </route>
