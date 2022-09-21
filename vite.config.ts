@@ -10,7 +10,7 @@ export default defineConfig({
 	},
 	build: {
 		target: ['es2015'],
-		cssTarget: ['es2015']
+		cssTarget: ['chrome49']
 	},
 	define: {
 		'process.env': {}

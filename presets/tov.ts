@@ -52,6 +52,7 @@ export default () => {
 		legacy({
 			targets: ['defaults', 'not IE 11', 'chrome 49'],  //需要兼容的目标列表，可以设置多个
 			additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+			modernPolyfills: ['es.global-this'],
 			renderLegacyChunks: true
 		}),
 		// 模块自动加载
