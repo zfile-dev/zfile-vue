@@ -31,7 +31,7 @@ let globalConfigStore = useGlobalConfigStore();
 
 // 引入文件预览组件
 import useFilePreview from '~/composables/file/useFilePreview';
-const { openAudio, openImage, openOffice, openPdf, openText, openVideo } = useFilePreview();
+const { openAudio, openImage, openOffice, openPdf, openText, openVideo, open3d } = useFilePreview();
 
 // 文件操作相关
 import useFileOperator from '~/composables/file/useFileOperator';
