@@ -50,7 +50,7 @@ import { AutoImportResolvers, normalizeResolvers } from './shared/resolvers'
 export default () => {
 	return [
 		legacy({
-			targets: ['defaults', 'not IE 11', 'chrome 49'],  //需要兼容的目标列表，可以设置多个
+			targets: ['defaults', 'not IE 11', 'chrome >= 49', 'firefox >= 1', 'edge > 1'],  //需要兼容的目标列表，可以设置多个
 			additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
 			modernPolyfills: ['es.global-this'],
 			renderLegacyChunks: true

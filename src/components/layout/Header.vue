@@ -6,8 +6,7 @@
 					<el-breadcrumb-item :to="rootPath">{{ '首页' }}</el-breadcrumb-item>
 					<el-breadcrumb-item v-for="item in breadcrumbData"
 					                    :to="{path: encodeAllIgnoreSlashes(item.fullPath)}"
-					                    :key="item.fullPath"
-					                    class="hidden-xs-only">
+					                    :key="item.fullPath">
 						{{ item.name }}
 					</el-breadcrumb-item>
 				</el-breadcrumb>
@@ -256,7 +255,10 @@ onMounted(() => {
 
 
 	.el-scrollbar {
-		@apply max-w-[40%] md:max-w-[50%] lg:max-w-[60%] xl:max-w-[70%];
+		@apply max-w-[70%] md:max-w-[45%] lg:max-w-[60%] xl:max-w-[70%];
+    :deep(.el-scrollbar__wrap) {
+      @apply overflow-hidden;
+    }
 		:deep(.el-scrollbar__bar.is-vertical) {
 			display: none !important;
 		}
@@ -298,30 +300,12 @@ onMounted(() => {
 
 }
 
-@media only screen and (max-width: 767px) {
-	.zfile-header {
-		:deep(.el-breadcrumb__separator) {
-			display: none !important;
-		}
-
-		:deep(.el-form-item__label) {
-			display: none !important;
-		}
-
-		:deep(.el-select) {
-			width: 120px;
-      @apply truncate text-sm font-medium text-gray-700;
-		}
-	}
-}
-
 .zfile-debug-tips {
 	:deep(.el-form-item__label) {
 		font-weight: bold;
 		color: red !important;
 	}
 }
-
 
 .zfile-header-storage-select {
   :deep(.el-input__wrapper) {
