@@ -216,17 +216,48 @@ if (storageConfigStore.globalConfig.customCss) {
     console.error('加载自定义 css 加载失败:', storageConfigStore.globalConfig.customCss, e);
   }
 }
+import {Parser} from 'htmlparser2';
+
+const loadScript = (script) => {
+  if (script) {
+    document.getElementsByTagName('head')[0].appendChild(script);
+    console.debug(`加载自定义 js, src:${script.src}, text:${script.text}`);
+  }
+}
 
 onMounted(() => {
   nextTick(()=>{
     if (storageConfigStore.globalConfig.customJs) {
+      let script = null;
       try {
-        let clearCustomJs = storageConfigStore.globalConfig.customJs.replace(/<script.*?>|<\/script>/ig, "");
-        console.log('加载自定义 js:', clearCustomJs);
-        let script = document.createElement("script");
-        script.type = "text/javascript";
-        script.text = clearCustomJs;
-        document.getElementsByTagName('head')[0].appendChild(script);
+        const parser = new Parser({
+          onopentag(name, attributes) {
+            loadScript(script);
+            if (name === "script") {
+              script = document.createElement("script");
+              for (let prop in attributes) {
+                script[prop] = attributes[prop];
+              }
+            }
+          },
+          ontext(text) {
+            if (!script) {
+              script = document.createElement("script");
+            }
+            script.text = text;
+          },
+          onclosetag(tagname) {
+            if (tagname === "script") {
+              loadScript(script);
+              script = null;
+            }
+          },
+          onend() {
+            loadScript(script);
+          }
+        });
+        parser.write(storageConfigStore.globalConfig.customJs);
+        parser.end();
       } catch (e) {
         console.log('加载自定义 js 失败: ', storageConfigStore.globalConfig.customJs, e);
       }
