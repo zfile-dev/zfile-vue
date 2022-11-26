@@ -1,8 +1,16 @@
 {
 	"name": "zfile",
-	"version": "4.1.2",
+	"version": "4.1.3",
 	"description": "ZFile 文件管理",
 	"author": "Zhao Jun",
+	"browserslist": [
+		"defaults",
+		"not ie <= 11",
+		"chrome >= 49",
+		"firefox >= 51",
+		"edge > 1",
+		"android > 1"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/zfile-dev/zfile-vue.git"
@@ -49,6 +57,7 @@
 		"flv.js": "^1.6.2",
 		"github-markdown-css": "^5.1.0",
 		"hls.js": "^1.1.5",
+		"htmlparser2": "^8.0.1",
 		"lazysizes": "^5.3.2",
 		"less": "^4.1.3",
 		"less-loader": "^10.2.0",
