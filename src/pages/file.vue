@@ -275,7 +275,7 @@
       <Link></Link>
 
       <!-- 上传框 -->
-      <ZUpload @close="loadFileAndConfig"></ZUpload>
+      <ZUpload @close="loadFile"></ZUpload>
 
       <!-- 音频播放器 -->
       <audio-player></audio-player>
@@ -499,19 +499,12 @@ let { checkSelectable, selectRowsChange, selectRow, selectRows, selectStatistics
 
 // 初始化时，加载文件列表
 onBeforeMount(() => {
-	loadFileAndConfig();
+	loadFile();
 })
-
-const loadFileAndConfig = () => {
-	if (route.params.storageKey) {
-		loadFile();
-		loadFileConfig();
-	}
-}
 
 // 切换存储源或路径时，重新加载文件列表
 watch(() => [route.params.storageKey, route.params.fullpath], () => {
-	loadFileAndConfig();
+  loadFile();
 })
 
 const {
