@@ -86,7 +86,7 @@ let formRules = ref({
 		{required: true, message: '请输入管理员密码', trigger: ['change', 'blur']},
 	],
 	domain: [
-		{required: true, type: 'url', message: '请输入正确的域名，需以 http:// 或 https:// 开头', trigger: 'change'},
+		{required: true, message: '请输入正确的域名，需以 http:// 或 https:// 开头', trigger: 'change'},
 	]
 });
 

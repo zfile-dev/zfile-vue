@@ -16,12 +16,12 @@
 
 		<z-form-item prop="domain" label="后端站点域名">
 			<el-input id="domain" :prefix-icon="Link" v-model="data.domain"/>
-			<template #tips>此地址用于生成直链及本次存储下载使用，请务必保持和服务端地址一样.</template>
-		</z-form-item>
+			<template #tips>此地址用于生成直链及本次存储下载使用，请务必保持和服务端地址一样 (需写 http(s):// 协议头)</template>
+    </z-form-item>
 
 		<z-form-item prop="frontDomain" label="前端站点域名">
 			<el-input :prefix-icon="Link" v-model="data.frontDomain"/>
-			<template #tips>前后端分离后，需配置此地址，会影响 401、403、404 页面的跳转.</template>
+			<template #tips>前后端分离后，需配置此地址，会影响 401、403、404 页面的跳转 (需写 http(s):// 协议头，未前后端分离请保持为空)</template>
 		</z-form-item>
 
 		<z-form-item prop="avatar" label="头像地址">
@@ -59,10 +59,8 @@ let dataRules = ref({
 	],
 	domain: [
 		{required: true, message: '请输入后端站点域名'},
-		{type: 'url', message: '请输入正确的域名'},
 	],
 	frontDomain: [
-		{type: 'url', message: '请输入正确的域名'},
 	],
 	avatar: [
 		{type: 'url', message: '请输入正确的头像地址，需以 http 或 https 开头'},
