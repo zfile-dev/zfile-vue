@@ -19,7 +19,7 @@ const back = () => router.push('/')
 <template>
 	<div class="flex flex-wrap h-screen text-center justify-around items-center">
 		<div class="font-blod desc">
-			<div class="text-7xl code">401</div>
+			<div class="text-7xl err-code">401</div>
 			<div ref="content" class="text-3xl content">您</div>
 			<button
 				active="scale-90 transform"
@@ -35,7 +35,7 @@ const back = () => router.push('/')
 </template>
 
 <style>
-.code {
+.err-code {
 	margin-bottom: 20px;
 }
 
