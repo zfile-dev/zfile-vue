@@ -127,6 +127,8 @@ export default function useFileData() {
             } else {
                 title.value = storageConfigStore.globalConfig.siteName + ' | 首页';
             }
+
+            loadFileConfig(param);
         }).catch((error) => {
             let data = error.response.data;
             // 如果需要密码或密码错误进行提示, 并弹出输入密码的框.
@@ -143,10 +145,12 @@ export default function useFileData() {
     }
 
     // 加载存储器设置
-    const loadFileConfig = () => {
+    const loadFileConfig = (loadFileParam) => {
+
         let param = {
             storageKey: storageKey.value,
-            path: currentPath.value
+            path: currentPath.value,
+            password: loadFileParam.password
         }
         loadStorageConfigReq(param).then((res) => {
             storageConfigStore.updateFolderConfig(res.data);
