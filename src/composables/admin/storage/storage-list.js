@@ -8,6 +8,9 @@ import {
 } from "~/api/admin-storage";
 import Sortable from "sortablejs";
 
+import useCommon from "~/composables/useCommon";
+const { isMobile } = useCommon();
+
 let cacheManageVisible = ref(false);
 let currentCacheManageId = ref();
 
@@ -128,6 +131,7 @@ export default function useStorageList(router) {
         Sortable.create(el, {
             draggable: '.storage-item',
             filter: '.add-storage-btn',
+            delay: isMobile.value ? 300 : 0,
             onEnd: e => {
                 if (e.oldIndex === e.newIndex) {
                     return;
