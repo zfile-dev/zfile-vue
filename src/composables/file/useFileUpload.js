@@ -110,57 +110,31 @@ export default function useFileUpload() {
                     return;
                 }
 
-                // 检测出上传文件中包含隐藏文件的索引
-                let hiddenFileIndexArray = [];
-
-                fileList.forEach((item, index) => {
-                    if (item.name === '.DS_Store') {
-                        hiddenFileIndexArray.push(index);
-                    }
-                })
-
                 const uploadFileAction = () => {
                     visible.value = true;
                     fileList.forEach((item) => {
                         beforeUpload({
-                            file: item
+                            file: item,
+                            uploadToPath: currentPath.value
                         });
                     })
                 }
 
-                if (hiddenFileIndexArray.length > 0) {
-                    ElMessageBox.confirm(`检测到有 ${hiddenFileIndexArray.length} 个 .DS_Store 文件，是否上传时跳过这些文件`, '提示', {
-                        confirmButtonText: '跳过这些文件',
-                        cancelButtonText: '依旧上传',
+                // 上传文件过多时，提示.
+                if (fileList.length > 100) {
+                    ElMessageBox.confirm(`文件数量为 ${fileList.length} 个，是否确认上传？`, '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
                         type: 'success',
                         callback: (action) => {
                             if (action === 'confirm') {
-                                for (let i = hiddenFileIndexArray.length - 1; i >= 0; i--) {
-                                    let index = hiddenFileIndexArray[i];
-                                    fileList.splice(index, 1);
-                                }
+                                uploadFileAction();
                             }
-                            uploadFileAction();
                         }
                     });
                 } else {
-                    // 上传文件过多时，提示.
-                    if (fileList.length > 100) {
-                        ElMessageBox.confirm(`文件数量为 ${fileList.length} 个，是否确认上传？`, '提示', {
-                            confirmButtonText: '确定',
-                            cancelButtonText: '取消',
-                            type: 'success',
-                            callback: (action) => {
-                                if (action === 'confirm') {
-                                    uploadFileAction();
-                                }
-                            }
-                        });
-                    } else {
-                        uploadFileAction();
-                    }
+                    uploadFileAction();
                 }
-
             })
         }
 
@@ -376,31 +350,18 @@ export default function useFileUpload() {
         })
     }
 
-    // 上传前的检查
+    /**
+     * 上传文件前的一些操作
+     * @param param
+     */
     const beforeUpload = (param) => {
-        let findResult = fileDataStore.fileList.find((value) => {
-            if (value.name === param.file.name) {
-                return value;
-            }
-        })
-
-        if (findResult) {
-            ElNotification({
-                zIndex: 9999,
-                title: '提示',
-                message: `当前目录已存在文件 ${findResult.name}, 跳过上传.`,
-                type: 'warning',
-            })
-            return;
-        }
-
-        uploadFile(param.file);
+        uploadFile(param.file, param.uploadToPath);
     }
 
     // 文件上传操作.
-    const uploadFile = (file) => {
+    const uploadFile = (file, uploadToPath) => {
         const fileIndex = uploadIndex++;
-        let uploadToPath = currentPath.value;
+        uploadToPath = uploadToPath || currentPath.value;
 
         // 如果包含 webkitRelativePath, 则表示是文件夹上传, 需要获取文件完整路径
         if (file.webkitRelativePath || file.dropUploadPath) {
@@ -436,6 +397,7 @@ export default function useFileUpload() {
             waitingFileList.push({
                 index: fileIndex,
                 file: file,
+                uploadToPath: uploadToPath,
             });
             return;
         }
@@ -528,7 +490,11 @@ export default function useFileUpload() {
         let end = 0;    // 结束字节数
         let fileSize = file.size;           // 文件大小
         const MAX_FILE_SIZE = 104857599;    // 每块大小 100M
-        let chunks = Math.ceil(fileSize / MAX_FILE_SIZE);  // 块的个数
+
+        if (fileSize === 0) {
+            baseOnUploadError(fileIndex, '当前存储类型不支持上传空文件');
+            return;
+        }
 
         // 分块上传
         const uploadBlock = () => {
@@ -571,7 +537,7 @@ export default function useFileUpload() {
                     start += MAX_FILE_SIZE;
                     index += 1;
                     uploadBlock();
-                } else if (response.status === 201) {
+                } else if (response.status === 201 || response.status === 200) {
                     // console.log('file upload full success.', start, end);
                     baseOnUploadFinish(fileIndex);
                 }
@@ -716,7 +682,8 @@ export default function useFileUpload() {
                     let spliceList = waitingFileList.splice(0, 1);
                     let fileItem = spliceList[0];
                     beforeUpload({
-                        file: fileItem.file
+                        file: fileItem.file,
+                        uploadToPath: fileItem.uploadToPath
                     });
                     console.log('开始从等待队列中获取上传文件: ', fileItem.file.name);
                 }
