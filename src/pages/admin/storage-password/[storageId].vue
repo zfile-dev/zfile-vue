@@ -33,7 +33,7 @@
 				<el-tooltip content="此处可填写表达书描述，用于辅助记忆，防止时间过长后不知道表达式含义." placement="top">
 					<el-input :prefix-icon="Notebook" placeholder="请输入表达式描述" v-model="item.description"></el-input>
 				</el-tooltip>
-				<el-input :prefix-icon="FolderIcon" placeholder="请输入表达式" v-model="item.expression"></el-input>
+				<el-input :prefix-icon="FolderIcon" placeholder="请输入表达式" v-model.trim="item.expression"></el-input>
 				<el-input :prefix-icon="KeyIcon" placeholder="请输入密码" type="password" show-password v-model="item.password"></el-input>
 				<el-button type="danger" @click="deletePasswordItem(index)" :icon="Delete"></el-button>
 			</div>

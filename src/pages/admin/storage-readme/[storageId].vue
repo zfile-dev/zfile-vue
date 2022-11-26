@@ -45,7 +45,7 @@
 				<el-tooltip content="此处可填写表达书描述，用于辅助记忆，防止时间过长后不知道表达式含义." placement="top">
 					<el-input :prefix-icon="Notebook" placeholder="请输入表达式描述" v-model="item.description"></el-input>
 				</el-tooltip>
-				<el-input :prefix-icon="FolderIcon" placeholder="请输入表达式" v-model="item.expression"></el-input>
+				<el-input :prefix-icon="FolderIcon" placeholder="请输入表达式" v-model.trim="item.expression"></el-input>
 				<el-input class="editor-input" @click="openReadmeEditor(item)" readonly :prefix-icon="Document" placeholder="请点击编辑文档" v-model="item.readmeText"></el-input>
 				<el-select class="editor-input" v-model="item.displayMode">
 					<el-option label="顶部显示" value="top"></el-option>

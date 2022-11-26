@@ -31,7 +31,7 @@
 				<el-tooltip content="此处可填写表达书描述，用于辅助记忆，防止时间过长后不知道表达式含义." placement="top">
 					<el-input :prefix-icon="Notebook" placeholder="请输入表达式描述" v-model="item.description"></el-input>
 				</el-tooltip>
-				<el-input :prefix-icon="FolderIcon" placeholder="请输入表达式" v-model="item.expression"></el-input>
+				<el-input :prefix-icon="FolderIcon" placeholder="请输入表达式" v-model.trim="item.expression"></el-input>
 				<el-select class="editor-input" v-model="item.mode">
 					<el-option label="仅隐藏" value="hidden"></el-option>
 					<el-option label="隐藏并不可访问(针对目录)" value="inaccessible"></el-option>
