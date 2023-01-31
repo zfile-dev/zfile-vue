@@ -112,12 +112,7 @@ export default function useFileUpload() {
 
                 const uploadFileAction = () => {
                     visible.value = true;
-                    fileList.forEach((item) => {
-                        beforeUpload({
-                            file: item,
-                            uploadToPath: currentPath.value
-                        });
-                    })
+                    fileList.forEach((file) => beforeUpload({ file }))
                 }
 
                 // 上传文件过多时，提示.
@@ -350,72 +345,71 @@ export default function useFileUpload() {
         })
     }
 
+    const filePath2UploadPath = (file) => {
+        let uploadToPath = currentPath.value
+        let pathStr = file.webkitRelativePath || file.dropUploadPath
+        if (!pathStr.startsWith('/')) {
+            pathStr = '/' + pathStr
+        }
+        let pathList = pathStr.split('/')
+        pathList.forEach((item, index) => {
+            let isFirstItem = 0 === index
+            let isLastItem = pathList.length - 1 === index
+            if (isFirstItem || isLastItem) return
+            if (item) {
+                uploadToPath += `/${item}`
+            }
+        })
+        return uploadToPath
+    }
+
     /**
      * 上传文件前的一些操作
      * @param param
      */
-    const beforeUpload = (param) => {
-        uploadFile(param.file, param.uploadToPath);
+    const beforeUpload = ({ file }) => {
+        let index = uploadIndex++
+        let uploadToPath = currentPath.value
+        // 如果包含 webkitRelativePath, 则表示是文件夹上传, 需要获取文件完整路径
+        if (file.webkitRelativePath || file.dropUploadPath) {
+            uploadToPath = filePath2UploadPath(file)
+        }
+        const fileInfo = {
+            index: index,
+            file: file,
+            uploadToPath: uploadToPath,
+        }
+        if (uploadProgressInfoStatistics.value.totalUploading >= maxFileUploads) {
+            waitingFileList.push(fileInfo)
+        } else {
+            uploadFile(fileInfo)
+        }
     }
 
     // 文件上传操作.
-    const uploadFile = (file, uploadToPath) => {
-        const fileIndex = uploadIndex++;
-        uploadToPath = uploadToPath || currentPath.value;
-
-        // 如果包含 webkitRelativePath, 则表示是文件夹上传, 需要获取文件完整路径
-        if (file.webkitRelativePath || file.dropUploadPath) {
-            let pathStr = file.webkitRelativePath || file.dropUploadPath;
-            if (!pathStr.startsWith('/')) {
-                pathStr = '/' + pathStr;
-            }
-            let pathList = pathStr.split('/');
-            pathList.forEach((item, index) => {
-                let isFirstItem = 0 === index;
-                let isLastItem = pathList.length - 1 === index;
-
-                if (isFirstItem || isLastItem) {
-                    return;
-                }
-
-                if (item) {
-                    uploadToPath += ('/' + item);
-                }
-            })
-        }
-
-        let param = {
-            storageKey: storageKey.value,
-            path: common.removeDuplicateSeparator(uploadToPath),
-            name: file.name,
-            size: file.size
-        }
-
-        console.log('当前上传信息:', param, ', 当前同时上传文件数:',uploadProgressInfoStatistics.value.totalUploading, '限制同时上传文件数:', maxFileUploads);
-        if (uploadProgressInfoStatistics.value.totalUploading >= maxFileUploads) {
-            console.log(`上传文件数超出 ${maxFileUploads}, 等待上传`);
-            waitingFileList.push({
-                index: fileIndex,
-                file: file,
-                uploadToPath: uploadToPath,
-            });
-            return;
-        }
-
+    const uploadFile = (uploadInfo) => {
+        const { index: fileIndex, file, uploadToPath } = uploadInfo
         let uploadFileInfo = {
-            name: file.name,
-            size: file.size,
-            speed: '-',
-            progress: 0,
-            loaded: 0,
-            status: 'uploading',
-            startTime: Date.now(),
-            file: file,
-            index: fileIndex
+          name: file.name,
+          size: file.size,
+          speed: '-',
+          progress: 0,
+          loaded: 0,
+          status: 'uploading',
+          startTime: Date.now(),
+          file,
+          index: fileIndex,
         }
-        uploadingFileList.push(uploadFileInfo);
-        cancelTokenSourceMap.set(fileIndex, axios.CancelToken.source());
-        uploadingFileMap.set(fileIndex, uploadingFileList[uploadingFileList.length - 1]);
+        uploadingFileList.push(uploadFileInfo)
+        cancelTokenSourceMap.set(fileIndex, axios.CancelToken.source())
+        uploadingFileMap.set(fileIndex, uploadingFileList[uploadingFileList.length - 1])
+    
+        const param = {
+          storageKey: storageKey.value,
+          path: common.removeDuplicateSeparator(uploadToPath),
+          name: file.name,
+          size: file.size,
+        }
 
         uploadFileReq(param).then((res) => {
             const { on } = useEventBus(`cancel-upload-${fileIndex}`);
@@ -679,12 +673,8 @@ export default function useFileUpload() {
                 if (waitingFileList.length === 0) {
                     console.log('等待上传的文件数为 0, 无需继续上传.');
                 } else {
-                    let spliceList = waitingFileList.splice(0, 1);
-                    let fileItem = spliceList[0];
-                    beforeUpload({
-                        file: fileItem.file,
-                        uploadToPath: fileItem.uploadToPath
-                    });
+                    const fileItem = waitingFileList.shift();
+                    uploadFile(fileItem)
                     console.log('开始从等待队列中获取上传文件: ', fileItem.file.name);
                 }
             }
