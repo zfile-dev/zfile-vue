@@ -114,8 +114,7 @@ export default function useFileUpload() {
                     visible.value = true;
                     fileList.forEach((item) => {
                         beforeUpload({
-                            file: item,
-                            uploadToPath: currentPath.value
+                            file: item
                         });
                     })
                 }
@@ -355,13 +354,16 @@ export default function useFileUpload() {
      * @param param
      */
     const beforeUpload = (param) => {
-        uploadFile(param.file, param.uploadToPath);
+        uploadFile(param.file, param.uploadBasePath);
     }
 
     // 文件上传操作.
-    const uploadFile = (file, uploadToPath) => {
+    const uploadFile = (file, uploadBasePath) => {
         const fileIndex = uploadIndex++;
-        uploadToPath = uploadToPath || currentPath.value;
+
+        uploadBasePath = uploadBasePath || currentPath.value;
+
+        let uploadToPath = uploadBasePath;
 
         // 如果包含 webkitRelativePath, 则表示是文件夹上传, 需要获取文件完整路径
         if (file.webkitRelativePath || file.dropUploadPath) {
@@ -397,7 +399,7 @@ export default function useFileUpload() {
             waitingFileList.push({
                 index: fileIndex,
                 file: file,
-                uploadToPath: uploadToPath,
+                uploadBasePath: uploadBasePath,
             });
             return;
         }
@@ -683,7 +685,7 @@ export default function useFileUpload() {
                     let fileItem = spliceList[0];
                     beforeUpload({
                         file: fileItem.file,
-                        uploadToPath: fileItem.uploadToPath
+                        uploadBasePath: fileItem.uploadBasePath
                     });
                     console.log('开始从等待队列中获取上传文件: ', fileItem.file.name);
                 }
