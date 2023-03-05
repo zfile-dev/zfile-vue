@@ -140,7 +140,7 @@
 
 
       <!-- 视频播放器 -->
-      <el-dialog draggable custom-class="zfile-video-dialog" :destroy-on-close="true"
+      <el-dialog draggable class="zfile-video-dialog" :destroy-on-close="true"
                  v-model="dialogVideoVisible">
         <video-player v-if="dialogVideoVisible" ref="videoPlayer"/>
       </el-dialog>
