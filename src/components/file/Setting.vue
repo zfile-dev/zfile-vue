@@ -3,7 +3,7 @@
 		<el-drawer
 			v-model="visible"
 			title="个人设置"
-			custom-class="text-left"
+			class="text-left"
 			:with-header="false"
 			direction="rtl">
 			<div class="zfile-index-setting-drawer-body">

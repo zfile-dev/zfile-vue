@@ -3,7 +3,7 @@
 		<el-dialog v-model="visible" :destroy-on-close="true"
 		           @close="visible = false"
 		           title="生成直链"
-		           :custom-class="selectFiles.length > 1 ? 'zfile-file-download-link-dialog-multiple' : 'zfile-file-download-link-dialog-single'"
+               :class="{'zfile-file-download-link-dialog-multiple': selectFiles.length > 1, 'zfile-file-download-link-dialog-single': selectFiles.length <= 1}"
 		           draggable
 		           top="5vh">
 

@@ -106,7 +106,7 @@
 
 		<el-dialog v-model="settingVisible" :destroy-on-close="true"
 		           title="直链设置"
-		           custom-class="zfile-admin-down-link-dialog"
+		           class="zfile-admin-down-link-dialog"
 		           draggable
 		           top="5vh"
 		           width="80%">

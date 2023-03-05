@@ -3,7 +3,6 @@
 		<el-dialog v-if="visible" v-model="visible" :destroy-on-close="true"
 		           @close="closeDialog"
 		           :title="uploadMode === 'file' ? '上传文件' : '上传文件夹'"
-		           custom-class="zfile-file-upload-dialog"
 		           draggable
 		           top="5vh"
 		           width="70%">

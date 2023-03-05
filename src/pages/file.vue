@@ -231,7 +231,7 @@
       </el-dialog>
 
       <!-- 文本编辑器 -->
-      <el-dialog draggable custom-class="zfile-text-dialog zfile-dialog-mini-close" :destroy-on-close="true"
+      <el-dialog draggable class="zfile-text-dialog zfile-dialog-mini-close" :destroy-on-close="true"
                  :title="fileDataStore.currentClickRow.name"
                  v-model="dialogTextVisible">
         <TextViewer :file-name="fileDataStore.currentClickRow.name"
@@ -243,16 +243,16 @@
       </el-dialog>
 
       <!-- pdf 在线预览 -->
-      <el-dialog draggable custom-class="zfile-pdf-dialog"
+      <el-dialog draggable class="zfile-pdf-dialog"
                  :title="fileDataStore.currentClickRow.name"
                  v-model="dialogPdfVisible">
         <PdfViewer :file-name="fileDataStore.currentClickRow.name"
-                   :file-url="fileDataStore.currentClickRow.url"
-                   v-if="dialogPdfVisible"/>
+                    :file-url="fileDataStore.currentClickRow.url"
+                    v-if="dialogPdfVisible"/>
       </el-dialog>
 
       <!-- office 在线预览 -->
-      <el-dialog draggable custom-class="zfile-office-dialog"
+      <el-dialog draggable class="zfile-office-dialog zfile-dialog-mini-close zfile-dialog-hidden-title"
                  :title="fileDataStore.currentClickRow.name"
                  v-model="dialogOfficeVisible">
         <OfficeViewer
@@ -262,7 +262,7 @@
       </el-dialog>
 
       <!-- 3d 在线预览 -->
-      <el-dialog draggable custom-class="zfile-3d-dialog"
+      <el-dialog draggable class="zfile-3d-dialog"
                  :title="fileDataStore.currentClickRow.name"
                  v-model="dialog3dVisible">
         <Three3dPreview
@@ -286,7 +286,7 @@
       <!-- 弹窗文档 -->
       <el-dialog draggable
                  @close="readmeDialogClose"
-                 custom-class="zfile-readme-dialog zfile-dialog-mini-close zfile-dialog-hidden-title"
+                 class="zfile-readme-dialog zfile-dialog-mini-close zfile-dialog-hidden-title"
                  v-if="storageConfigStore.globalConfig.showDocument
                  && storageConfigStore.folderConfig.readmeText
                  && storageConfigStore.folderConfig.readmeDisplayMode === 'dialog'
