@@ -276,19 +276,6 @@ const initArtPlayer = async (name, url) => {
     h5aiDplayerMode = true;
   }
 
-  if (videoType === 'm3u8') {
-    // 取 __{video_name}__/video.m3u8 直链地址
-
-    let m3u8Link = common.removeDuplicateSeparator(storageConfigStore.globalConfig.domain + "/" +
-      storageConfigStore.globalConfig.directLinkPrefix + "/" +
-      storageKey.value + "/" +
-      (h5aiDplayerMode ? m3u8PathAndName : originPathAndName));
-
-    currentVideo.value.url = m3u8Link;
-    console.log('检测到当前播放的文件为 m3u8, 为了正常加载 ts 文件, 替换 m3u8 为直链: ' + m3u8Link);
-  }
-
-
   let options = {
     container: '.artplayer-app',
     title: name,
@@ -331,7 +318,21 @@ const initArtPlayer = async (name, url) => {
       },
       m3u8: function(video, url) {
         if (Hls.isSupported()) {
-          const hls = new Hls();
+          const hls = new Hls({
+            xhrSetup: (xhr, hlsUrl) => {
+              // 根据 URL 获取文件名
+              let fileName = hlsUrl.substring(hlsUrl.lastIndexOf('/') + 1);
+              // 如果不是当前的视频 URL, 那就是切片的 URL.
+              if (hlsUrl !== url) {
+                let realUrl = fileDataStore.getFileUrlByName(fileName);
+                if (realUrl) {
+                  xhr.open('GET', realUrl, true);
+                } else {
+                  xhr.open('GET', hlsUrl, true);
+                }
+              }
+            }
+          });
           hls.loadSource(url);
           hls.attachMedia(video);
         } else {
