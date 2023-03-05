@@ -12,7 +12,9 @@ let fileDataStore = useFileDataStore();
 const contextMenuTargetFile = ref(false);
 const contextMenuTargetBlank = ref(false);
 
-export default function useFileContextMenu(currentInstance) {
+let contextmenuRef;
+
+export default function useFileContextMenu() {
 
     const showFileMenu = (row, column, event) => {
         if (!storageKey.value) {
@@ -60,8 +62,11 @@ export default function useFileContextMenu(currentInstance) {
         contextmenuRef.$el.hidden = false;
     }
 
+    const initContextMenu = (ref) => {
+        contextmenuRef = ref.value;
+    }
 
     return {
-        showFileMenu, contextMenuTargetFile, contextMenuTargetBlank
+        initContextMenu, showFileMenu, contextMenuTargetFile, contextMenuTargetBlank
     }
 }
