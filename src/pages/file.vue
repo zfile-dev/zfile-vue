@@ -126,6 +126,10 @@
             </div>
           </template>
         </el-table-column>
+
+        <template #append>
+            <load-more-file></load-more-file>
+        </template>
       </el-table>
 
       <!-- 画廊模式 -->
