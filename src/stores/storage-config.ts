@@ -29,7 +29,15 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
         layout: 'full',
         showAnnouncement: false,
         searchEnable: false,
-        showLogin: false
+        showLogin: false,
+        siteHomeName: '首页',
+        siteHomeLogo: '',
+        siteHomeLogoLink: '',
+        siteHomeLogoTargetMode: '',
+        maxShowSize: 1000,
+        loadMoreSize: 50,
+        defaultSortField: 'name',
+        defaultSortOrder: 'asc',
       },
       folderConfig: {
         readmeText: null,
