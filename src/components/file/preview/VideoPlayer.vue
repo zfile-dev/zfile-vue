@@ -228,7 +228,8 @@ let subtitleIcon = '<i class="art-icon art-icon-subtitle"><svg xmlns="http://www
 let nextVideoIcon = '<i class="art-icon art-icon-next-video"><svg height="25" width="25"  viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path></svg></i>';
 let prevVideoIcon = '<i class="art-icon art-icon-prev-video" style="transform: scale(-1,1);"><svg height="25" width="25"  viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path></svg></i>';
 
-import flvjs from 'flv.js';
+import Mpegts from "mpegts.js";
+
 import Hls from 'hls.js';
 
 const autoPlayNextVideo = useStorage('zfile-video-auto-player-next', false);
@@ -317,8 +318,8 @@ const initArtPlayer = async (name, url) => {
     },
     customType: {
       flv: function(video, url) {
-        if (flvjs.isSupported()) {
-          const flvPlayer = flvjs.createPlayer({
+        if (Mpegts.isSupported()) {
+          const flvPlayer = Mpegts.createPlayer({
             type: 'flv',
             url: url,
           });
