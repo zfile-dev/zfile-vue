@@ -6,30 +6,32 @@
       <el-button :disabled="!getPrevAndNextVideo(currentVideo.name).next" :icon="IconNext" @click="playNextVideo">下一个视频</el-button>
     </div>
 		<div class="zfile-video-tools" :class="hiddenTools ? 'hidden-important' : ''">
-			<div class="zfile-video-tools-item" @click="openTarget('download')">
-				<el-tooltip placement="top">
-					<template #content>
-						直接下载
-					</template>
-					<img src="../../../assets/image/video-download.png" alt="下载">
-				</el-tooltip>
-			</div>
-			<div class="zfile-video-tools-item" @click="openTarget('thunder')">
-				<el-tooltip placement="top">
-					<template #content>
-						使用迅雷下载
-					</template>
-					<img src="../../../assets/image/video-thunder.png" alt="迅雷">
-				</el-tooltip>
-			</div>
-			<div class="zfile-video-tools-item" @click="openTarget('motrix')">
-				<el-tooltip placement="top">
-					<template #content>
-						使用 motrix 下载
-					</template>
-					<img src="../../../assets/image/video-motrix.png" alt="motrix">
-				</el-tooltip>
-			</div>
+			<template v-if="storageConfigStore.permission.download">
+        <div class="zfile-video-tools-item" @click="openTarget('download')">
+          <el-tooltip placement="top">
+            <template #content>
+              直接下载
+            </template>
+            <img src="../../../assets/image/video-download.png" alt="下载">
+          </el-tooltip>
+        </div>
+        <div class="zfile-video-tools-item" @click="openTarget('thunder')">
+          <el-tooltip placement="top">
+            <template #content>
+              使用迅雷下载
+            </template>
+            <img src="../../../assets/image/video-thunder.png" alt="迅雷">
+          </el-tooltip>
+        </div>
+        <div class="zfile-video-tools-item" @click="openTarget('motrix')">
+          <el-tooltip placement="top">
+            <template #content>
+              使用 motrix 下载
+            </template>
+            <img src="../../../assets/image/video-motrix.png" alt="motrix">
+          </el-tooltip>
+        </div>
+      </template>
 			<div class="zfile-video-tools-item" @click="openTarget('potplayer')">
 				<el-tooltip placement="top">
 					<template #content>
