@@ -97,3 +97,14 @@ export const downloadLogReq = () => {
         }
     })
 }
+
+export const getClientIpReq = () => {
+    return axios({
+        url: "/admin/clientIp",
+        method: "get",
+        config: {
+            showDefaultMsg: false,
+            responseIntercept: false
+        }
+    })
+}

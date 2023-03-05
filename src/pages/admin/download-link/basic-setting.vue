@@ -79,9 +79,25 @@
 					每行输入一个域名，支持 * 通配符，如白名单 *zfile.vip 将只允许 zfile.vip、www.zfile.vip、demo.zfile.vip 等网站访问。
 				</template>
 				<template #tips v-if="data.refererType === 'black_list'">
-					每行输入一个域名，支持 * 通配符，如黑名单 *zfile.vip 将禁止所有如 zfile.vip、www.zfile.vip、demo.zfile.vip 等网站访问。
+					每行输入一个域名，需要写协议头，支持 * 通配符，如黑名单 http://*zfile.vip 将禁止所有如 http://zfile.vip、http://www.zfile.vip、http://demo.zfile.vip 等网站访问。
 				</template>
 			</z-form-item>
+
+      <!--设置直链防止恶意下载，单 IP N 秒内只允许访问 M 次直链-->
+      <z-form-item label="直链下载限制">
+        <span>单 IP</span>
+        <el-input-number v-model="data.linkLimitSecond" :min="0" :max="86400" :step="1" size="small" class="mx-2"/>
+        <span>秒内允许下载</span>
+        <el-input-number v-model="data.linkDownloadLimit" :min="0" :max="9999999" :step="1" size="small" class="mx-2" />
+        <span>次</span>
+        <template #tips>
+          <span>设置直链防止恶意下载，单 IP N 秒内只允许访问 M 次直链，如其中一个为 0 则不做任何限制.</span>
+          <br><br>
+          <span>注意：此功能对直链、短链都有效，且共享限制次数。但直链/短链跳转后的实际下载链接无法限制，因为那些链接不经过 ZFile.</span>
+          <br><br>
+          <span>注意：如果你使用了反向代理，而不是直接访问的 ZFile 端口, 那你需要在反向代理处设置以下请求头为用户真实 IP："X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"，不然不论谁访问 ZFile 都只能获取到反代服务器的 IP，同服务器一般是获取到 127.0.0.1 或 localhost, 这样此功能就无法正常使用!!!  (辅助信息: 系统获取到您当前 IP 为 <span class="text-blue-400">{{clientIp}}</span>)</span>
+        </template>
+      </z-form-item>
 
 			<template #footer>
 				<span class="dialog-footer">
@@ -96,4 +112,13 @@
 <script setup>
 import useLinkSetting from "~/composables/admin/link/useLinkSetting";
 const { data, saveData, saveLoading } = useLinkSetting();
+
+
+const clientIp = ref('');
+
+import { getClientIpReq } from "~/api/admin-setting";
+getClientIpReq().then(res => {
+  clientIp.value = res.data.data;
+})
+
 </script>
