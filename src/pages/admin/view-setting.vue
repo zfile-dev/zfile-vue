@@ -15,6 +15,7 @@
 		<z-form-item label="页面布局">
 			<el-radio v-model="data.layout" label="full">全屏</el-radio>
 			<el-radio v-model="data.layout" label="center">居中</el-radio>
+      <el-radio v-model="data.layout" label="card">卡片</el-radio>
 		</z-form-item>
 
 		<z-form-item label="根目录显示所有存储源">

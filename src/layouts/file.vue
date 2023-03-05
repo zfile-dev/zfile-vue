@@ -7,7 +7,7 @@
         </template>
       </Suspense>
     </el-header>
-    <el-main>
+		<el-main :class="'el-main-' + storageConfigStore.globalConfig?.layout">
       <router-view />
     </el-main>
     <el-footer v-if="storageConfigStore.globalConfig?.icp">
@@ -88,6 +88,10 @@ const loadGlobalSiteSetting = () => {
     width: 100%;
     padding: 0;
     overflow-x: hidden;
+  }
+
+  .el-main-card {
+    @apply bg-gray-100;
   }
 
   // 定义脚部高度，边框
