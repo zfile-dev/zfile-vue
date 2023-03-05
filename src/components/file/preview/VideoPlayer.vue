@@ -305,6 +305,7 @@ const initArtPlayer = async (name, url) => {
     miniProgressBar: true,
     autoplay: autoPlayVideo.value,
     whitelist: ['*'],
+    airplay: true,
     moreVideoAttr: {
       'x5-video-player-type': 'h5',
       'x5-video-player-fullscreen': false,
