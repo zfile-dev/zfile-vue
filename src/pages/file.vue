@@ -1,7 +1,7 @@
 <template>
   <div class="zfile-index-body-wrapper" @contextmenu="showFileMenu">
     <div class="zfile-index-body"
-         :class="storageConfigStore.globalConfig?.layout === 'center' ? 'zfile-index-table-center' : ''">
+         :class="'zfile-index-table-' + storageConfigStore.globalConfig?.layout">
 
       <!-- 公告 -->
       <el-alert v-if="storageConfigStore.globalConfig.showAnnouncement && storageConfigStore.globalConfig.announcement" class="zfile-index-announcement" type="success">
@@ -600,6 +600,23 @@ const showDialog = (readmeText) => {
 // 居中模式
 .zfile-index-table-center {
   @apply w-[80%] ml-[10%];
+}
+
+// 卡片模式
+.zfile-index-table-card {
+  @apply w-11/12 max-w-7xl mx-auto;
+
+  &::after {
+    content: "";
+    @apply top-2 h-2.5 block relative;
+  }
+
+  #ListTable {
+    @apply my-5 p-5 rounded-lg shadow-lg;
+  }
+  :deep(.el-scrollbar__bar.is-horizontal) {
+    @apply hidden;
+  }
 }
 
 // 文件列表主体
