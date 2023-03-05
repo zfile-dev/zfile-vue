@@ -32,6 +32,37 @@
 			</template>
 		</z-form-item>
 
+    <z-form-item label="默认最大显示文件数">
+      <el-input-number v-model="data.maxShowSize" :min="1"/>
+      <template #tips>
+        默认最大显示文件数, 用于控制文件夹中文件的显示数量，防止文件过多导致页面卡顿
+      </template>
+    </z-form-item>
+
+    <z-form-item label="每次加载更多文件数">
+      <el-input-number v-model="data.loadMoreSize" :min="1"/>
+      <template #tips>
+        当想显示更多文件时，每次额外显示的文件数
+      </template>
+    </z-form-item>
+
+    <z-form-item label="默认排序字段">
+      <el-radio v-model="data.defaultSortField" label="name">文件名</el-radio>
+      <el-radio v-model="data.defaultSortField" label="size">文件大小</el-radio>
+      <el-radio v-model="data.defaultSortField" label="time">修改时间</el-radio>
+      <template #tips>
+        默认排序方式, 用于控制文件夹中文件的显示顺序
+      </template>
+    </z-form-item>
+
+    <z-form-item label="默认排序方式">
+      <el-radio v-model="data.defaultSortOrder" label="asc">升序</el-radio>
+      <el-radio v-model="data.defaultSortOrder" label="desc">降序</el-radio>
+      <template #tips>
+        默认排序方式, 用于控制文件夹中文件的显示顺序
+      </template>
+    </z-form-item>
+
 		<z-form-item label="视频文件后缀">
 			<el-input v-model="data.customVideoSuffix"></el-input>
 			<template #tips>

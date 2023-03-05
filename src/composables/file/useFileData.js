@@ -87,8 +87,8 @@ export default function useFileData() {
         param.storageKey = storageKey.value;
         param.path = currentPath.value;
         param.password = param.password || getPathPwd();
-        param.orderBy = searchParam.orderBy;
-        param.orderDirection = searchParam.orderDirection;
+        param.orderBy = searchParam.orderBy || storageConfigStore.globalConfig.defaultSortField;
+        param.orderDirection = searchParam.orderDirection || storageConfigStore.globalConfig.defaultSortOrder;
 
         let requestStorageId = storageKey.value;
         loadFileListReq(param).then((response) => {
@@ -270,7 +270,7 @@ export default function useFileData() {
 
     return {
         loadFile, openRow, searchParam, sortChangeMethod,
-        skeletonLoading, skeletonData, basicLoading,
+        skeletonLoading, skeletonData, basicLoading, loading,
         initStorageConfig, loadFileConfig
     }
 
