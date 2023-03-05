@@ -32,7 +32,7 @@ let common = {
         INVALID_PASSWORD: 406
     },
     storageType: {
-        s3Type: ['s3', 'tencent', 'aliyun', 'qiniu', 'minio', 'huawei'],
+        s3Type: ['s3', 'tencent', 'aliyun', 'qiniu', 'minio', 'huawei', 'doge-cloud'],
         proxyType: ['local', 'webdav', 'ftp', 'sftp', 'google-drive'],
         micrsoftType: ['sharepoint', 'sharepoint-china', 'onedrive', 'onedrive-china']
     },
