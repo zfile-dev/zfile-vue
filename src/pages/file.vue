@@ -33,6 +33,7 @@
         empty-text=""
         @row-contextmenu="showFileMenu"
         :row-class-name="tableRowClassName"
+        :class="{'zfile-table-empty': fileDataStore.fileList.length === 0}"
         @selection-change="selectRowsChange"
         :data="skeletonLoading ? skeletonData : fileDataStore.fileList">
         <template #empty>
@@ -459,6 +460,10 @@ const showDialog = (readmeText) => {
   // 隐藏横向滚动条
   @apply overflow-y-hidden;
 
+  &.zfile-table-empty {
+    @apply h-full;
+  }
+
   :deep(.el-checkbox) {
     margin-right: 30px;
   }
@@ -469,6 +474,10 @@ const showDialog = (readmeText) => {
   :deep(.el-table__body-wrapper) {
     height: 100%;
     font-weight: 450;
+  }
+
+  :deep(.el-table__body-wrapper .el-scrollbar__view) {
+    height: 100%;
   }
 
 	/* 表头 -- icon 位置和大小 */
