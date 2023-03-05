@@ -643,7 +643,7 @@ const showDialog = (readmeText) => {
 
 	/* 表身 -- 文件名列 icon 位置 */
 	.el-table__body-wrapper .zfile-table-col-name svg {
-		@apply relative -top-[1.5px] align-middle text-xl mr-1.5 inline;
+		@apply relative align-middle text-xl mr-1.5 inline;
 	}
 
 	/* 表身 -- 不支持文字选中 */
