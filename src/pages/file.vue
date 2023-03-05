@@ -135,8 +135,6 @@
       <z-contextmenu></z-contextmenu>
 
 
-      </Contextmenu>
-
       <!-- 视频播放器 -->
       <el-dialog draggable custom-class="zfile-video-dialog" :destroy-on-close="true"
                  v-model="dialogVideoVisible">
