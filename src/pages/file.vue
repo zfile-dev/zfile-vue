@@ -242,11 +242,10 @@ import useGlobalConfigStore from "~/stores/global-config";
 // element table 表格加载动画
 import "~/assets/table-animation.less";
 // element 图标
-import { Calendar, Coin, Document, FolderOpened } from "@element-plus/icons-vue";
+import { Calendar, Coin, Document } from "@element-plus/icons-vue";
 
-// 右键菜单
-import { Contextmenu, ContextmenuDivider, ContextmenuItem } from "v-contextmenu";
 import useFileContextMenu from "~/composables/file/useFileContextMenu";
+const { showFileMenu } = useFileContextMenu();
 
 // 文件类别数据相关
 import useFileData from "~/composables/file/useFileData";
@@ -329,7 +328,6 @@ let storageConfigStore = useStorageConfigStore();
 let globalConfigStore = useGlobalConfigStore();
 
 const currentInstance = getCurrentInstance();
-const { showFileMenu, contextMenuTargetFile } = useFileContextMenu(currentInstance);
 
 let { checkSelectable, selectRowsChange, selectRow, selectRows, selectStatistics, tableRowClassName, clearSelection } = useFileSelect(currentInstance);
 
@@ -622,36 +620,6 @@ const showDialog = (readmeText) => {
 
 }
 
-// 右键菜单
-.v-contextmenu-item {
-	// 文字和图标的距离
-	:deep(label) {
-    @apply ml-2.5;
-	}
-
-	// 图标位置修正为居中
-	:deep(.contextmenu-icon) {
-    @apply top-[1px] pt-[1px];
-	}
-}
-
-.zfile-index-body {
-  // 工具条
-	.zfile-index-hover-tools {
-		@apply absolute z-10 bottom-0 sm:bottom-10 left-0 right-0 mx-auto w-fit;
-
-		.zfile-index-hover-body {
-			@apply bg-[#313136] w-fit px-5 h-12 py-2 text-white rounded mx-auto space-x-6 text-2xl;
-
-			svg {
-				@apply inline text-white cursor-pointer outline-none;
-				&:hover {
-					@apply text-blue-400;
-				}
-			}
-		}
-	}
-}
 </style>
 
 <route lang="yaml">
