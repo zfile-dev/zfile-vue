@@ -29,6 +29,28 @@
 			<template #tips>用于管理员页面右上角头像地址，推荐尺寸为 35 * 35.</template>
 		</z-form-item>
 
+    <z-form-item prop="siteHomeName" label="根路径名称">
+      <el-input id="siteHomeName" :prefix-icon="HomeIcon" v-model="data.siteHomeName"/>
+      <template #tips>用于设置首页上方面包屑根目录的默认名称.</template>
+    </z-form-item>
+
+    <z-form-item prop="siteHomeLogo" label="首页 Logo 图片地址">
+      <el-input id="siteHomeLogo" :prefix-icon="PhotographIcon" v-model="data.siteHomeLogo"/>
+      <template #tips>用于设置首页上面包屑左侧 Logo，留空为不显示，会自动居中显示，如有需要可通过自定义 css 来修改默认样式, logo 元素的 id 为 zfile-home-logo</template>
+    </z-form-item>
+
+    <z-form-item prop="siteHomeLogoLink" label="首页 Logo 打开链接">
+      <el-input id="siteHomeLogoLink" :prefix-icon="Link" v-model="data.siteHomeLogoLink"/>
+      <template #tips>点击 Logo 链接后打开的地址，为空则点击不进行任何跳转</template>
+    </z-form-item>
+
+    <z-form-item prop="siteHomeLogoTargetMode" label="首页 Logo 链接打开方式">
+      <el-radio v-model="data.siteHomeLogoTargetMode" label="_blank">新标签打开</el-radio>
+      <el-radio v-model="data.siteHomeLogoTargetMode" label="_self">当前页面打开</el-radio>
+      <template #tips>控制 Logo 链接的打开方式</template>
+    </z-form-item>
+
+
 		<z-form-item label="备案号">
 			<el-input id="icp" :prefix-icon="ShieldCheckIcon" v-model="data.icp"/>
 		</z-form-item>
@@ -45,7 +67,7 @@
 
 <script setup>
 import { Tickets, Link, Avatar } from '@element-plus/icons-vue'
-import { BadgeCheckIcon, ShieldCheckIcon } from '@heroicons/vue/solid'
+import { BadgeCheckIcon, ShieldCheckIcon, KeyIcon, HomeIcon, PhotographIcon, ExclamationIcon } from "@heroicons/vue/solid";
 
 import useGlobalConfigStore from "~/stores/global-config";
 let globalConfigStore = useGlobalConfigStore();
