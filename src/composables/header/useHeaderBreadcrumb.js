@@ -7,6 +7,9 @@ let storageConfigStore = useStorageConfigStore();
 import useRouterData from "~/composables/useRouterData";
 let { fullpath, storageKey } = useRouterData();
 
+import useCommon from "~/composables/useCommon";
+const { encodeAllIgnoreSlashes } = useCommon();
+
 // 面包屑数据
 let breadcrumbData = ref([]);
 let initialized = false;
@@ -16,7 +19,13 @@ export default function useBreadcrumb() {
 
     // 构建面包屑
     let buildBreadcrumbData = () => {
-        breadcrumbData.value = [];
+        breadcrumbData.value = [
+            {
+                name: storageConfigStore.globalConfig.siteHomeName || '首页',
+                href: rootPath.value,
+                disable: false
+            }
+        ];
 
         // 如果为包含根目录模式，则面包屑显示驱动器
         if (rootShowStorage) {
@@ -25,7 +34,7 @@ export default function useBreadcrumb() {
             if (storageByKey) {
                 breadcrumbData.value.push({
                     name: storageByKey.name,
-                    fullPath: '/' + storageByKey.key
+                    href: encodeAllIgnoreSlashes('/' + storageByKey.key)
                 })
             }
         }
@@ -34,10 +43,10 @@ export default function useBreadcrumb() {
             fullpath.value.forEach((item, index, arr) => {
                 let breadcrumbItem = {
                     name: item,
-                    fullPath: removeDuplicateSlashes('/' + storageKey.value + '/' + arr.slice(0, index + 1).join('/'))
+                    href: encodeAllIgnoreSlashes(removeDuplicateSlashes('/' + storageKey.value + '/' + arr.slice(0, index + 1).join('/'))),
+                    disable: index === arr.length - 1
                 }
                 breadcrumbData.value.push(breadcrumbItem);
-
             })
         }
     };
