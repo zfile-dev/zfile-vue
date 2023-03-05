@@ -26,14 +26,13 @@ onMounted(() => {
 	getFileTextReq(fileUrl).then((res) => {
 		fileContent.value = res.data;
 	}).catch((e) => {
-		console.log(`默认加载文本文件: [${props.fileName}] - [${props.fileUrl}] 失败, 尝试从服务端加载.`, e);
-		getFileTextFromServerReq({url: fileUrl}).then((res) => {
-			fileContent.value = res.data;
-		}).catch((e) => {
-			console.log(`从服务器端加载文本文件: [${props.fileName}] - [${props.fileUrl}] 失败.`, e);
-			alert('加载文件预览器失败，请检测文件下载链接是否正常');
-		})
-	});
+		console.log(`加载文本文件: [${props.fileName}] - [${props.fileUrl}] 失败, 尝试从服务端加载.`, e);
+    alert('加载文件预览器失败，请检测文件下载链接是否正常');
+    ElMessage.warning({
+      message: `加载文件预览器失败，请检测文件下载链接是否正常或是否限制了跨域访问， ${fileUrl}`,
+      duration: 0
+    });
+  });
 })
 
 let markdownHtml = computed(() => {
