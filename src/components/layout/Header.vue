@@ -211,51 +211,48 @@ if (storageConfigStore.globalConfig.customCss) {
     console.error('加载自定义 css 加载失败:', storageConfigStore.globalConfig.customCss, e);
   }
 }
-import {Parser} from 'htmlparser2';
+import HeaderLogo from "~/components/file/HeaderLogo.vue";
 
-const loadScript = (script) => {
-  if (script) {
-    document.getElementsByTagName('head')[0].appendChild(script);
-    console.debug(`加载自定义 js, src:${script.src}, text:${script.text}`);
+const loadScriptDom = (scriptDom) => {
+  if (scriptDom) {
+    document.getElementsByTagName('head')[0].appendChild(scriptDom);
+    console.log(`加载自定义 js, src:${scriptDom.src}, text:${scriptDom.text}`);
+  }
+}
+
+const loadScriptText = (scriptText) => {
+  if (scriptText && scriptText.trim()) {
+    let scriptDom = document.createElement('script');
+    scriptDom.type = 'text/javascript';
+    scriptDom.text = scriptText;
+    loadScriptDom(scriptDom);
   }
 }
 
 onMounted(() => {
   nextTick(()=>{
     if (storageConfigStore.globalConfig.customJs) {
-      let script = null;
-      try {
-        const parser = new Parser({
-          onopentag(name, attributes) {
-            loadScript(script);
-            if (name === "script") {
-              script = document.createElement("script");
-              for (let prop in attributes) {
-                script[prop] = attributes[prop];
-              }
-            }
-          },
-          ontext(text) {
-            if (!script) {
-              script = document.createElement("script");
-            }
-            script.text = text;
-          },
-          onclosetag(tagname) {
-            if (tagname === "script") {
-              loadScript(script);
-              script = null;
-            }
-          },
-          onend() {
-            loadScript(script);
+      // 创建一个新的 div 元素
+      const tempDivDom = document.createElement('div');
+      // 将字符串作为 HTML 插入到新的 div 中
+      tempDivDom.innerHTML = storageConfigStore.globalConfig.customJs;
+      // 遍历新 div 中的所有 script 元素
+      Array.from(tempDivDom.getElementsByTagName('script')).forEach(script => {
+        // 如果该 script 元素有 src 属性，则动态引入外部 JavaScript
+        if (script.src) {
+          const newScript = document.createElement('script');
+          for (let i = 0; i < script.attributes.length; i++) {
+            const attr = script.attributes[i];
+            newScript.setAttribute(attr.name, attr.value);
           }
-        });
-        parser.write(storageConfigStore.globalConfig.customJs);
-        parser.end();
-      } catch (e) {
-        console.log('加载自定义 js 失败: ', storageConfigStore.globalConfig.customJs, e);
-      }
+          loadScriptDom(newScript);
+        } else {
+          // 否则，执行内联的 JavaScript 代码
+          loadScriptText(script.innerHTML);
+        }
+        tempDivDom.removeChild(script);
+      });
+      loadScriptText(tempDivDom.innerHTML);
     }
   })
 })
