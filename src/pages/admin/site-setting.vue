@@ -17,11 +17,39 @@
 		<z-form-item prop="domain" label="后端站点域名">
 			<el-input id="domain" :prefix-icon="Link" v-model="data.domain"/>
 			<template #tips>此地址用于生成直链及本次存储下载使用，请务必保持和服务端地址一样 (需写 http(s):// 协议头)</template>
+      <el-popover placement="right" :width="400" trigger="click">
+        <template #reference>
+          <div v-show="fixDomain.flag" class="mt-2">
+            <span class="text-red-500 text-sm">设置异常，点击查看</span>
+            <ExclamationIcon class="inline w-5 text-red-500"/>
+          </div>
+        </template>
+        <div class="text-sm">
+          <div class="mb-2">检测到设置异常，实际后端域名应为 <span class="text-red-500">{{ fixDomain.except }}</span>，是否需要修复？（不修正可能会影响下载、文件夹加密和文档预览功能）</div>
+          <div class="flex justify-end">
+            <el-button size="small" type="warning" :icon="BadgeCheckIcon" @click="fixDomain.action">自动修正</el-button>
+          </div>
+        </div>
+      </el-popover>
     </z-form-item>
 
 		<z-form-item prop="frontDomain" label="前端站点域名">
 			<el-input :prefix-icon="Link" v-model="data.frontDomain"/>
 			<template #tips>前后端分离后，需配置此地址，会影响 401、403、404 页面的跳转 (需写 http(s):// 协议头，未前后端分离请保持为空)</template>
+      <el-popover placement="right" :width="400" trigger="click">
+        <template #reference>
+          <div v-show="fixFrontDomain.flag" class="mt-2">
+            <span class="text-red-500 text-sm">设置异常，点击查看</span>
+            <ExclamationIcon class="inline w-5 text-red-500"/>
+          </div>
+        </template>
+        <div class="text-sm">
+          <div class="mb-2">检测到设置异常，实际前端域名应为 <span class="text-red-500">{{ fixFrontDomain.except }}</span>，是否需要修复？（不修正会影响 401、403、404 页面的跳转功能）</div>
+          <div class="flex justify-end">
+            <el-button size="small" type="warning" :icon="BadgeCheckIcon" @click="fixFrontDomain.action">自动修正</el-button>
+          </div>
+        </div>
+      </el-popover>
 		</z-form-item>
 
 		<z-form-item prop="avatar" label="头像地址">
@@ -91,6 +119,7 @@ let dataRules = ref({
 
 const siteSettingForm = ref();
 const saveForm = () => {
+  document.querySelector(".z-form").click();
 	siteSettingForm.value.validate(checked => {
 		if (checked) {
 			saveData();
@@ -98,42 +127,58 @@ const saveForm = () => {
 	})
 }
 
+let fixDomain = ref({
+  flag: false,
+  except: '',
+  action: () => {}
+});
+let fixFrontDomain = ref({
+  flag: false,
+  except: '',
+  action: () => {}
+});
 
 watch(() => dataLoading.value, (newVal, oldValue) => {
 	// 如果是刚加载完成, 则检测域名配置是否正确.
 	if (oldValue === true) {
+    // 校验后端域名
 		let serverDomain = globalConfigStore.zfileConfig.baseUrl || window.location.origin;
 		let siteDomain = data.value.domain;
-
 		if (serverDomain !== siteDomain) {
-			ElMessageBox.confirm(`检测到服务端地址为 ${serverDomain}，当前配置站点域名为 ${siteDomain}，是否自动进行修正？（不修正可能会影响下载、文件夹加密和文档预览功能）`, '提示', {
-				confirmButtonText: '确定',
-				cancelButtonText: '取消',
-				type: 'warning',
-				callback: action => {
-					if (action === 'confirm') {
-						data.value.domain = serverDomain;
-						saveForm();
-					}
-				}
-			});
-		} else {
-			let siteFrontDomain = data.value.frontDomain;
-			let origin = window.location.origin;
-			if (globalConfigStore.zfileConfig.baseUrl !== '' && siteFrontDomain !== origin) {
-				ElMessageBox.confirm(`检测到当前为前后端分离模式，访问域名为 ${origin}，当前配置前端站点域名为 ${siteFrontDomain}，是否自动进行修正？（不修正可能会防盗链功能）`, '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					type: 'warning',
-					callback: action => {
-						if (action === 'confirm') {
-							data.value.frontDomain = origin;
-							saveForm();
-						}
-					}
-				});
-			}
+      fixDomain.value.flag = true;
+      fixDomain.value.current = siteDomain;
+      fixDomain.value.except = serverDomain;
+      fixDomain.value.action = () => {
+        data.value.domain = serverDomain;
+        saveForm();
+        fixDomain.value.flag = false;
+      }
 		}
+
+    // 校验前端域名
+    let siteFrontDomain = data.value.frontDomain;
+    let origin = window.location.origin;
+    // 如果是前后端分离场景，但设置的前端域名不等于当前域名，则提示用户修改
+    if (globalConfigStore.zfileConfig.baseUrl !== '' && siteFrontDomain !== origin) {
+      fixFrontDomain.value.flag = true;
+      fixFrontDomain.value.current = siteFrontDomain;
+      fixFrontDomain.value.except = origin;
+      fixFrontDomain.value.action = () => {
+        data.value.frontDomain = origin;
+        saveForm();
+        fixFrontDomain.value.flag = false;
+      }
+      // 如果是前后端不分离场景，但设置的前端域名不为空，则提示用户修改
+    } else if (globalConfigStore.zfileConfig.baseUrl === '' && !!siteFrontDomain) {
+      fixFrontDomain.value.flag = true;
+      fixFrontDomain.value.current = siteFrontDomain;
+      fixFrontDomain.value.except = '空';
+      fixFrontDomain.value.action = () => {
+        data.value.frontDomain = '';
+        saveForm();
+        fixFrontDomain.value.flag = false;
+      }
+    }
 	}
 })
 
