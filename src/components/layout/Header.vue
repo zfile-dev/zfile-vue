@@ -274,14 +274,9 @@ onMounted(() => {
 	color: #606266;
 	transition: border-color var(--el-transition-duration), background-color var(--el-transition-duration);
 	border-bottom: 1px solid rgba(132, 133, 141, 0.2);
-	@apply space-x-5 sm:space-x-20;
-
 
 	.el-scrollbar {
-		@apply max-w-[70%] md:max-w-[45%] lg:max-w-[60%] xl:max-w-[70%];
-    :deep(.el-scrollbar__wrap) {
-      @apply overflow-hidden;
-    }
+    @apply w-full;
 		:deep(.el-scrollbar__bar.is-vertical) {
 			display: none !important;
 		}
@@ -317,10 +312,27 @@ onMounted(() => {
 		}
 
 		.zfile-header-storage-select {
-			@apply mr-4;
+			@apply mr-4 min-w-[200px];
 		}
 	}
 
+}
+
+@media only screen and (max-width: 767px) {
+	.zfile-header {
+		:deep(.el-breadcrumb__separator) {
+			display: none !important;
+		}
+
+		:deep(.el-form-item__label) {
+			display: none !important;
+		}
+
+		:deep(.el-select) {
+			width: 120px;
+      @apply truncate text-sm font-medium text-gray-700;
+		}
+	}
 }
 
 .zfile-debug-tips {
