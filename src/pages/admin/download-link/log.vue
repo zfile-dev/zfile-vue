@@ -64,6 +64,7 @@
 
 				<div>
 					<el-button @click="batchDeleteLink" :icon="Delete" type="danger">批量删除</el-button>
+          <el-button @click="batchDeleteLinkLogByQuery" :icon="Delete" type="danger">删除全部页</el-button>
 				</div>
 
 				<el-table ref="linkTableRef" size="large" :data="pageData" >
@@ -128,7 +129,12 @@
 import useLinkSetting from "~/composables/admin/link/useLinkSetting";
 const { data, saveData, saveLoading } = useLinkSetting();
 
-import {batchDeleteDownloadLog, deleteDownloadLog, getDownloadLogList} from "~/api/admin-download-link";
+import {
+  batchDeleteDownloadLogReq,
+  batchDeleteDownloadLogByQueryReq,
+  deleteDownloadLog,
+  getDownloadLogList
+} from "~/api/admin-download-link";
 import zhCn from 'element-plus/lib/locale/lang/zh-cn'
 
 import { Search, Delete } from "@element-plus/icons-vue";
@@ -162,17 +168,22 @@ const handleCurrentChange = (val) => {
 	init();
 };
 
+
+const getSearchParam = () => {
+  if (searchParam.date instanceof Array) {
+    searchParam.dateFrom = searchParam.date[0];
+    searchParam.dateTo = searchParam.date[1];
+  } else {
+    searchParam.dateFrom = '';
+    searchParam.dateTo = '';
+  }
+  return searchParam;
+}
+
 const pageData = ref();
 
 const init = () => {
-	if (searchParam.date instanceof Array) {
-		searchParam.dateFrom = searchParam.date[0];
-		searchParam.dateTo = searchParam.date[1];
-	} else {
-		searchParam.dateFrom = '';
-		searchParam.dateTo = '';
-	}
-	getDownloadLogList(searchParam).then(res => {
+	getDownloadLogList(getSearchParam()).then(res => {
 		pageData.value = res.data;
 		searchParam.total = res.dataCount;
 	});
@@ -220,11 +231,23 @@ const batchDeleteLink = () => {
 		type: 'warning'
 	}).then(() => {
 		let ids = selectionRows.map(item => item.id);
-		batchDeleteDownloadLog({ids: ids}).then(res => {
+		batchDeleteDownloadLogReq({ids: ids}).then(res => {
 			ElMessage.success('删除成功');
 			init();
 		});
 	});
+}
+
+
+const batchDeleteLinkLogByQuery = () => {
+  ElMessageBox.confirm(`是否确认删除当前查询条件下的 ${searchParam.total} 条直链下载日志？(如数量不对，请先点击查询后再用该功能按条件删除)`, '提示', {
+    type: 'warning'
+  }).then(() => {
+    batchDeleteDownloadLogByQueryReq(getSearchParam()).then(res => {
+      ElMessage.success('清空成功');
+      init();
+    });
+  });
 }
 
 /**

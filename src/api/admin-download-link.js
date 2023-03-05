@@ -47,9 +47,18 @@ export const deleteDownloadLog = (id) => {
 }
 
 // 批量删除下载日志
-export const batchDeleteDownloadLog = (data) => {
+export const batchDeleteDownloadLogReq = (data) => {
     return axios({
         url: `/admin/download/log/delete/batch`,
+        method: "post",
+        data
+    })
+}
+
+// 按条件批量删除下载日志
+export const batchDeleteDownloadLogByQueryReq = (data) => {
+    return axios({
+        url: `/admin/download/log/delete/batch/query`,
         method: "post",
         data
     })
