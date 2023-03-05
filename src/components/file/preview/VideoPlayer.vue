@@ -527,6 +527,19 @@ onMounted(() => {
       width: 28px;
     }
   }
+
+  :deep(.art-video-player) {
+
+    .art-control-fullscreenWeb {
+      @apply hidden md:block;
+    }
+
+    &.art-fullscreen {
+      .art-control-fullscreenWeb {
+        @apply block;
+      }
+    }
+  }
 }
 
 .zfile-video-switch-tools {
