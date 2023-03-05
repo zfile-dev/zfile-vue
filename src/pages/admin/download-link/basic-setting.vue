@@ -72,11 +72,11 @@
 			<z-form-item v-show="data.refererType !== 'no'" label="白名单">
 				<el-input type="textarea"
 				          :rows="6"
-				          placeholder="每行输入一个域名"
+				          placeholder="每行输入一个域名，如：&#13;&#10;http://*example.com&#13;&#10;https://*example.com&#13;&#10;https://a.*.example.com&#13;&#10;*://*.example.com"
 				          v-model="data.refererValue">
 				</el-input>
 				<template #tips v-if="data.refererType === 'white_list'">
-					每行输入一个域名，支持 * 通配符，如白名单 *zfile.vip 将只允许 zfile.vip、www.zfile.vip、demo.zfile.vip 等网站访问。
+					每行输入一个域名，需要写协议头支持 * 通配符，如白名单 http://*zfile.vip 将只允许 http://zfile.vip、http://www.zfile.vip、http://demo.zfile.vip 等网站访问。
 				</template>
 				<template #tips v-if="data.refererType === 'black_list'">
 					每行输入一个域名，需要写协议头，支持 * 通配符，如黑名单 http://*zfile.vip 将禁止所有如 http://zfile.vip、http://www.zfile.vip、http://demo.zfile.vip 等网站访问。
