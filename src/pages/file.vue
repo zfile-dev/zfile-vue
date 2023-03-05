@@ -359,9 +359,7 @@ const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = us
 
 const { openUploadDialog, openUploadFolderDialog } = useFileUpload();
 
-const reload = () => {
-  window.location.reload()
-}
+
 
 import md5 from "md5";
 let { storageKey, currentPath } = useRouterData();
