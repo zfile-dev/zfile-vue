@@ -1,15 +1,10 @@
 <template>
 	<div class="zfile-header">
 		<el-scrollbar>
-			<div class="zfile-header-breadcrumb box animate__animated animate__fadeIn">
-				<el-breadcrumb separator="/" separator-class="ArrowRight">
-					<el-breadcrumb-item :to="rootPath">{{ '首页' }}</el-breadcrumb-item>
-					<el-breadcrumb-item v-for="item in breadcrumbData"
-					                    :to="{path: encodeAllIgnoreSlashes(item.fullPath)}"
-					                    :key="item.fullPath">
-						{{ item.name }}
-					</el-breadcrumb-item>
-				</el-breadcrumb>
+			<div class="zfile-header-breadcrumb box animate__animated animate__fadeIn flex flex-1">
+        <header-logo></header-logo>
+        <breadcrumb class="h-12" :items="breadcrumbData" :threshold-width="20" @breadcrumb-click="resetSearch">
+        </breadcrumb>
 			</div>
 		</el-scrollbar>
 
@@ -155,7 +150,7 @@ const { loadStorageSourceList, currentStorageKey, storageList } = useHeaderStora
 
 // 面包屑数据和操作
 import useBreadcrumb from "~/composables/header/useHeaderBreadcrumb";
-const { buildBreadcrumbData, rootPath, breadcrumbData } = useBreadcrumb();
+const { buildBreadcrumbData, breadcrumbData } = useBreadcrumb();
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
