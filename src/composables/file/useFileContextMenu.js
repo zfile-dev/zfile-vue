@@ -43,8 +43,6 @@ export default function useFileContextMenu() {
             contextMenuTargetFile.value = true;
         }
 
-        let contextmenuRef = currentInstance.proxy.$refs.contextmenu;
-
         event.preventDefault();
         event.stopPropagation();
 
