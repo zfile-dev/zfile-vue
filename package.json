@@ -41,7 +41,7 @@
 		"prepare": "husky install"
 	},
 	"dependencies": {
-		"@element-plus/icons-vue": "^2.0.6",
+		"@element-plus/icons-vue": "^2.0.10",
 		"@headlessui/vue": "^1.6.5",
 		"@heroicons/vue": "^1.0.6",
 		"@kangc/v-md-editor": "^2.3.15",
