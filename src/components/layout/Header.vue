@@ -1,12 +1,10 @@
 <template>
 	<div class="zfile-header">
-		<el-scrollbar>
-			<div class="zfile-header-breadcrumb box animate__animated animate__fadeIn flex flex-1">
-        <header-logo></header-logo>
-        <breadcrumb class="h-12" :items="breadcrumbData" :threshold-width="20" @breadcrumb-click="resetSearch">
-        </breadcrumb>
-			</div>
-		</el-scrollbar>
+    <div class="zfile-header-breadcrumb box animate__animated animate__fadeIn flex flex-1">
+      <header-logo></header-logo>
+      <breadcrumb class="h-12" :items="breadcrumbData" @breadcrumb-click="clickBreadcrumb">
+      </breadcrumb>
+    </div>
 
 		<div class="zfile-header-right box animate__animated animate__fadeIn">
       <!-- 功能区 -->
@@ -95,7 +93,7 @@
 
     <div v-if="isMobile" v-show="route.params.storageKey">
       <el-dropdown trigger="click" class="top-3">
-        <MenuIcon class="block h-6 w-6" aria-hidden="true"/>
+        <Bars3Icon class="block h-6 w-6" aria-hidden="true"/>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item v-if="storageConfigStore.globalConfig.showLogin" @click="toLoginView">
@@ -135,7 +133,7 @@
 </template>
 
 <script setup>
-import { MenuIcon } from '@heroicons/vue/outline'
+import { Bars3Icon } from '@heroicons/vue/24/outline'
 
 let router = useRouter();
 let route = useRoute();
@@ -164,6 +162,11 @@ onMounted(() => {
 	});
 })
 
+const clickBreadcrumb = (item) => {
+  if (item.href) {
+    router.push(item.href);
+  }
+}
 
 watch(() => route.params.storageKey, (value) => {
 	if (value === undefined) {
@@ -228,6 +231,7 @@ const loadScriptText = (scriptText) => {
     loadScriptDom(scriptDom);
   }
 }
+
 
 onMounted(() => {
   nextTick(()=>{
@@ -341,6 +345,7 @@ onMounted(() => {
 		color: red !important;
 	}
 }
+
 
 .zfile-header-storage-select {
   :deep(.el-input__wrapper) {

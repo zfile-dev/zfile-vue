@@ -19,6 +19,10 @@ export default function useBreadcrumb() {
 
     // 构建面包屑
     let buildBreadcrumbData = () => {
+        if (!rootShowStorage && !storageKey.value) {
+            breadcrumbData.value = [];
+            return;
+        }
         breadcrumbData.value = [
             {
                 name: storageConfigStore.globalConfig.siteHomeName || '首页',
@@ -41,12 +45,14 @@ export default function useBreadcrumb() {
 
         if (fullpath.value) {
             fullpath.value.forEach((item, index, arr) => {
-                let breadcrumbItem = {
-                    name: item,
-                    href: encodeAllIgnoreSlashes(removeDuplicateSlashes('/' + storageKey.value + '/' + arr.slice(0, index + 1).join('/'))),
-                    disable: index === arr.length - 1
-                }
-                breadcrumbData.value.push(breadcrumbItem);
+								if (item) {
+									let breadcrumbItem = {
+											name: item,
+											href: encodeAllIgnoreSlashes(removeDuplicateSlashes('/' + storageKey.value + '/' + arr.slice(0, index + 1).join('/'))),
+											disable: index === arr.length - 1
+									}
+									breadcrumbData.value.push(breadcrumbItem);
+								}
             })
         }
     };
