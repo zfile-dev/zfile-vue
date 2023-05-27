@@ -1,4 +1,5 @@
-import {ElMessage, ElMessageBox} from "element-plus";
+import {ElMessage} from "element-plus";
+import MessageBox from "~/components/messageBox/messageBox";
 
 import path from "path-browserify";
 import {removeDuplicateSlashes} from "fast-glob/out/managers/patterns";
@@ -95,7 +96,9 @@ export default function useFileData() {
 
             let passwordPattern = response.data.passwordPattern;
 
-            putPathPwd(passwordPattern, param.password);
+            if (initParam?.rememberPassword) {
+                putPathPwd(passwordPattern, param.password);
+            }
 
             // 如果请求的 storageKey 和当前的 storageKey 不一致
             // 则表示再加载数据期间，修改了 storageKey, 为了防止数据错乱, 取消本次渲染.
@@ -136,7 +139,6 @@ export default function useFileData() {
                 ElMessage.warning('密码错误，请重新输入！');
                 popPassword();
             } else if (data.code === common.responseCode.REQUIRED_PASSWORD) {
-                ElMessage.warning('此文件夹需要密码，请输入密码！');
                 popPassword();
             } else {
                 ElMessage.error(data.msg);
@@ -243,25 +245,29 @@ export default function useFileData() {
     // 显示密码输入框
     let popPassword = () => {
         // 如果输入了密码, 则写入到 sessionStorage 缓存中, 并重新调用加载文件.
-        ElMessageBox.prompt('此文件夹已加密，请输入密码', '提示', {
+        MessageBox.prompt('此文件夹已加密，请输入密码：', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             inputType: 'password',
+            checkbox: true,
+            defaultChecked: storageConfigStore.globalConfig.defaultSavePwd,
+            inputDefault: getPathPwd(),
+            checkboxLabel: '记住密码',
             inputValidator(val) {
                 return !!val
             },
             inputErrorMessage: '密码不能为空.'
-        }).then(({value}) => {
-            loadFile({password: value});
+        }).then(({value, checkbox}) => {
+            loadFile({password: value, rememberPassword: checkbox});
         }).catch(() => {
-                    if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.globalConfig.rootShowStorage === true) {
-                        fileDataStore.updateFileList(storageListAsFileList.value);
-                        routerRef.value.push("/");
-                        title.value = storageConfigStore.globalConfig.siteName + ' | 首页';
-                        loading.value = false;
-                    } else {
-                        let parentPath = path.resolve(searchParam.path, '../');
-                        routerRef.value.push("/" + storageKey.value + parentPath);
+            if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.globalConfig.rootShowStorage === true) {
+                fileDataStore.updateFileList(storageListAsFileList.value);
+                routerRef.value.push("/");
+                title.value = storageConfigStore.globalConfig.siteName + ' | 首页';
+                loading.value = false;
+            } else {
+                let parentPath = path.resolve(searchParam.path, '../');
+                routerRef.value.push("/" + storageKey.value + parentPath);
             }
         });
     }
