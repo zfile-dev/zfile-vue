@@ -62,7 +62,7 @@
 		</z-form-item>
 
 		<template #footer>
-			<el-button type="primary" size="default" :icon="BadgeCheckIcon" @click="saveReadmeData">保存设置</el-button>
+			<el-button type="primary" size="default" :icon="CheckBadgeIcon" @click="saveReadmeData">保存设置</el-button>
 		</template>
 
 		<readme-editor-dialog
@@ -74,8 +74,8 @@
 
 <script setup>
 import {Plus, Delete, Collection, Notebook, Document} from '@element-plus/icons-vue'
-import {BadgeCheckIcon} from '@heroicons/vue/solid'
-import {FolderIcon} from '@heroicons/vue/outline'
+import {CheckBadgeIcon} from '@heroicons/vue/24/solid'
+import {FolderIcon} from '@heroicons/vue/24/outline'
 import ZForm from "/src/components/form/ZForm.vue";
 import ZFormItem from "/src/components/form/ZFormItem.vue";
 

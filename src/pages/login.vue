@@ -38,7 +38,7 @@
 
 							<el-form-item v-else-if="loginVerifyMode === 'image'" class="box animate__animated animate__fadeInUp" prop="verifyCode">
 								<div class="flex space-x-5 w-full">
-									<el-input class="flex-1" placeholder="请输入验证码" :prefix-icon="PhotographIcon" v-model.trim="formData.verifyCode"/>
+									<el-input class="flex-1" placeholder="请输入验证码" :prefix-icon="PhotoIcon" v-model.trim="formData.verifyCode"/>
 									<el-image :src="loginVerifyCodeImgData?.imgBase64" @click="loadLoginVerifyCodeImgData()"></el-image>
 								</div>
 							</el-form-item>
@@ -54,7 +54,7 @@
 							</el-form-item>
 
 							<el-form-item class="clear-right">
-								<el-button :loading="loading" class="w-full mb-0" native-type="submit" type="primary" :icon="BadgeCheckIcon" @click="submitForm">登录</el-button>
+								<el-button :loading="loading" class="w-full mb-0" native-type="submit" type="primary" :icon="CheckBadgeIcon" @click="submitForm">登录</el-button>
 							</el-form-item>
 						</el-form>
 					</div>
@@ -68,8 +68,8 @@
 import {checkLoginReq, loginReq, loginVerifyImgReq, loginVerifyModeReq} from '~/api/login'
 
 import { User, Key, QuestionFilled, Check } from '@element-plus/icons-vue'
-import { BadgeCheckIcon } from '@heroicons/vue/solid'
-import { PhotographIcon } from '@heroicons/vue/outline'
+import { CheckBadgeIcon } from '@heroicons/vue/24/solid'
+import { PhotoIcon } from '@heroicons/vue/24/outline'
 import {installStatusReq} from "~/api/install";
 
 let router = useRouter();

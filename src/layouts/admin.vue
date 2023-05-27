@@ -7,8 +7,8 @@
           <DisclosureButton
             class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
             <span class="sr-only">Open main menu</span>
-            <MenuIcon v-if="!open" class="block h-6 w-6" aria-hidden="true"/>
-            <XIcon v-else class="block h-6 w-6" aria-hidden="true"/>
+            <Bars3Icon v-if="!open" class="block h-6 w-6" aria-hidden="true"/>
+            <XMarkIcon v-else class="block h-6 w-6" aria-hidden="true"/>
           </DisclosureButton>
         </div>
         <div class="flex-1 flex items-center justify-center md:items-stretch md:justify-start">
@@ -92,8 +92,8 @@
               </router-link>
               <template #dropdown>
                 <el-dropdown-menu>
-                  <el-dropdown-item :icon="MenuAlt1Icon">
-                    <router-link to="/admin/download-link">直链列表</router-link>
+                  <el-dropdown-item :icon="Bars3CenterLeftIcon">
+                    <router-link to="/admin/download-link">短链管理</router-link>
                   </el-dropdown-item>
                   <el-dropdown-item :icon="Tickets">
                     <router-link to="/admin/download-link/log">直链日志</router-link>
@@ -232,7 +232,7 @@ import {
   Menu, MenuButton, MenuItem, MenuItems
 } from '@headlessui/vue';
 
-import { MenuAlt1Icon, XIcon, ArrowSmUpIcon, MenuIcon } from '@heroicons/vue/outline'
+import { Bars3CenterLeftIcon, XMarkIcon, Bars3Icon } from '@heroicons/vue/24/outline'
 
 import { Setting, Tickets } from '@element-plus/icons-vue';
 

@@ -22,14 +22,14 @@
 		</z-form-item>
 
 		<template #footer>
-			<el-button type="primary" size="default" :icon="BadgeCheckIcon" @click="submitForm">保存设置</el-button>
+			<el-button type="primary" size="default" :icon="CheckBadgeIcon" @click="submitForm">保存设置</el-button>
 		</template>
 	</z-form>
 </template>
 
 <script setup>
 import {User, Key} from "@element-plus/icons-vue";
-import {BadgeCheckIcon} from '@heroicons/vue/solid'
+import {CheckBadgeIcon} from '@heroicons/vue/24/solid'
 
 import usePassword from "~/composables/admin/password/usePassword";
 const { passwordData, updateLoading, updatePassword, passwordDataRules } = usePassword();

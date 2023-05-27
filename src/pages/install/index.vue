@@ -43,7 +43,7 @@
 							<el-form-item>
 								<el-button native-type="submit"
 								           :loading="loading"
-								           class="w-full" type="primary" :icon="BadgeCheckIcon"
+								           class="w-full" type="primary" :icon="CheckBadgeIcon"
 								           @click="submitForm">
 									系统初始化
 								</el-button>
@@ -60,7 +60,7 @@
 import {installReq, installStatusReq} from '~/api/install'
 
 import {Key, Link, Tickets, User} from '@element-plus/icons-vue'
-import {BadgeCheckIcon} from '@heroicons/vue/solid'
+import {CheckBadgeIcon} from '@heroicons/vue/24/solid'
 import useGlobalConfigStore from "~/stores/global-config";
 
 let router = useRouter();

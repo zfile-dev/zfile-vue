@@ -21,13 +21,13 @@
         <template #reference>
           <div v-show="fixDomain.flag" class="mt-2">
             <span class="text-red-500 text-sm">设置异常，点击查看</span>
-            <ExclamationIcon class="inline w-5 text-red-500"/>
+            <ExclamationTriangleIcon class="inline w-5 text-red-500"/>
           </div>
         </template>
         <div class="text-sm">
           <div class="mb-2">检测到设置异常，实际后端域名应为 <span class="text-red-500">{{ fixDomain.except }}</span>，是否需要修复？（不修正可能会影响下载、文件夹加密和文档预览功能）</div>
           <div class="flex justify-end">
-            <el-button size="small" type="warning" :icon="BadgeCheckIcon" @click="fixDomain.action">自动修正</el-button>
+            <el-button size="small" type="warning" :icon="CheckBadgeIcon" @click="fixDomain.action">自动修正</el-button>
           </div>
         </div>
       </el-popover>
@@ -40,13 +40,13 @@
         <template #reference>
           <div v-show="fixFrontDomain.flag" class="mt-2">
             <span class="text-red-500 text-sm">设置异常，点击查看</span>
-            <ExclamationIcon class="inline w-5 text-red-500"/>
+            <ExclamationTriangleIcon class="inline w-5 text-red-500"/>
           </div>
         </template>
         <div class="text-sm">
           <div class="mb-2">检测到设置异常，实际前端域名应为 <span class="text-red-500">{{ fixFrontDomain.except }}</span>，是否需要修复？（不修正会影响 401、403、404 页面的跳转功能）</div>
           <div class="flex justify-end">
-            <el-button size="small" type="warning" :icon="BadgeCheckIcon" @click="fixFrontDomain.action">自动修正</el-button>
+            <el-button size="small" type="warning" :icon="CheckBadgeIcon" @click="fixFrontDomain.action">自动修正</el-button>
           </div>
         </div>
       </el-popover>
@@ -63,7 +63,7 @@
     </z-form-item>
 
     <z-form-item prop="siteHomeLogo" label="首页 Logo 图片地址">
-      <el-input id="siteHomeLogo" :prefix-icon="PhotographIcon" v-model="data.siteHomeLogo"/>
+      <el-input id="siteHomeLogo" :prefix-icon="PhotoIcon" v-model="data.siteHomeLogo"/>
       <template #tips>用于设置首页上面包屑左侧 Logo，留空为不显示，会自动居中显示，如有需要可通过自定义 css 来修改默认样式, logo 元素的 id 为 zfile-home-logo</template>
     </z-form-item>
 
@@ -88,14 +88,14 @@
     </z-form-item>
 
 		<template #footer>
-			<el-button type="primary" size="default" :icon="BadgeCheckIcon" @click="saveForm">保存设置</el-button>
+			<el-button type="primary" size="default" :icon="CheckBadgeIcon" @click="saveForm">保存设置</el-button>
 		</template>
 	</z-form>
 </template>
 
 <script setup>
 import { Tickets, Link, Avatar } from '@element-plus/icons-vue'
-import { BadgeCheckIcon, ShieldCheckIcon, KeyIcon, HomeIcon, PhotographIcon, ExclamationIcon } from "@heroicons/vue/solid";
+import { CheckBadgeIcon, ShieldCheckIcon, KeyIcon, HomeIcon, PhotoIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/solid'
 
 import useGlobalConfigStore from "~/stores/global-config";
 let globalConfigStore = useGlobalConfigStore();

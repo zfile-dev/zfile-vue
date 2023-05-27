@@ -144,7 +144,7 @@
 		</z-form-item>
 
 		<template #footer>
-			<el-button type="primary" size="default" :icon="BadgeCheckIcon" @click="saveData">保存设置</el-button>
+			<el-button type="primary" size="default" :icon="CheckBadgeIcon" @click="saveData">保存设置</el-button>
 		</template>
 	</z-form>
 	</div>
@@ -176,7 +176,7 @@ const VMdEditor = defineAsyncComponent(() => {
 })
 
 
-import {BadgeCheckIcon} from '@heroicons/vue/solid'
+import {CheckBadgeIcon} from '@heroicons/vue/24/solid'
 
 import useViewSetting from "~/composables/admin/view/useViewSetting";
 const { data, saveData, saveLoading } = useViewSetting();

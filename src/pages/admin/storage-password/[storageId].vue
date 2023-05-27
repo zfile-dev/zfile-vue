@@ -44,15 +44,15 @@
 		</z-form-item>
 
 		<template #footer>
-			<el-button type="primary" size="default" :icon="BadgeCheckIcon" @click="savePasswordData">保存设置</el-button>
+			<el-button type="primary" size="default" :icon="CheckBadgeIcon" @click="savePasswordData">保存设置</el-button>
 		</template>
 	</z-form>
 </template>
 
 <script setup>
 import {Plus, Delete, Collection, Notebook} from '@element-plus/icons-vue'
-import {BadgeCheckIcon} from '@heroicons/vue/solid'
-import {KeyIcon, FolderIcon} from '@heroicons/vue/outline'
+import {CheckBadgeIcon} from '@heroicons/vue/24/solid'
+import {KeyIcon, FolderIcon} from '@heroicons/vue/24/outline'
 import ZForm from "/src/components/form/ZForm.vue";
 import ZFormItem from "/src/components/form/ZFormItem.vue";
 
