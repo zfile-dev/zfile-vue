@@ -218,8 +218,8 @@
   </Disclosure>
 
   <div class="p-0 sm:p-10 pb-16 sm:pb-26 bg-gray-100 h-full overflow-y-auto border-t-2">
-    <div class="max-w-7xl mx-auto bg-white shadow overflow-hidden sm:rounded-lg">
-      <router-view class="box animate__animated animate__fadeIn"/>
+    <div class="max-w-7xl mx-auto bg-white shadow h-full sm:h-auto sm:rounded-lg">
+      <router-view class="box animate__animated h-full sm:h-auto overflow-auto animate__fadeIn"/>
     </div>
   </div>
 
