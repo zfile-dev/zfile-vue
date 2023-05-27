@@ -38,6 +38,7 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
         loadMoreSize: 50,
         defaultSortField: 'name',
         defaultSortOrder: 'asc',
+        linkExpireTimes: ''
       },
       folderConfig: {
         readmeText: null,
