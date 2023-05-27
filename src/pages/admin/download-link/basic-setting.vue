@@ -71,15 +71,33 @@
 
 			<z-form-item v-show="data.refererType !== 'no'" label="白名单">
 				<el-input type="textarea"
+									@input="testAntPathMatcher"
 				          :rows="6"
-				          placeholder="每行输入一个域名，如：&#13;&#10;http://*example.com&#13;&#10;https://*example.com&#13;&#10;https://a.*.example.com&#13;&#10;*://*.example.com"
 				          v-model="data.refererValue">
 				</el-input>
-				<template #tips v-if="data.refererType === 'white_list'">
-					每行输入一个域名，需要写协议头支持 * 通配符，如白名单 http://*zfile.vip 将只允许 http://zfile.vip、http://www.zfile.vip、http://demo.zfile.vip 等网站访问。
-				</template>
-				<template #tips v-if="data.refererType === 'black_list'">
-					每行输入一个域名，需要写协议头，支持 * 通配符，如黑名单 http://*zfile.vip 将禁止所有如 http://zfile.vip、http://www.zfile.vip、http://demo.zfile.vip 等网站访问。
+				<template #tips >
+          每行输入一个域名，如：
+          <ul>
+            <li>限制泛域名 <span class="text-red-400">http 协议</span> 全部子目录可访问：<div class="inline select-all font-bold"><span class="text-red-400">http://</span>*example.com/**</div></li>
+            <li>限制泛域名 <span class="text-red-400">https 协议</span> 全部子目录可访问：<div class="inline select-all font-bold"><span class="text-red-400">https://</span>*example.com/**</div></li>
+            <li>限制泛域名 <span class="text-red-400">全部协议</span> 全部子目录可访问：<div class="inline select-all font-bold"><span class="text-red-400">*://</span>*example.com/**</div></li>
+          </ul>
+          <div v-if="data.refererType === 'white_list'">
+            每行输入一个域名，需要写协议头支持 * 通配符，如白名单 http://*zfile.vip 将只允许 http://zfile.vip、http://www.zfile.vip、http://demo.zfile.vip 等网站访问。
+          </div>
+          <div v-if="data.refererType === 'black_list'">
+            每行输入一个域名，需要写协议头，支持 * 通配符，如黑名单 http://*zfile.vip 将禁止所有如 http://zfile.vip、http://www.zfile.vip、http://demo.zfile.vip 等网站访问。
+          </div>
+
+          <div class="mt-4">
+						<div>可在下方输入你要测试的地址（应包含协议，路径，从浏览器地址栏复制就是了）</div>
+						<el-input @input="testAntPathMatcher" v-model="testAntVal">
+							<template #suffix>
+								<CheckCircleIcon class="w-4 text-green-500" v-if="testAntVal && testAntResult === true"></CheckCircleIcon>
+								<XCircleIcon class="w-4 text-red-500" v-else-if="testAntVal && testAntResult === false"></XCircleIcon>
+							</template>
+						</el-input>
+          </div>
 				</template>
 			</z-form-item>
 
@@ -110,15 +128,35 @@
 
 
 <script setup>
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/vue/24/solid";
+
+
 import useLinkSetting from "~/composables/admin/link/useLinkSetting";
 const { data, saveData, saveLoading } = useLinkSetting();
 
-
 const clientIp = ref('');
 
-import { getClientIpReq } from "~/api/admin-setting";
+import { getClientIpReq, testAntPathMatcherReq } from "~/api/admin-setting";
 getClientIpReq().then(res => {
   clientIp.value = res.data.data;
 })
+
+
+const testAntVal = ref('');
+const testAntResult = ref(null);
+
+
+const testAntPathMatcher = useDebounceFn(() => {
+	let param = {
+		antPath: data?.value?.refererValue,
+		testPath: testAntVal.value
+	}
+	testAntPathMatcherReq(param).then(res => {
+		testAntResult.value = res.data.data;
+	});
+}, 250);
+
+
+
 
 </script>

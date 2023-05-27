@@ -108,3 +108,15 @@ export const getClientIpReq = () => {
         }
     })
 }
+
+export const testAntPathMatcherReq = (data) => {
+    return axios({
+        url: "/admin/ant-path-test",
+        method: "post",
+				data: data,
+        config: {
+            showDefaultMsg: false,
+            responseIntercept: false
+        }
+    })
+}
