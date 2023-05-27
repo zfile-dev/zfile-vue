@@ -194,11 +194,15 @@ const clearExceedProgress = () => {
 // 字幕列表, 如果是当前视频, 则设置为默认勾选.
 const getSubtitles = (currentName) => {
 	let subtitleList = [];
-	fileDataStore.fileList.find((item, index) => {
-		let name = item.name.toLowerCase();
+	fileDataStore.fileList.find((item) => {
+    let currentNameBase = currentName.split('.')[0];
+		let name = item.name;
 		if (name === (currentName + ".vtt") ||
 			name === (currentName + ".srt") ||
-			name === (currentName + ".ass")) {
+			name === (currentName + ".ass") ||
+      name === (currentNameBase + ".vtt") ||
+      name === (currentNameBase + ".srt") ||
+      name === (currentNameBase + ".ass")) {
 			subtitleList.push({
 				default: subtitleList.length === 0,
 				url: item.url,
