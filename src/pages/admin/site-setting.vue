@@ -14,6 +14,11 @@
 			<el-input id="siteName" :prefix-icon="Tickets" v-model="data.siteName"/>
 		</z-form-item>
 
+    <z-form-item prop="faviconUrl" label="站点 favicon">
+      <el-input id="faviconUrl" :prefix-icon="Tickets" v-model="data.faviconUrl"/>
+      <template #tips>网站在浏览器标题栏的 favicon 图标，需确保输入的地址没有 referer 防盗链，如修改后不生效请清理浏览器缓存或再试。</template>
+    </z-form-item>
+
 		<z-form-item prop="domain" label="后端站点域名">
 			<el-input id="domain" :prefix-icon="Link" v-model="data.domain"/>
 			<template #tips>此地址用于生成直链及本次存储下载使用，请务必保持和服务端地址一样 (需写 http(s):// 协议头)</template>
@@ -107,6 +112,9 @@ let dataRules = ref({
 	siteName: [
 		{required: true, message: '请输入站点名称'},
 	],
+  faviconUrl: [
+    {type: 'url', message: '请输入正确的 favicon 地址，需以 http 或 https 开头'},
+  ],
 	domain: [
 		{required: true, message: '请输入后端站点域名'},
 	],
