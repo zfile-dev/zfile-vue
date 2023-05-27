@@ -1,19 +1,19 @@
 <template>
-  <el-container v-if="loadedConfig">
-    <el-header>
-      <Suspense>
-        <template #default>
-          <Header></Header>
-        </template>
-      </Suspense>
-    </el-header>
+	<el-container v-if="loadedConfig">
+		<el-header>
+			<Suspense>
+				<template #default>
+					<Header></Header>
+				</template>
+			</Suspense>
+		</el-header>
 		<el-main :class="'el-main-' + storageConfigStore.globalConfig?.layout">
-      <router-view />
-    </el-main>
-    <el-footer v-if="storageConfigStore.globalConfig?.icp">
-      <Footer></Footer>
-    </el-footer>
-  </el-container>
+			<router-view />
+		</el-main>
+		<el-footer>
+			<Footer></Footer>
+		</el-footer>
+	</el-container>
 </template>
 
 <script setup>
@@ -27,7 +27,7 @@ let storageConfigStore = useStorageConfigStore();
 
 // 初始化时，加载全局设置
 onBeforeMount(() => {
-  loadGlobalSiteSetting()
+	loadGlobalSiteSetting()
 })
 
 let router = useRouter();
@@ -35,71 +35,71 @@ let router = useRouter();
 let loadedConfig = ref(false);
 
 const loadGlobalSiteSetting = () => {
-  loadGlobalSiteConfigReq().then((res) => {
-    // 如果未安装, 则跳转到安装页
-    if (!res.data.installed) {
-      router.push('/install');
-      return;
-    }
-    storageConfigStore.updateGlobalConfig(res.data);
+	loadGlobalSiteConfigReq().then((res) => {
+		// 如果未安装, 则跳转到安装页
+		if (!res.data.installed) {
+			router.push('/install');
+			return;
+		}
+		storageConfigStore.updateGlobalConfig(res.data);
 
-    if (res.data.customAudioSuffix) {
-      common.constant.fileTypeMap.audio = res.data.customAudioSuffix.split(',');
-    }
-    if (res.data.customImageSuffix) {
-      common.constant.fileTypeMap.image = res.data.customImageSuffix.split(',');
-    }
-    if (res.data.customTextSuffix) {
-      common.constant.fileTypeMap.text = res.data.customTextSuffix.split(',');
-    }
-    if (res.data.customVideoSuffix) {
-      common.constant.fileTypeMap.video = res.data.customVideoSuffix.split(',');
-    }
-    loadedConfig.value = true;
-  }).catch((err) => {
-    if (err.message === 'Network Error') {
-      ElMessage.error('加载失败，无法连接到服务端，请联系管理员.');
-    }
-  })
+		if (res.data.customAudioSuffix) {
+			common.constant.fileTypeMap.audio = res.data.customAudioSuffix.split(',');
+		}
+		if (res.data.customImageSuffix) {
+			common.constant.fileTypeMap.image = res.data.customImageSuffix.split(',');
+		}
+		if (res.data.customTextSuffix) {
+			common.constant.fileTypeMap.text = res.data.customTextSuffix.split(',');
+		}
+		if (res.data.customVideoSuffix) {
+			common.constant.fileTypeMap.video = res.data.customVideoSuffix.split(',');
+		}
+		loadedConfig.value = true;
+	}).catch((err) => {
+		if (err.message === 'Network Error') {
+			ElMessage.error('加载失败，无法连接到服务端，请联系管理员.');
+		}
+	})
 }
 </script>
 
 <style lang="scss" scoped>
 .el-container {
-  height: 100%;
-  width: 100%;
+	height: 100%;
+	width: 100%;
 
-  .el-header,
-  .el-footer {
-    color: var(--el-text-color-primary);
-    padding: 0;
-    text-align: center;
-  }
+	.el-header,
+	.el-footer {
+		color: var(--el-text-color-primary);
+		padding: 0;
+		text-align: center;
+	}
 
-  .el-header {
-    --el-header-height: unset;
-    height: 48px;
-    line-height: 48px !important;
-  }
+	.el-header {
+		--el-header-height: unset;
+		height: 48px;
+		line-height: 48px !important;
+	}
 
-  // 去除文件区 padding
-  .el-main {
-    height: 100%;
-    width: 100%;
-    padding: 0;
-    overflow-x: hidden;
-  }
+	// 去除文件区 padding
+	.el-main {
+		height: 100%;
+		width: 100%;
+		padding: 0;
+		overflow-x: hidden;
+	}
 
   .el-main-card {
     @apply bg-gray-100;
   }
 
-  // 定义脚部高度，边框
-  .el-footer {
-    border-top: var(--zfile-header-footer-border-top);
-    height: 40px;
-    line-height: 40px;
-    font-size: 14px;
-  }
+	// 定义脚部高度，边框
+	.el-footer {
+		border-top: var(--zfile-header-footer-border-top);
+		height: 40px;
+		line-height: 40px;
+		font-size: 14px;
+	}
 }
 </style>
