@@ -25,6 +25,14 @@
 			</template>
 		</z-form-item>
 
+
+		<z-form-item label="默认保存输入的文件夹密码">
+			<el-switch v-model="data.defaultSavePwd"/>
+			<template #tips>
+				可设置是否默认保存输入的文件夹密码, 如果为 true, 则下次进入文件夹时会自动使用上次输入的密码，无需再次输入.
+			</template>
+		</z-form-item>
+
 		<z-form-item label="文件操作习惯">
 			<el-radio v-model="data.fileClickMode" label="click">单击进入</el-radio>
 			<el-radio v-model="data.fileClickMode" label="dbclick">双击进入</el-radio>
