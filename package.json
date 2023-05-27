@@ -63,6 +63,7 @@
 		"marked": "^4.0.17",
 		"md5": "^2.3.0",
 		"minimatch": "^5.1.0",
+		"moment": "^2.29.4",
 		"monaco-editor": "^0.36.1",
 		"mpegts.js": "^1.7.2",
 		"path-browserify": "^1.0.1",
