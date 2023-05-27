@@ -212,6 +212,7 @@
 
       <!-- 底部文档 -->
       <el-card class="mt-5" v-if="storageConfigStore.globalConfig.showDocument
+                  && route.params.storageKey
                   && storageConfigStore.folderConfig.readmeText
                   && storageConfigStore.folderConfig.readmeDisplayMode === 'bottom'">
         <v-md-preview :text="storageConfigStore.folderConfig.readmeText"></v-md-preview>
