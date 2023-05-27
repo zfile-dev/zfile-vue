@@ -18,6 +18,9 @@ let loading = ref(false);
 let storageList = ref([]);
 let searchKey = ref('');
 
+import useStorageCopy from '~/composables/admin/storage/storage-copy'
+const { openDialog: openCopyStorageDialog } = useStorageCopy();
+
 export default function useStorageList(router) {
 
     // 添加存储源
@@ -122,6 +125,7 @@ export default function useStorageList(router) {
             case "filterManager": showFilterPage(command.storage); break;
             case "pwdManager":  showPasswordPage(command.storage); break;
             case "delete": deleteStorage(command.storage); break;
+            case "copy": openCopyStorageDialog(command.storage); break;
         }
     }
 

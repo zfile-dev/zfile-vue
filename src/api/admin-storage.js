@@ -166,3 +166,12 @@ export const changeCompatibilityReadmeEnableReq = (id, action) => {
         method: "post",
     })
 }
+
+// 复制存储源
+export const copyStorageReq = (data) => {
+    return axios({
+        url: `/admin/storage/copy`,
+        method: "post",
+        data
+    })
+}
