@@ -102,6 +102,8 @@
 									<el-dropdown-item :icon="Document" :command="{operator: 'readmeManager', storage}">目录文档</el-dropdown-item>
 									<el-dropdown-item :icon="View" :command="{operator: 'filterManager', storage}">文件过滤</el-dropdown-item>
 									<el-dropdown-item :icon="Key" :command="{operator: 'pwdManager', storage}">密码设置</el-dropdown-item>
+                  <div class="divider"></div>
+                  <el-dropdown-item :icon="CopyDocument" :command="{operator: 'copy', storage}">复制存储源</el-dropdown-item>
 									<div class="divider"></div>
 									<el-dropdown-item :icon="Delete" :command="{operator: 'delete', storage}">删除</el-dropdown-item>
 								</el-dropdown-menu>
@@ -116,12 +118,15 @@
         </li>
 			</ul>
 		</el-card>
+    <storage-copy @close="init"></storage-copy>
 	</div>
 </template>
 
 <script setup>
-import {Search, Delete, Edit, Key, Lock, VideoPause, VideoPlay, View, Document, Plus, MoreFilled} from '@element-plus/icons-vue'
+import {Search, Delete, Edit, Key, Lock, VideoPause, VideoPlay, View, Document, Plus, MoreFilled, CopyDocument} from '@element-plus/icons-vue'
 let router = useRouter();
+
+import StorageCopy from '~/pages/admin/storage-copy/index.vue'
 
 import useStorageList from "~/composables/admin/storage/storage-list";
 const {
