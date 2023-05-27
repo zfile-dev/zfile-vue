@@ -15,5 +15,8 @@ export default defineConfig({
 	define: {
 		'process.env': {}
 	},
+	server:{
+		host: '0.0.0.0',
+	},
 	plugins: [Tov()],
 })
