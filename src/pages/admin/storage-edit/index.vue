@@ -304,6 +304,9 @@ const submitForm = () => {
 			}).finally(() => {
 				loading.value = false;
 			})
+		} else {
+			ElMessage.warning('表单验证失败, 请检查表单数据是否填写正确');
+			return false;
 		}
 	})
 }
@@ -406,11 +409,12 @@ let useInitData = () => {
             return;
 					}
 
-					let systemNames = ['admin', 'file', 'login', 'install', 's', 'onedrive', 'api', 'sharepoint', 's3'];
+					let systemNames = ['admin', 'file', 'login', 'install', 's', 'onedrive', 'api', 'sharepoint', 's3', 'webdav'];
 					if (systemNames.includes(value)) {
 						callback(new Error('不可占用系统级名称，请修改。'));
 						return;
 					}
+
 
 					let reg = /^[\w\-]+$/;
 					if (!reg.test(value)) {
@@ -446,6 +450,26 @@ let useInitData = () => {
 
           if (window.location.protocol === 'https:' && value.indexOf('http://') === 0) {
             callback(new Error('检测到当前 ZFile 站点是 https 协议, 受浏览器限制, 此处也必须是 https 协议, 否则可能无法正常使用.'));
+            return;
+          }
+
+          callback();
+        },
+      }
+    ],
+    'storageSourceAllParam.filePath': [
+      {
+        validator: (rule, value, callback) => {
+          if (value === undefined || value === null || value === '') {
+            callback(new Error('本地存储路径不能为空'));
+            return;
+          }
+
+					let isLinuxAbsolutePath = /^\/.*/.test(value);
+					let isWindowsAbsolutePath = /^[a-zA-Z]+:.*/.test(value);
+					console.log(isLinuxAbsolutePath, isWindowsAbsolutePath);
+          if (!isLinuxAbsolutePath && !isWindowsAbsolutePath) {
+            callback(new Error('本地存储路径必须是绝对路径，Linux 以 / 开头，Windows 以盘符开头'));
             return;
           }
 
