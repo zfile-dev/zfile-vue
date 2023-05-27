@@ -9,5 +9,5 @@ import BasicSetting from "~/pages/admin/download-link/basic-setting.vue";
 <route lang="yaml">
 meta:
   layout: admin
-  name: 直链设置
+  name: 直/短链设置
 </route>

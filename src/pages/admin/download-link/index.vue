@@ -258,5 +258,5 @@ let openLink = (shortLink) => {
 <route lang="yaml">
 meta:
   layout: admin
-  name: 直链管理
+  name: 短链管理
 </route>

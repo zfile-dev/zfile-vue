@@ -231,11 +231,6 @@ import MarkdownViewerAsyncLoading from "~/components/file/preview/MarkdownViewer
 import MarkdownViewerDialogAsyncLoading from "~/components/file/preview/MarkdownViewerDialogAsyncLoading.vue";
 import VideoPlayerAsyncLoading from "~/components/file/preview/VideoPlayerAsyncLoading.vue";
 import TextViewerAsyncLoading from "~/components/file/preview/TextViewerAsyncLoading.vue";
-import AudioPlayer from "~/components/file/preview/AudioPlayer.vue";
-import BackTop from "~/components/BackTop.vue";
-import SvgIcon from "~/components/SvgIcon.vue";
-import Link from "~/components/file/Link.vue";
-import ZUpload from "~/components/file/ZUpload.vue";
 
 import useFileDataStore from "~/stores/file-data";
 import useStorageConfigStore from "~/stores/storage-config";
@@ -257,14 +252,10 @@ import useFileLink from "~/composables/file/useFileLink";
 import useTableOperator from "~/composables/file/useTableOperator";
 // 文件预览相关
 import useFilePreview from "~/composables/file/useFilePreview";
-// 文件操作相关
-import useFileOperator from "~/composables/file/useFileOperator";
-
 
 import useCommon from "~/composables/useCommon";
 import useFileSelect from "~/composables/file/useFileSelect";
 // 文件上传相关
-import useFileUpload from "~/composables/file/useFileUpload";
 import useRouterData from "~/composables/useRouterData";
 
 
@@ -331,7 +322,7 @@ let globalConfigStore = useGlobalConfigStore();
 
 const currentInstance = getCurrentInstance();
 
-let { checkSelectable, selectRowsChange, selectRow, selectRows, selectStatistics, tableRowClassName, clearSelection } = useFileSelect(currentInstance);
+let { checkSelectable, selectRowsChange, tableRowClassName } = useFileSelect(currentInstance);
 
 
 // 初始化时，加载文件列表
@@ -345,21 +336,15 @@ watch(() => [route.params.storageKey, route.params.fullpath], () => {
 })
 
 const {
-	openRow, sortChangeMethod,
-	basicLoading, skeletonLoading, skeletonData, loadFile,
-	loadFileConfig } = useFileData();
+  sortChangeMethod,
+	basicLoading, skeletonLoading, skeletonData, loadFile } = useFileData();
 
-// 直链打开
-const { openLinkDialog, visible:linkVisible } = useFileLink();
+
+const { generateLinkDialogVisible } = useFileLink();
 
 const { tableClickRow, tableDbClickRow, tableHoverRow, tableLeaveRow } = useTableOperator();
 
 const { dialogVideoVisible, dialogTextVisible, dialogPdfVisible, dialogOfficeVisible, dialog3dVisible } = useFilePreview();
-
-const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = useFileOperator();
-
-const { openUploadDialog, openUploadFolderDialog } = useFileUpload();
-
 
 
 import md5 from "md5";

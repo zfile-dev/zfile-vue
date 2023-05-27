@@ -289,5 +289,5 @@ let openLink = (shortLink) => {
 <route lang="yaml">
 meta:
   layout: admin
-  name: 直链日志
+  name: 下载日志
 </route>
