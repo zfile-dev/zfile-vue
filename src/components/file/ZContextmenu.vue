@@ -37,7 +37,7 @@
         <label>打包下载</label>
       </ContextmenuItem>
       <ContextmenuItem v-show="storageConfigStore.permission.link"
-                       @click="openLinkDialog">
+                       @click="openGenerateLinkDialog">
         <el-icon class="contextmenu-icon">
           <svg-icon class="inline" name="link"></svg-icon>
         </el-icon>
@@ -123,7 +123,7 @@ let globalConfigStore = useGlobalConfigStore();
 const { openRow } = useFileData();
 const { selectRow, selectRows, selectStatistics, clearSelection } = useFileSelect();
 const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = useFileOperator();
-const { openLinkDialog } = useFileLink();
+const { openGenerateLinkDialog } = useFileLink();
 const { openUploadDialog, openUploadFolderDialog } = useFileUpload();
 
 const contextmenu = ref();

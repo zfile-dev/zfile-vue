@@ -1,10 +1,15 @@
+import common from "~/common";
+import { batchGenerateShortLinkReq } from "~/api/home";
+
 import { toClipboard } from '@soerenmartius/vue3-clipboard'
 import { encodeData, rendererRect, rendererRound,
     rendererDSJ, rendererLine, rendererFuncB } from 'beautify-qrcode';
 
-import common from "~/common";
-
-import { batchGenerateShortLinkReq } from "~/api/home";
+const generateLinkLoading = ref(false);
+const generateLinkDialogVisible = ref(false);
+const generateLinkFormData = reactive({
+    expireTime: null,
+});
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
@@ -12,21 +17,48 @@ let storageConfigStore = useStorageConfigStore();
 import useRouterData from "~/composables/useRouterData";
 let { storageKey } = useRouterData()
 
+const dataList = ref([]);
 let data = computed(() => {
-    return datas.value.length > 0 ? datas.value[0] : null;
+    return dataList.value.length > 0 ? dataList.value[0] : null;
 });
+let generateLinkResultDialogVisible = ref(false);
+let generateLinkResultLoading = ref(false);
 
-const datas = ref([]);
-let visible = ref(false);
-let loading = ref(false);
+const linkDialogVisible = computed(() => {
+    return generateLinkDialogVisible.value && generateLinkResultDialogVisible.value;
+});
 
 export default function useFileLink() {
 
-    /**
-     * 打开直链 dialog
+    /*
+     * 打开生成链接弹窗
      */
-    const openLinkDialog = () => {
-        visible.value = true;
+    const openGenerateLinkDialog = () => {
+        generateLinkDialogVisible.value = true;
+    };
+
+    /**
+     * 关闭生成链接弹窗
+     */
+    const closeGenerateLinkDialog = () => {
+        generateLinkDialogVisible.value = false;
+    };
+
+    /**
+     * 提交生成链接表单
+     */
+    const submitGenerateLinkForm = () => {
+        closeGenerateLinkDialog();
+        openGenerateLinkResultDialog();
+    };
+
+
+
+    /**
+     * 打开直链生成结果弹窗
+     */
+    const openGenerateLinkResultDialog = () => {
+        generateLinkResultDialogVisible.value = true;
     }
 
     /**
@@ -58,18 +90,18 @@ export default function useFileLink() {
         return 'data:image/svg+xml;utf8,' + encodeURIComponent(xmlElement.innerHTML);
     }
 
-
     /**
      * 生成直链
      *
      * @param files          要生成的直链列表
      */
     const generateALlLink = (files) => {
-        loading.value = true;
+        generateLinkResultLoading.value = true;
 
         let param = {
             storageKey: storageKey.value,
-            paths: []
+            paths: [],
+            expireTime: generateLinkFormData.expireTime
         }
 
         files.forEach((row) => {
@@ -103,15 +135,23 @@ export default function useFileLink() {
                 } else {
                     item.name = files[index].name
                 }
-                datas.value.push(item);
+                dataList.value.push(item);
             })
         }).finally(() => {
-            loading.value = false;
+            generateLinkResultLoading.value = false;
         })
     }
 
     return {
-        visible, loading, openLinkDialog, copyText, data, datas, generateALlLink
+        generateLinkDialogVisible,
+        openGenerateLinkDialog,
+        closeGenerateLinkDialog,
+        generateLinkFormData,
+        generateLinkLoading,
+        submitGenerateLinkForm,
+
+        linkDialogVisible,
+        generateLinkResultDialogVisible, generateLinkResultLoading, openGenerateLinkResultDialog, copyText, data, dataList, generateALlLink
     }
 
 }

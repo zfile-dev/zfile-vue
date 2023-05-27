@@ -1,21 +1,20 @@
 <template>
-	<div class="zfile-file-download-link-body" v-if="visible">
-		<el-dialog v-model="visible" :destroy-on-close="true"
-		           @close="visible = false"
+	<div class="zfile-file-download-link-body" v-if="generateLinkResultDialogVisible">
+		<el-dialog v-model="generateLinkResultDialogVisible" :destroy-on-close="true"
+		           @close="generateLinkResultDialogVisible = false"
 		           title="生成直链"
                :class="{'zfile-file-download-link-dialog-multiple': selectFiles.length > 1, 'zfile-file-download-link-dialog-single': selectFiles.length <= 1}"
 		           draggable
 		           top="5vh">
-
 
 			<el-table v-loading="loading"
                 element-loading-text="生成中..."
                 class="zfile-download-link-table"
                 @cell-click="handleCellClick"
                 :max-height="height * 0.7"
-                :data="datas"
+                :data="dataList"
                 v-if="selectFiles.length > 1">
-				<el-table-column prop="name" show-tooltip-when-overflow>
+				<el-table-column prop="name" :show-overflow-tooltip="true">
           <template #header="scope">
             文件名
             <el-tooltip
@@ -121,7 +120,7 @@
 							<el-tooltip append-to=".zfile-file-download-link-body"
 							            popper-class="zfile-link-tips"
 							            placement="left" content="缩短版直链地址，便于复制分发.">
-								<el-input @click="copyText(data.shortLink)" :prefix-icon="Link" type="small" v-model="data.shortLink">
+								<el-input @click="copyText(data.shortLink)" :prefix-icon="Link" v-model="data.shortLink">
 								</el-input>
 							</el-tooltip>
 						</el-form-item>
@@ -131,7 +130,7 @@
 
 			<template #footer>
 				<el-button type="primary" v-show="selectFiles.length > 1" @click="exportExcel">导出</el-button>
-				<el-button type="info" @click="visible = false">关闭</el-button>
+				<el-button type="info" @click="generateLinkResultDialogVisible = false">关闭</el-button>
 			</template>
 		</el-dialog>
 	</div>
@@ -157,9 +156,11 @@ import useFileSelect from "~/composables/file/useFileSelect";
 let { selectFiles } = useFileSelect();
 
 import useFileLink from "~/composables/file/useFileLink";
-let { visible, loading, copyText, data, datas, generateALlLink } = useFileLink();
+let { generateLinkResultDialogVisible, loading, copyText, data, dataList, generateALlLink } = useFileLink();
 
-watch(() => visible.value, (value) => {
+
+
+watch(() => generateLinkResultDialogVisible.value, (value) => {
 	if (value) {
 		if (selectFiles.value.length === 0) {
 			ElMessage.warning('请至少选择一个文件');
@@ -171,7 +172,7 @@ watch(() => visible.value, (value) => {
       generateALlLink(selectFiles.value);
 		}
 	} else {
-		datas.value = [];
+		dataList.value = [];
 	}
 })
 
@@ -179,7 +180,7 @@ watch(() => visible.value, (value) => {
 const batchCopyLinkField = (filed) => {
 	let links = [];
   let fields = filed.split('.');
-  datas.value.forEach((row) => {
+  dataList.value.forEach((row) => {
     let value = row;
     fields.forEach((item) => {
       value = value[item];
@@ -208,7 +209,7 @@ const exportExcel = () => {
 	let wb = utils.table_to_book(document.querySelector('.zfile-download-link-table'), xlsxParam)
 
 	let colsWidth = [{ wch: 50 }, { wch: 50 }, { wch: 50 }];
-	datas.value.forEach((item) => {
+	dataList.value.forEach((item) => {
 		let col1Length = item.name.length;
 		let col2Length = item.pathLink.length;
 		let col3Length = item.shortLink.length;

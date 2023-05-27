@@ -3,7 +3,7 @@
 		<el-card>
 			<div class="flex justify-between">
 				<h3 class="text-lg leading-6 font-medium text-gray-900">
-					直链日志
+					下载日志
 				</h3>
 				<div v-if="data" class="flex space-x-1.5 justify-center items-center cursor-pointer">
 					<span class="text-gray-400 text-sm font-bold">记录下载日志：</span>
@@ -18,7 +18,7 @@
 			<div class="mt-4">
 				<el-form inline v-model="searchParam">
 					<el-form-item label="存储源">
-						<el-select clearable :teleported="false" v-model="searchParam.storageKey">
+						<el-select clearable :teleported="false" v-model="searchParam.storageKey" placeholder="请选择存储源">
 							<el-option
 								v-for="item in storageList"
 								:key="item.id"
@@ -34,7 +34,7 @@
 					<el-form-item label="短链 Key">
 						<el-input v-model="searchParam.shortKey"></el-input>
 					</el-form-item>
-					<el-form-item label="文件名">
+					<el-form-item label="文件路径">
 						<el-input v-model="searchParam.path"></el-input>
 					</el-form-item>
 					<el-form-item label="请求 IP">
@@ -46,7 +46,7 @@
 					<el-form-item label="Referer">
 						<el-input v-model="searchParam.referer"></el-input>
 					</el-form-item>
-					<el-form-item label="创建时间">
+					<el-form-item label="下载时间">
 						<el-date-picker
 							v-model="searchParam.date"
 							type="daterange"
@@ -62,14 +62,14 @@
 					</el-form-item>
 				</el-form>
 
-				<div>
-					<el-button @click="batchDeleteLink" :icon="Delete" type="danger">批量删除</el-button>
+				<div class="mb-2">
+					<el-button @click="batchDeleteLink" :icon="Delete" type="danger">批量删除选中</el-button>
           <el-button @click="batchDeleteLinkLogByQuery" :icon="Delete" type="danger">删除全部页</el-button>
 				</div>
 
-				<el-table ref="linkTableRef" size="large" :data="pageData" >
+				<el-table border ref="linkTableRef" size="large" :data="pageData" style="width: 100%">
 					<el-table-column type="selection" width="55" />
-					<el-table-column width="120" label="存储源名称">
+					<el-table-column fixed width="120" label="存储源名称">
 						<template #default="scope">
 							<el-tooltip
 								:content="scope.row.storageType?.description"
@@ -78,26 +78,37 @@
 							</el-tooltip>
 						</template>
 					</el-table-column>
-					<el-table-column show-tooltip-when-overflow prop="shortKey" label="短链 key">
+					<el-table-column fixed width="90" align="center" label="下载类型">
+						<template #default="scope">
+							<el-tag v-if="scope.row.shortKey" type="success">短链</el-tag>
+							<el-tag v-else>直链</el-tag>
+						</template>
+					</el-table-column>
+					<el-table-column min-width="400" :show-overflow-tooltip="true" prop="shortKey" label="下载链接">
             <template #default="scope">
-              <div class="space-x-2">
-                <span>{{scope.row.shortKey}}</span>
-                <svg-icon @click="copyText(scope.row.shortKey)" class="inline cursor-pointer" name="copy"></svg-icon>
-                <svg-icon @click="openLink(scope.row.shortKey)" class="inline cursor-pointer text-blue-500 text-sm" name="target"></svg-icon>
+							<div class="space-x-2" v-if="scope.row.shortKey">
+								<span>{{ generateShortLink(scope.row.shortKey) }}</span>
+                <svg-icon @click="copyText(generateShortLink(scope.row.shortKey))" class="ml-2 inline cursor-pointer" name="copy"></svg-icon>
+                <svg-icon @click="openLink(generateShortLink(scope.row.shortKey))" class="ml-1 inline cursor-pointer text-blue-500 text-sm" name="target"></svg-icon>
               </div>
+							<div v-else>
+								<span>{{ generateLink(scope.row) }}</span>
+								<svg-icon @click="copyText(generateLink(scope.row))" class="ml-2 inline cursor-pointer" name="copy"></svg-icon>
+								<svg-icon @click="openLink(generateLink(scope.row))" class="ml-1 inline cursor-pointer text-blue-500 text-sm" name="target"></svg-icon>
+							</div>
             </template>
 					</el-table-column>
-					<el-table-column show-tooltip-when-overflow prop="path" label="路径">
+					<el-table-column width="300" :show-overflow-tooltip="true" prop="path" label="文件路径">
 					</el-table-column>
-					<el-table-column width="100" show-tooltip-when-overflow prop="ip" label="请求 ip">
+					<el-table-column width="100" :show-overflow-tooltip="true" prop="ip" label="请求 IP">
 					</el-table-column>
-					<el-table-column width="180" show-tooltip-when-overflow prop="userAgent" label="UserAgent">
+					<el-table-column width="250" :show-overflow-tooltip="true" prop="userAgent" label="UserAgent">
 					</el-table-column>
-					<el-table-column width="150" show-tooltip-when-overflow prop="referer" label="Referer">
+					<el-table-column width="200" :show-overflow-tooltip="true" prop="referer" label="Referer">
 					</el-table-column>
-					<el-table-column width="180" prop="createTime" label="创建时间">
+					<el-table-column width="155" prop="createTime" label="下载时间">
 					</el-table-column>
-					<el-table-column width="120" label="操作">
+					<el-table-column fixed="right" width="120" label="操作">
 						<template #default="scope">
 							<el-popconfirm title="是否确认删除?" @confirm="deleteLink(scope.row.id)">
 								<template #reference>
@@ -137,10 +148,12 @@ import {
 } from "~/api/admin-download-link";
 import zhCn from 'element-plus/lib/locale/lang/zh-cn'
 
+
 import { Search, Delete } from "@element-plus/icons-vue";
 import {loadStorageListReq} from "~/api/admin-storage";
 import { toClipboard } from "@soerenmartius/vue3-clipboard";
 import { loadConfigReq } from "~/api/admin-setting";
+import common from "~/common";
 
 const searchParam = reactive({
 	shortKey: '',
@@ -259,11 +272,18 @@ let copyText = (text) => {
   });
 }
 
-/**
- * 打开短链
- */
-let openLink = (shortLink) => {
-  window.open(`${systemConfig.value.domain}/s/${shortLink}`);
+
+let openLink = (url) => {
+	window.open(url);
+}
+
+
+let generateShortLink = (shortKey) => {
+	return common.removeDuplicateSeparator(`${systemConfig?.value?.domain}/s/${shortKey}`);
+}
+
+let generateLink = (row) => {
+	return common.removeDuplicateSeparator(`${systemConfig?.value?.domain}/${systemConfig?.value?.directLinkPrefix}/${row.storageKey}/${row.path}`);
 }
 
 </script>

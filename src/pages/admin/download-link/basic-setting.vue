@@ -4,31 +4,32 @@
 		        v-loading="saveLoading"
 		        v-if="data"
 		        element-loading-text="保存中...">
-			<template #form-title>
-				直链设置
-			</template>
-			<template #form-sub-title>
-				这里可以配置直链相关设置
-			</template>
+
+      <template #form-title>
+        直/短链设置
+      </template>
+      <template #form-sub-title>
+        这里可以配置直/短链相关设置
+      </template>
+
+      <z-form-item label="记录下载日志">
+        <el-switch v-model="data.recordDownloadLog"/>
+        <template #tips>
+          是否记录直/短链下载日志
+        </template>
+      </z-form-item>
+
+      <z-form-item label="是否允许生成/使用直链（路径）">
+        <el-switch v-model="data.showPathLink"/>
+        <template #tips>
+          控制是否生成直链时显示直链路径及是否允许使用直链进行下载.
+        </template>
+      </z-form-item>
 
 			<z-form-item label="直链地址前缀">
 				<el-input v-model="data.directLinkPrefix"></el-input>
 				<template #tips>
 					直链地址前缀, 如 http(s)://ip:port/<span class="text-red-400 font-bold">{{data.directLinkPrefix}}</span>/path/filename
-				</template>
-			</z-form-item>
-
-			<z-form-item label="显示生成直/短链功能">
-				<el-switch v-model="data.showLinkBtn"/>
-				<template #tips>
-					仅控制是否显示直/短链生成按钮，不影响使用允许使用直/短链下载
-				</template>
-			</z-form-item>
-
-			<z-form-item label="记录下载日志">
-				<el-switch v-model="data.recordDownloadLog"/>
-				<template #tips>
-					是否记录直链下载日志
 				</template>
 			</z-form-item>
 
@@ -39,19 +40,10 @@
 				</template>
 			</z-form-item>
 
-			<z-form-item label="是否允许使用直链（路径）">
-				<el-switch v-model="data.showPathLink"/>
-				<template #tips>
-					控制是否生成直链时显示直链路径及是否允许使用直链进行下载
-				</template>
-			</z-form-item>
-
-      <z-form-item label="是否允许路径直链可直接访问">
-        <el-switch v-model="data.allowPathLinkAnonAccess"/>
+      <z-form-item label="短链有效期">
+        <TimePicker v-model="data.linkExpireTimes" />
         <template #tips>
-          <span>是否允许未通过 "生成直链" 功能的直链可访问 (仅表示可访问, 如未开启上方 "是否允许使用直链（路径）" 功能，则即使访问了也不允许下载.)</span>
-          <br><br>
-          <span>因路径直链的格式是文件路径和文件名，所以很容易被猜到并访问, 如您不想未生成直链就可直接访问，可考虑使用此功能控制.</span>
+          控制生成短链的有效期
         </template>
       </z-form-item>
 

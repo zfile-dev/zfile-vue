@@ -3,7 +3,7 @@
   <transition enter-active-class="animate__animated animate__fadeInUp animate__faster"
               leave-active-class="animate__animated animate__fadeOutDown animate__faster">
     <!-- 已经处于某个存储源，且不是画廊模式，且选中了多个文件，且没有打开直链弹窗时显示悬浮菜单 -->
-    <div v-show="route.params.storageKey && !fileDataStore.imgMode && selectRows.length > 0 && linkVisible === false"
+    <div v-show="route.params.storageKey && !fileDataStore.imgMode && selectRows.length > 0 && generateLinkDialogVisible === false"
          class="zfile-index-hover-tools">
       <div class="zfile-index-hover-body">
         <template>
@@ -57,7 +57,7 @@
             effect="dark"
             content="生成直链"
             placement="top">
-            <svg-icon @click="openLinkDialog" name="tool-link"></svg-icon>
+            <svg-icon @click="openGenerateLinkDialog" name="tool-link"></svg-icon>
           </el-tooltip>
         </template>
 
@@ -119,7 +119,7 @@ import useFileSelect from "~/composables/file/useFileSelect";
 import useFileOperator from "~/composables/file/useFileOperator";
 
 const { openRow } = useFileData();
-const { openLinkDialog, visible:linkVisible } = useFileLink();
+const { openGenerateLinkDialog, generateLinkDialogVisible } = useFileLink();
 const { selectRow, selectRows, selectStatistics, clearSelection } = useFileSelect();
 const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = useFileOperator();
 

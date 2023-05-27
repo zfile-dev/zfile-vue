@@ -85,7 +85,7 @@
                 <el-icon size="18px">
                   <i-ep-link class="mr-1"/>
                 </el-icon>
-                直链管理
+                链接管理
                 <el-icon class="el-icon--right">
                   <i-ep-arrow-down />
                 </el-icon>
@@ -96,10 +96,10 @@
                     <router-link to="/admin/download-link">短链管理</router-link>
                   </el-dropdown-item>
                   <el-dropdown-item :icon="Tickets">
-                    <router-link to="/admin/download-link/log">直链日志</router-link>
+                    <router-link to="/admin/download-link/log">下载日志</router-link>
                   </el-dropdown-item>
                   <el-dropdown-item :icon="Setting">
-                    <router-link to="/admin/download-link/setting">直链设置</router-link>
+                    <router-link to="/admin/download-link/setting">直/短链设置</router-link>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -196,17 +196,17 @@
         <DisclosureButton
           :class="currentActive === '/admin/download-link' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
           as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-          <router-link to="/admin/download-link">直链列表</router-link>
+          <router-link to="/admin/download-link">短链管理</router-link>
         </DisclosureButton>
         <DisclosureButton
           :class="currentActive === '/admin/download-link/log' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
           as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-          <router-link to="/admin/download-link/log">直链日志</router-link>
+          <router-link to="/admin/download-link/log">下载日志</router-link>
         </DisclosureButton>
         <DisclosureButton
           :class="currentActive === '/admin/download-link/setting' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
           as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-          <router-link to="/admin/download-link/setting">直链设置</router-link>
+          <router-link to="/admin/download-link/setting">直/短链设置</router-link>
         </DisclosureButton>
         <DisclosureButton
           @click="logDownload"
@@ -222,6 +222,7 @@
       <router-view class="box animate__animated animate__fadeIn"/>
     </div>
   </div>
+
 </template>
 
 <script setup>

@@ -3,7 +3,7 @@
 		<el-card>
 			<div class="flex justify-between">
 				<h3 class="text-lg leading-6 font-medium text-gray-900">
-					直链管理
+          短链管理
 				</h3>
 				<div class="flex space-x-1.5 justify-center items-center cursor-pointer">
 					<span @click="openSettingVisible">
@@ -15,7 +15,7 @@
 			<div class="mt-4">
 				<el-form inline v-model="searchParam">
 					<el-form-item label="存储源">
-						<el-select clearable :teleported="false" v-model="searchParam.storageId">
+						<el-select clearable :teleported="false" v-model="searchParam.storageId" placeholder="请选择存储源">
 							<el-option
 								v-for="item in storageList"
 								:key="item.id"
@@ -52,9 +52,10 @@
 
 				<div>
 					<el-button @click="batchDeleteLink" :icon="Delete" type="danger">批量删除</el-button>
+          <el-button @click="batchExportLink" :icon="Download" type="primary">导出直链</el-button>
 				</div>
 
-				<el-table ref="linkTableRef" size="large" :data="pageData" >
+				<el-table border ref="linkTableRef" size="large" :data="pageData" >
 					<el-table-column type="selection" width="55" />
 					<el-table-column width="120" label="存储源名称">
 						<template #default="scope">
@@ -74,10 +75,17 @@
               </div>
             </template>
 					</el-table-column>
-					<el-table-column show-tooltip-when-overflow prop="url" label="路径">
+					<el-table-column :show-overflow-tooltip="true" prop="url" label="路径">
 					</el-table-column>
 					<el-table-column width="180" prop="createDate" label="创建时间">
 					</el-table-column>
+          <el-table-column width="180" prop="expireDate" label="过期时间">
+						<template #default="scope">
+							<div :class="isExpiredDate(scope.row.expireDate) ? 'text-red-500' : ''">
+								<span>{{scope.row.expireDate}}</span>
+							</div>
+						</template>
+          </el-table-column>
 					<el-table-column width="120" label="操作">
 						<template #default="scope">
 							<el-popconfirm title="是否确认删除?" @confirm="deleteLink(scope.row.id)">
@@ -117,10 +125,11 @@
 
 <script setup>
 import BasicSetting from "~/pages/admin/download-link/basic-setting.vue";
-import {batchDeleteShortLink, deleteShortLink, getShortLinkList} from "~/api/admin-download-link";
+import {batchDeleteShortLink, deleteShortLink, getShortLinkList } from "~/api/admin-download-link";
 import zhCn from 'element-plus/lib/locale/lang/zh-cn'
+import moment from 'moment'
 
-import { Search, Delete } from "@element-plus/icons-vue";
+import { Search, Delete, Download } from "@element-plus/icons-vue";
 import {loadStorageListReq} from "~/api/admin-storage";
 import { toClipboard } from "@soerenmartius/vue3-clipboard";
 import { loadConfigReq } from "~/api/admin-setting";
@@ -218,6 +227,9 @@ const batchDeleteLink = () => {
 	});
 }
 
+const batchExportLink = () => {
+  window.open(`${systemConfig.value.domain}/admin/link/export${params}`);
+}
 
 /**
  *  复制直链
@@ -233,6 +245,13 @@ let copyText = (text) => {
  */
 let openLink = (shortLink) => {
   window.open(`${systemConfig.value.domain}/s/${shortLink}`);
+}
+
+
+// 比较直链是否过期, 输入时间格式为 2023-05-01 18:33
+let isExpiredDate = (date) => {
+	let now = moment().format('YYYY-MM-DD HH:mm');
+	return moment(date).isBefore(now);
 }
 
 </script>

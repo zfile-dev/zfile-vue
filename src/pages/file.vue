@@ -188,7 +188,8 @@
       </el-dialog>
 
       <!-- 生成直链 -->
-      <Link></Link>
+      <GenerateLink v-if="generateLinkDialogVisible"></GenerateLink>
+      <GenerateLinkResult></GenerateLinkResult>
 
       <!-- 上传框 -->
       <ZUpload @close="loadFile"></ZUpload>
