@@ -44,7 +44,7 @@
 		"@element-plus/icons-vue": "^2.0.6",
 		"@headlessui/vue": "^1.7.12",
 		"@heroicons/vue": "^2.0.17",
-		"@kangc/v-md-editor": "^2.3.15",
+		"@kangc/v-md-editor": "^2.3.18",
 		"@soerenmartius/vue3-clipboard": "^0.1.2",
 		"@vueuse/integrations": "^9.13.0",
 		"animate.css": "^4.1.1",
