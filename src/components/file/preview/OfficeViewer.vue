@@ -30,7 +30,8 @@ onMounted(() => {
       "width": '100%',
       "editorConfig": {
         mode: 'view',
-        "lang": "zh-CN"
+        "lang": "zh-CN",
+        "user": { "name": "匿名" },
       }
     };
     const docEditor = new DocsAPI.DocEditor("office-body", config);
