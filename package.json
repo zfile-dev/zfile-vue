@@ -73,7 +73,7 @@
 		"ua-browser": "^0.1.5",
 		"v-contextmenu": "^3.0.0",
 		"v3-img-preview-enhance": "^1.1.18",
-		"vue": "^3.2.47",
+		"vue": "^3.3.5",
 		"vue-3d-loader": "^2.0.8",
 		"vue-pdf-embed": "^1.1.4",
 		"xlsx": "^0.18.5"
