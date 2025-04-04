@@ -1,6 +1,6 @@
 <template>
   <TransitionRoot as="template" :show="show">
-    <Dialog as="div" class="relative z-10" @close="handlerClose('close')">
+    <Dialog as="div" class="zfile-prompt-dialog" @close="handlerClose('close')">
       <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
       </TransitionChild>
@@ -63,7 +63,6 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
 import {
   Dialog,
   DialogPanel,
@@ -73,9 +72,9 @@ import {
 } from "@headlessui/vue";
 import { XMarkIcon, PencilIcon } from '@heroicons/vue/24/outline'
 import { useAsyncValidator } from '@vueuse/integrations/useAsyncValidator'
-import { MaybeComputedRef } from "@vueuse/shared";
 import { Rules } from "async-validator";
 import { ConfirmResult } from "./types";
+import { ElCheckbox, ElInput }  from "element-plus";
 
 const props = defineProps({
   show: {
@@ -144,9 +143,10 @@ const props = defineProps({
   }
 })
 
+
 // 表单数据和校验规则
-const form = ref({ inputModel: props.inputDefault, checkboxModel: props.defaultChecked })
-const rules:MaybeComputedRef<Rules> = {
+const form = ref({ inputModel: props.inputDefault!, checkboxModel: props.defaultChecked! })
+const rules:Rules = {
   inputModel: {
     type: 'string',
     required: true,
@@ -159,13 +159,20 @@ const { pass, errorFields } = useAsyncValidator(form, rules)
 // 响应关闭事件
 const emit = defineEmits(['update:show'])
 const handlerClose = (type: 'cancel' | 'close' | 'confirm') => {
-  const result: ConfirmResult = {
+  const result:ConfirmResult = {
     checkbox: form.value.checkboxModel,
     value: form.value.inputModel,
     type
   }
 
   emit('update:show', false)
-  props.onClose(result)
+  props.onClose!(result)
 }
 </script>
+
+<style lang="scss">
+.zfile-prompt-dialog {
+  position: relative;
+  z-index: 3000;
+}
+</style>

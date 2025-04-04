@@ -1,0 +1,91 @@
+$admin-form-item__content-max-width: 768px;
+
+.z-admin-body-wrapper {
+  @apply p-4 h-full sm:h-auto overflow-auto;
+}
+
+.z-admin-form {
+	.el-form-item {
+		@apply border-b border-gray-200;
+
+	  	.el-form-item__label {
+			@apply font-medium;
+		}
+
+		.el-form-item__content {
+			max-width: $admin-form-item__content-max-width;
+		}
+	}
+
+	.el-form-item--large {
+		padding-bottom: 22px;
+	}
+
+	.el-form-item--large:first-child {
+		margin-top: 28px;
+	}
+
+	.el-form-item--default, .el-form-item--small, .el-form-item--mini {
+		padding-bottom: 18px;
+	}
+
+	.el-form-item--default:first-child,
+	.el-form-item--small:first-child,
+	.el-form-item--mini:first-child {
+		margin-top: 24px;
+	}
+}
+
+.el-form-item {
+	.el-form-item__content {
+		max-width: $admin-form-item__content-max-width;
+	}
+}
+
+.z-admin-search-from {
+  @apply mb-2;
+  .el-form-item {
+	@apply w-full;
+
+	.el-input, .el-select, .el-date-editor {
+	  @apply w-full;
+	}
+  }
+
+  .z-admin-search-from-row {
+	@apply w-full;
+  }
+}
+
+// 表单中的表格上方按钮区
+.z-admin-form-table-tools {
+  @apply w-full;
+  .el-button {
+	  @apply max-md:w-full mb-2;
+  }
+}
+
+// 表格上方按钮区 (搜索类表格页的操作区)
+.z-admin-table-tools {
+  @apply mb-2 w-full
+	    max-md:border-t-2
+		max-md:border-dashed
+  		max-md:mt-2
+  		max-md:flex
+  		max-md:flex-col;
+  .el-button {
+	@media (max-width: 767px) {
+	  margin-left: 0 !important;
+	  width: 100%;
+	  margin-top: 8px;
+	}
+  }
+}
+
+.z-btn-primary {
+  @apply text-blue-400 w-4 h-4 inline cursor-pointer;
+}
+
+.z-btn-danger {
+  @apply text-red-400 w-4 h-4 inline cursor-pointer;
+}

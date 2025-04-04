@@ -24,7 +24,7 @@ export default function useFileContextMenu() {
         // 如果右键的不是空白区域，则不显示菜单
         if (row instanceof Event) {
             event = row;
-            let parentDom = document.querySelector(".zfile-index-body-wrapper");
+            let parentDom = document.querySelector(".zfile-index-body");
             let ignoreDom = document.querySelector(".el-dialog");
             if (!parentDom.contains(event.target) || ignoreDom?.contains(event.target)) {
                 return;
@@ -67,4 +67,5 @@ export default function useFileContextMenu() {
     return {
         initContextMenu, showFileMenu, contextMenuTargetFile, contextMenuTargetBlank
     }
+
 }

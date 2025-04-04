@@ -1,41 +1,42 @@
-import {loadStoragePasswordReq, saveStoragePasswordReq} from "~/api/admin-storage";
-import util from "~/tool/common";
+import {loadStoragePasswordReq, saveStoragePasswordReq} from "~/api/admin/admin-storage";
 
-let passwordList = ref([]);
+let list = ref([]);
 let loading = ref(false);
 import Sortable from "sortablejs";
+import { isEmpty } from "~/utils";
 
 export default function useStoragePassword(router, route) {
     let currentStorageId = route.params.storageId;
 
-    const loadPasswordData = () => {
+    const loadData = () => {
         loadStoragePasswordReq(currentStorageId).then((response) => {
-            passwordList.value = response.data;
-            if (passwordList.value.length === 0) {
-                addPasswordItem();
+            list.value = response.data;
+            if (list.value.length === 0) {
+                addItem();
             }
             setSort();
         });
     }
 
     const setSort = () => {
-        const el = document.querySelector('.z-form-body')
-        Sortable.create(el, {
-            draggable: '.expression-item',
-            onEnd: e => {
-                if (e.oldIndex === e.newIndex) {
-                    return;
+        const el = document.querySelectorAll('.el-table__body-wrapper table > tbody')[0]
+        if (el) {
+            Sortable.create(el, {
+                filter: ".el-button",
+                onEnd: e => {
+                    if (e.oldIndex === e.newIndex) {
+                        return;
+                    }
+                    const targetRow = list.value.splice(e.oldIndex, 1)[0];
+                    list.value.splice(e.newIndex, 0, targetRow);
                 }
-
-                const currRow = passwordList.value.splice(e.oldIndex - 1, 1)[0];
-                passwordList.value.splice(e.newIndex - 1, 0, currRow)
-            }
-        })
+            })
+        }
     }
 
-    const savePasswordData = () => {
-        let notFill = passwordList.value.find((value) => {
-            if (util.isEmpty(value.description) || util.isEmpty(value.expression) || util.isEmpty(value.password)) {
+    const saveData = () => {
+        let notFill = list.value.find((value) => {
+            if (isEmpty(value.description) || isEmpty(value.expression) || isEmpty(value.password)) {
                 ElMessage.warning('请检查数据填写是否完整');
                 return true;
             }
@@ -44,11 +45,11 @@ export default function useStoragePassword(router, route) {
 
         if (!notFill) {
             loading.value = true;
-            for (let i = 0; i < passwordList.value.length; i++) {
-                let valueElement = passwordList.value[i];
+            for (let i = 0; i < list.value.length; i++) {
+                let valueElement = list.value[i];
                 valueElement.id = (i + 1);
             }
-            saveStoragePasswordReq(currentStorageId, passwordList.value).then(() => {
+            saveStoragePasswordReq(currentStorageId, list.value).then(() => {
                 ElMessageBox.confirm('保存成功, 是否返回存储源列表？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -65,22 +66,36 @@ export default function useStoragePassword(router, route) {
         }
     }
 
-    const addPasswordItem = () => {
-        passwordList.value.push({
-            description: '表达式 - ' + (passwordList.value.length + 1),
+    const addItem = () => {
+        list.value.push({
+            description: '表达式 - ' + (list.value.length + 1),
             expression: '',
             password: '',
             storageId: currentStorageId
         });
     }
 
-    const deletePasswordItem = (index) => {
-        passwordList.value.splice(index, 1);
+    const deleteItem = (index) => {
+        list.value.splice(index, 1);
     }
 
+    const moveUp = (index) => {
+        if (index === 0) return;
+        const item = list.value[index];
+        list.value.splice(index, 1);
+        list.value.splice(index - 1, 0, item);
+    };
+
+    const moveDown = (index) => {
+        if (index === list.value.length - 1) return;
+        const item = list.value[index];
+        list.value.splice(index, 1);
+        list.value.splice(index + 1, 0, item);
+    };
+
     return {
-        loading, loadPasswordData, passwordList,
-        addPasswordItem, deletePasswordItem,
-        savePasswordData
+        loading, loadData, list,
+        addItem, deleteItem, moveUp, moveDown,
+        saveData
     }
 }

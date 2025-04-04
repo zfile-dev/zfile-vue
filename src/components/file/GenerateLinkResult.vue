@@ -2,7 +2,7 @@
 	<div class="zfile-file-download-link-body" v-if="generateLinkResultDialogVisible">
 		<el-dialog v-model="generateLinkResultDialogVisible" :destroy-on-close="true"
 		           @close="generateLinkResultDialogVisible = false"
-		           title="生成直链"
+		           title="直链"
                :class="{'zfile-file-download-link-dialog-multiple': selectFiles.length > 1, 'zfile-file-download-link-dialog-single': selectFiles.length <= 1}"
 		           draggable
 		           top="5vh">
@@ -11,10 +11,10 @@
                 element-loading-text="生成中..."
                 class="zfile-download-link-table"
                 @cell-click="handleCellClick"
-                :max-height="height * 0.7"
+                :max-height="currentPageHeight * 0.7"
                 :data="dataList"
                 v-if="selectFiles.length > 1">
-				<el-table-column prop="name" :show-overflow-tooltip="true">
+				<el-table-column prop="name" show-overflow-tooltip>
           <template #header="scope">
             文件名
             <el-tooltip
@@ -23,7 +23,7 @@
               effect="dark"
               content="批量复制到剪贴板"
               placement="top">
-              <svg-icon @click="batchCopyLinkField('name')" class="inline cursor-pointer l-5" name="copy"></svg-icon>
+              <i-ic-baseline-content-copy @click="batchCopyLinkField('name')" class="inline cursor-pointer l-5" />
             </el-tooltip>
           </template>
 					<template #default="scope">
@@ -31,7 +31,9 @@
 					</template>
 				</el-table-column>
 
-				<el-table-column prop="pathLink" v-if="storageConfigStore.permission.pathLink" show-overflow-tooltip>
+				<el-table-column prop="pathLink"
+                         v-if="storageConfigStore.permission.pathLink && (currentLinkDialogType === 'all' || currentLinkDialogType === 'pathLink')"
+                         show-overflow-tooltip>
 					<template #header="scope">
 						直链
 						<el-tooltip
@@ -40,7 +42,7 @@
 							effect="dark"
 							content="批量复制到剪贴板"
 							placement="top">
-							<svg-icon @click="batchCopyLinkField('pathLink')" class="inline cursor-pointer l-5" name="copy"></svg-icon>
+							<i-ic-baseline-content-copy @click="batchCopyLinkField('pathLink')" class="inline cursor-pointer l-5" />
 						</el-tooltip>
 					</template>
 					<template #default="scope">
@@ -48,7 +50,9 @@
 					</template>
 				</el-table-column>
 
-				<el-table-column prop="shortLink" v-if="storageConfigStore.permission.shortLink" show-overflow-tooltip width="250">
+				<el-table-column prop="shortLink"
+                         v-if="storageConfigStore.permission.shortLink && (currentLinkDialogType === 'all' || currentLinkDialogType === 'shortLink')"
+                         show-overflow-tooltip>
 					<template #header="scope">
 						短链
 						<el-tooltip
@@ -57,15 +61,15 @@
 							effect="dark"
 							content="批量复制到剪贴板"
 							placement="top">
-							<svg-icon @click="batchCopyLinkField('shortLink')" class="inline cursor-pointer l-5" name="copy"></svg-icon>
+							<i-ic-baseline-content-copy @click="batchCopyLinkField('shortLink')" class="inline cursor-pointer l-5" />
 						</el-tooltip>
 					</template>
 					<template #default="scope">
 						{{ scope.row.shortLink }}
 					</template>
 				</el-table-column>
-
 			</el-table>
+
 			<el-row class="md:space-y-6" v-if="selectFiles.length === 1 && data">
 				<div class="flex flex-row space-x-10 w-full">
 					<el-image ref="qrcodeRef" class="w-3/4" :src="data.currentImg"/>
@@ -100,27 +104,27 @@
 				<div class="w-full">
 					<el-form>
 						<el-form-item>
-							<el-input readonly :prefix-icon="Document" v-model="data.row.name"></el-input>
+							<el-input readonly :prefix-icon="DocumentTextIcon" v-model="data.name"></el-input>
 						</el-form-item>
 						<el-form-item>
-							<el-input readonly :prefix-icon="Calendar" v-model="data.row.time"></el-input>
+							<el-input readonly :prefix-icon="CalendarIcon" v-model="data.time"></el-input>
 						</el-form-item>
 						<el-form-item>
-							<el-input readonly :prefix-icon="Coin" v-model="data.row.size"></el-input>
+							<el-input readonly :prefix-icon="CircleStackIcon" v-model="data.size"></el-input>
 						</el-form-item>
-						<el-form-item v-if="storageConfigStore.permission.pathLink">
+						<el-form-item v-if="storageConfigStore.permission.pathLink && (currentLinkDialogType === 'all' || currentLinkDialogType === 'pathLink')">
 							<el-tooltip append-to=".zfile-file-download-link-body"
 							            popper-class="zfile-link-tips"
 							            placement="left" content="路径直链地址，包含文件完整路径.">
-								<el-input @click="copyText(data.pathLink)" :prefix-icon="Link" type="small" v-model="data.pathLink">
+								<el-input @click="copyText(data.pathLink)" :prefix-icon="LinkIcon" v-model="data.pathLink">
 								</el-input>
 							</el-tooltip>
 						</el-form-item>
-						<el-form-item v-if="storageConfigStore.permission.shortLink">
+						<el-form-item v-if="storageConfigStore.permission.shortLink && (currentLinkDialogType === 'all' || currentLinkDialogType === 'shortLink')">
 							<el-tooltip append-to=".zfile-file-download-link-body"
 							            popper-class="zfile-link-tips"
 							            placement="left" content="缩短版直链地址，便于复制分发.">
-								<el-input @click="copyText(data.shortLink)" :prefix-icon="Link" v-model="data.shortLink">
+								<el-input @click="copyText(data.shortLink)" :prefix-icon="LinkIcon" v-model="data.shortLink">
 								</el-input>
 							</el-tooltip>
 						</el-form-item>
@@ -137,7 +141,8 @@
 </template>
 
 <script setup>
-import { Calendar, Coin, Link, Document } from '@element-plus/icons-vue';
+import { currentPageHeight } from "~/utils";
+import { CalendarIcon, CircleStackIcon, LinkIcon, DocumentTextIcon } from '@heroicons/vue/24/outline'
 
 // 组件传参及回写
 const props = defineProps({
@@ -156,7 +161,7 @@ import useFileSelect from "~/composables/file/useFileSelect";
 let { selectFiles } = useFileSelect();
 
 import useFileLink from "~/composables/file/useFileLink";
-let { generateLinkResultDialogVisible, loading, copyText, data, dataList, generateALlLink } = useFileLink();
+let { generateLinkResultDialogVisible, loading, copyText, data, dataList, generateALlLink, currentLinkDialogType } = useFileLink();
 
 
 
@@ -190,11 +195,8 @@ const batchCopyLinkField = (filed) => {
 	copyText(links.join('\n'));
 }
 
-import useCommon from "~/composables/useCommon";
-const { height } = useCommon();
-
 import FileSaver from 'file-saver'
-import { utils, write } from 'xlsx'
+import { utils, write } from 'xlsx/dist/xlsx.core.min'
 
 const exportExcel = () => {
 	let xlsxParam = { raw: true }
@@ -211,8 +213,8 @@ const exportExcel = () => {
 	let colsWidth = [{ wch: 50 }, { wch: 50 }, { wch: 50 }];
 	dataList.value.forEach((item) => {
 		let col1Length = item.name.length;
-		let col2Length = item.pathLink.length;
-		let col3Length = item.shortLink.length;
+		let col2Length = item.pathLink?.length;
+		let col3Length = item.shortLink?.length;
 
 		if (col1Length > colsWidth[0].wch) {
 			colsWidth[0].wch = col1Length;

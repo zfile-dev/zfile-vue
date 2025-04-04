@@ -27,16 +27,16 @@
 							effect="dark"
 							content="列表模式"
 							placement="bottom">
-							<div class="zfile-index-setting-drawer-item current">
-								<SvgIcon name="table-layout"></SvgIcon>
+							<div class="zfile-index-setting-drawer-item" :class="{ current: zfileSettingCache.view.type === 'table' }" @click="zfileSettingCache.view.type = 'table'">
+								<Bars3Icon></Bars3Icon>
 							</div>
 						</el-tooltip>
 						<el-tooltip
 							effect="dark"
-							content="图标模式（暂未实现）"
+							content="图标模式"
 							placement="bottom">
-							<div class="zfile-index-setting-drawer-item">
-								<SvgIcon name="card-layout"></SvgIcon>
+							<div class="zfile-index-setting-drawer-item" :class="{ current: zfileSettingCache.view.type === 'card' }" @click="zfileSettingCache.view.type = 'card'">
+								<Squares2X2Icon></Squares2X2Icon>
 							</div>
 						</el-tooltip>
 					</div>
@@ -63,45 +63,45 @@
 					<div class="zfile-index-setting-drawer-title">画廊</div>
 					<div class="text-gray-400 text-sm">如已处于画廊模式，需重新启用画廊模式生效.</div>
 					<div class="flex justify-between">
-						<div class="text-lg font-medium">图片列数</div>
+						<div class="text-base font-medium">图片列数</div>
 						<el-input-number v-model="zfileSettingCache.gallery.column" :min="1"></el-input-number>
 					</div>
 					<div class="flex justify-between">
-						<div class="text-lg font-medium">列间距</div>
+						<div class="text-base font-medium">列间距</div>
 						<el-input-number v-model="zfileSettingCache.gallery.columnSpacing" :min="0"></el-input-number>
 					</div>
 					<div class="flex justify-between">
-						<div class="text-lg font-medium">行间距</div>
+						<div class="text-base font-medium">行间距</div>
 						<el-input-number v-model="zfileSettingCache.gallery.rowSpacing" :min="0"></el-input-number>
 					</div>
 					<div class="flex justify-between">
-						<div class="text-lg font-medium">图片是否带圆角边框</div>
+						<div class="text-base font-medium">图片是否带圆角边框</div>
 						<el-switch v-model="zfileSettingCache.gallery.roundedBorder"></el-switch>
 					</div>
 					<div class="flex justify-between">
-						<div class="text-lg font-medium">显示名称</div>
+						<div class="text-base font-medium">显示名称</div>
 						<el-switch v-model="zfileSettingCache.gallery.showInfo"></el-switch>
 					</div>
 					<div class="flex justify-between">
-						<div class="text-lg font-medium">名称显示模式</div>
-						<el-select class="w-[150px]" v-model="zfileSettingCache.gallery.showInfoMode">
+						<div class="text-base font-medium w-full">名称显示模式</div>
+						<el-select v-model="zfileSettingCache.gallery.showInfoMode">
 							<el-option label="悬浮显示" value="hover"></el-option>
 							<el-option label="底部显示" value="bottom"></el-option>
 						</el-select>
 					</div>
 					<div class="flex justify-between">
-						<div class="text-lg font-medium">双击预览模式</div>
-						<el-select class="w-[150px]" v-model="zfileSettingCache.imagePreview.mode">
+						<div class="text-base font-medium w-full">双击预览模式</div>
+						<el-select v-model="zfileSettingCache.imagePreview.mode">
 							<el-option label="显示全部" value="full"></el-option>
 							<el-option label="显示单张" value="only"></el-option>
 						</el-select>
 					</div>
           <div class="flex justify-between">
-            <div class="text-lg font-medium">点击放大预览</div>
+            <div class="text-base font-medium">点击放大预览</div>
             <el-switch v-model="zfileSettingCache.imagePreview.gallery"></el-switch>
           </div>
           <div class="flex justify-between">
-            <div class="text-lg font-medium">回到顶部按钮</div>
+            <div class="text-base font-medium">回到顶部按钮</div>
             <el-switch v-model="zfileSettingCache.gallery.showBackTop"></el-switch>
           </div>
 				</div>
@@ -114,8 +114,14 @@
 </template>
 
 <script setup>
+import { isMobile } from "~/utils";
+import { Bars3Icon, Squares2X2Icon } from '@heroicons/vue/24/solid'
+
 import useSetting from "~/composables/header/useSetting";
 const { visible, zfileSettingCache } = useSetting();
+
+import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
+const { currentStorageKey, storageList } = useHeaderStorageList();
 
 import useGlobalConfigStore from "~/stores/global-config";
 let globalConfigStore = useGlobalConfigStore();
@@ -135,6 +141,13 @@ const viewSizeMap = {
 	3: 'large'
 };
 
+const viewMap = {
+	1: 'table',
+	2: 'card',
+	3: 'card-gallery'
+};
+
+
 watch(() => zfileSettingCache.value, (value) => {
 	globalConfigStore.zfileConfig.gallery = value.gallery;
   globalConfigStore.zfileConfig.imagePreview = value.imagePreview;
@@ -151,17 +164,6 @@ watch(() => zfileSettingCache.value, (value) => {
 	immediate: true,
 	deep: true
 });
-
-let router = useRouter();
-let route = useRoute();
-
-import useCommon from "~/composables/useCommon";
-const { isMobile } = useCommon();
-
-import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
-const { currentStorageKey, storageList } = useHeaderStorageList();
-
-
 </script>
 
 <style lang="scss" scoped>

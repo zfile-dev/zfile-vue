@@ -19,11 +19,13 @@
 <script setup>
 import Header from "~/components/layout/Header.vue";
 import Footer from "~/components/layout/Footer.vue";
-import { loadGlobalSiteConfigReq } from "~/api/home";
+import { loadGlobalSiteConfigReq } from "~/api/home/home";
 
 import useStorageConfigStore from "~/stores/storage-config";
-import common from "~/common";
 let storageConfigStore = useStorageConfigStore();
+
+import useGlobalConfigStore from "~/stores/global-config";
+let globalConfigStore = useGlobalConfigStore();
 
 // 初始化时，加载全局设置
 onBeforeMount(() => {
@@ -43,18 +45,26 @@ const loadGlobalSiteSetting = () => {
 		}
 		storageConfigStore.updateGlobalConfig(res.data);
 
+    if (res.data.guest) {
+      window.location.href = globalConfigStore.zfileConfig.baseUrl + '/guest';
+      return;
+    }
+
 		if (res.data.customAudioSuffix) {
-			common.constant.fileTypeMap.audio = res.data.customAudioSuffix.split(',');
+			constant.fileTypeMap.audio = res.data.customAudioSuffix.split(',');
 		}
 		if (res.data.customImageSuffix) {
-			common.constant.fileTypeMap.image = res.data.customImageSuffix.split(',');
+			constant.fileTypeMap.image = res.data.customImageSuffix.split(',');
 		}
 		if (res.data.customTextSuffix) {
-			common.constant.fileTypeMap.text = res.data.customTextSuffix.split(',');
+			constant.fileTypeMap.text = res.data.customTextSuffix.split(',');
 		}
 		if (res.data.customVideoSuffix) {
-			common.constant.fileTypeMap.video = res.data.customVideoSuffix.split(',');
+			constant.fileTypeMap.video = res.data.customVideoSuffix.split(',');
 		}
+    if (res.data.customOfficeSuffix) {
+      constant.fileTypeMap.office = res.data.customOfficeSuffix.split(',');
+    }
 		loadedConfig.value = true;
 	}).catch((err) => {
 		if (err.message === 'Network Error') {
@@ -84,8 +94,6 @@ const loadGlobalSiteSetting = () => {
 
 	// 去除文件区 padding
 	.el-main {
-		height: 100%;
-		width: 100%;
 		padding: 0;
 		overflow-x: hidden;
 	}

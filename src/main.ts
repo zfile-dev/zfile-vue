@@ -11,7 +11,7 @@ import useGlobalConfigStore from "~/stores/global-config";
 const globalConfigStore = useGlobalConfigStore();
 
 import config from '../package.json'
-console.log("\n %c ZFile " + config.version + " %c https://github.com/zhaojun1998/zfile \n\n", "background: #35495e; padding: 1px; border-radius: 3px 0 0 3px; color: #fff", "background: #fadfa3; padding: 1px; border-radius: 0 3px 3px 0; color: #fff");
+console.log("\n %c ZFile " + config.version + " %c https://github.com/zfile-dev/zfile \n\n", "background: #35495e; padding: 1px; border-radius: 3px 0 0 3px; color: #fff", "background: #fadfa3; padding: 1px; border-radius: 0 3px 3px 0; color: #fff");
 
 axios.get('/zfile.config.json').then((res) => {
   globalConfigStore.updateZfileConfig(res.data);

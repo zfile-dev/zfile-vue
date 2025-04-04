@@ -1,9 +1,9 @@
 <template>
   <nav class="flex w-full relative z-breadcrumbs-root" ref="parentEl">
     <ol role="list" ref="breadcrumbEl" class="z-breadcrumbs">
-      <li v-for="item in foldBreadcrumb.head" :key="item.name">
+      <li v-for="(item, index) in foldBreadcrumb.head" :key="item.index">
         <div class="z-breadcrumbs__item">
-          <ChevronRightIcon class="z-breadcrumbs__icon" v-if="item !== props.items[0]" />
+          <ChevronRightIcon class="z-breadcrumbs__icon" v-if="index !== 0" />
           <a @click.prevent.stop="clickBreadcrumb(item)" :href="item.href" class="z-breadcrumbs__text">{{ item.name }}</a>
         </div>
       </li>
@@ -24,7 +24,7 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="w-48 sm:w-72">
-                  <el-dropdown-item v-for="(item, index) in foldBreadcrumb.fold" :key="index" @click.prevent.stop="clickBreadcrumb(item)">
+                  <el-dropdown-item v-for="(item, index) in foldBreadcrumb.fold" :key="item.index" @click.prevent.stop="clickBreadcrumb(item)">
                     <a :href="item?.href"
                        :class="[item === props.items[props.items.length - 1] ? 'cursor-not-allowed text-gray-300' : 'text-gray-600 hover:text-gray-700 font-semibold', '  max-w-md overflow-ellipsis overflow-hidden whitespace-nowrap']">
                       {{ item?.name }}
@@ -36,7 +36,7 @@
           </div>
         </li>
         <li v-for="(item, index) in foldBreadcrumb.show" :key="item.name">
-          <div class="z-breadcrumbs__item">
+          <div class="z-breadcrumbs__item" @click="debugFn">
             <ChevronRightIcon class="z-breadcrumbs__icon" v-if="item !== props.items[0]" />
             <a @click.prevent.stop="clickBreadcrumb(item)" :href="item.href" :class="index === foldBreadcrumb.show.length - 1 ? 'disable' : ''" class="z-breadcrumbs__text">{{ item.name }}</a>
           </div>
@@ -45,8 +45,8 @@
     </ol>
 
     <!-- 辅助渲染面包屑，用于获取每个子元素的宽度 -->
-    <ol role="list" ref="hideBreadcrumbEl" class="!flex-nowrap z-breadcrumbs invisible absolute">
-      <li v-for="item in props.items" :key="item.name">
+    <ol role="list" ref="hideBreadcrumbEl" class="z-breadcrumbs invisible absolute" :aaa="JSON.stringify(props.items)">
+      <li v-for="item in props.items" :key="item.index">
         <div class="z-breadcrumbs__item">
           <ChevronRightIcon class="z-breadcrumbs__icon" v-if="item !== props.items[0]" />
           <a @click.prevent.stop="clickBreadcrumb(item)" :href="item.href" class="z-breadcrumbs__text">{{ item.name }}</a>
@@ -63,6 +63,10 @@
 import { ChevronRightIcon } from '@heroicons/vue/24/solid'
 import { useResizeObserver } from '@vueuse/core'
 
+let route = useRoute();
+console.log(route);
+
+
 // 组件接收的参数
 let props = defineProps({
   items: {
@@ -73,6 +77,13 @@ let props = defineProps({
     type: Number,
     default: 1
   }
+})
+
+// 检测到 props.items 变化时，重新给 props.items 中的每个元素添加一个 index 属性
+watch(() => props.items, () => {
+  props.items.forEach((item, index) => {
+    item.index = index;
+  })
 })
 
 // 组件回调的事件
@@ -99,8 +110,10 @@ useResizeObserver(parentEl, (entries) => {
 })
 
 // 面包屑元素宽度变化时，重新计算面包屑
-useResizeObserver(hideBreadcrumbEl, (entries) => {
+useMutationObserver(hideBreadcrumbEl, (entries) => {
   resizeFunction(entries);
+}, {
+  childList: true,
 })
 
 const resizeFunction = (entries) => {
@@ -143,7 +156,9 @@ const foldBreadcrumb = ref({
 
 // 根据面包屑数据计算面包屑折叠数据
 const computeFoldBreadcrumb = () => {
+  console.log('[z-breadcrumb] 开始计算面包屑折叠数据');
   let items = props.items.slice(0);
+
   let head = [];
   let fold = [];
   let show = items.slice(0);
@@ -203,6 +218,10 @@ const getElementWidth = (element) => {
   let boundingClientRect = element.getBoundingClientRect();
   return boundingClientRect.width + parseFloat(getComputedStyle(element).marginLeft) + parseFloat(getComputedStyle(element).marginRight);
 }
+
+const debugFn = () => {
+  console.log('foldBreadcrumb', foldBreadcrumb.value);
+}
 </script>
 
 <style scoped lang="scss">
@@ -213,7 +232,7 @@ const getElementWidth = (element) => {
     @apply flex items-center;
   }
   .z-breadcrumbs__icon {
-    @apply flex-shrink-0 h-5 w-5 text-gray-400;
+    @apply flex-shrink-0 h-3 font-bold w-3 text-gray-500;
   }
   .z-breadcrumbs__text {
     @apply ml-3 text-[13px] font-semibold text-gray-600 hover:text-gray-700;

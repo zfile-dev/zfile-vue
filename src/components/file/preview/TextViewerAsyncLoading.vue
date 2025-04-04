@@ -2,7 +2,7 @@
   <div class="zfile-async-loading p-10 h-[75vh] w-full">
     <div class="flex justify-between h-full">
       <div class="w-1/4">
-        <el-skeleton animated count="6" />
+        <el-skeleton animated :count="6" />
       </div>
       <div class="w-20 h-full">
         <el-skeleton animated class="h-full">

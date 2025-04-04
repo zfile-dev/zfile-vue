@@ -1,8 +1,4 @@
 import { useKeyModifier } from '@vueuse/core'
-import {removeDuplicateSlashes} from "fast-glob/out/managers/patterns";
-
-import useGlobalConfigStore from "~/stores/global-config";
-let globalConfigStore = useGlobalConfigStore();
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
@@ -24,7 +20,10 @@ import useFileOperator from "~/composables/file/useFileOperator";
 let { batchDelete } = useFileOperator();
 
 import useFileData from "~/composables/file/useFileData";
-const { skeletonLoading, openRow } = useFileData();
+const { openRow } = useFileData();
+
+import useFileLoading from "~/composables/file/useFileLoading";
+const { skeletonLoading } = useFileLoading();
 
 import useFileSelect from "~/composables/file/useFileSelect";
 const { selectRows, selectRow, clearSelection, toggleRowSelection, toggleAllSelection } = useFileSelect();
@@ -68,6 +67,13 @@ export const hasDialog = () => {
 export const hasPasswordInputFocus = () => {
     return document.querySelector(".is-message-box .el-input__inner") === document.activeElement;
 }
+
+
+// 当前是否聚焦在搜索输入框
+export const hasSearchInputFocus = () => {
+    return document.querySelector(".zfile-search-input .el-input__inner") === document.activeElement;
+}
+
 
 // 拖拽选择相关
 // 开始拖拽的文件行索引

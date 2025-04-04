@@ -1,0 +1,52 @@
+@use 'sass:math';
+
+// layout
+$navbar-height: 3rem;
+$banner-height: 25rem;
+$footbar-height: 4rem;
+$container-width: 960px;
+$mobile-width: 420px;
+
+// colors
+$white: #ffffff;
+$black: #000000;
+$widget-primary: #0075ff;
+$npm-primary: #bb161b;
+$github-dimmed: #22272e;
+$github-attention: #c69026;
+$github-text-primary: #0366d6;
+$github-sponsor-primary: rgb(234, 74, 170);
+$twitter-primary: #1d9bf0;
+$twitter-dimmed: #0c7abf;
+
+// theme
+$header-bg: var(--theme-header);
+$banner-bg: var(--theme-banner);
+$body-bg: var(--theme-body);
+$border-color: var(--theme-border);
+
+$link-color: var(--link-color);
+$text-color: var(--text-color);
+$text-secondary: var(--text-secondary);
+$text-disabled: var(--text-disabled);
+$text-divider: var(--text-divider);
+
+// sizes
+$xs-radius: 1px;
+$sm-radius: 2px;
+$lg-radius: 4px;
+
+// times
+$transition-time: 0.15s;
+
+// gaps
+$gap: 1rem; // ~14px
+$sm-gap: $gap * 0.618; // ~8.6px
+$xs-gap: math.div($sm-gap, 2); // ~4.4px
+$lg-gap: $sm-gap * 2; // ~17px
+
+// fonts
+$font-size-small: 12px;
+$font-size-base: 14px;
+$font-size-large: 18px;
+$font-size-huge: 22px;

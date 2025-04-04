@@ -1,15 +1,19 @@
-import common from "~/common";
-import { batchGenerateShortLinkReq } from "~/api/home";
+import { concatPath, encodeAllIgnoreSlashes, fileSizeFormat } from "~/utils";
+import { batchGenerateShortLinkReq } from "~/api/home/home";
 
 import { toClipboard } from '@soerenmartius/vue3-clipboard'
 import { encodeData, rendererRect, rendererRound,
     rendererDSJ, rendererLine, rendererFuncB } from 'beautify-qrcode';
+
+import useGlobalConfigStore from "~/stores/global-config";
+let globalConfigStore = useGlobalConfigStore();
 
 const generateLinkLoading = ref(false);
 const generateLinkDialogVisible = ref(false);
 const generateLinkFormData = reactive({
     expireTime: null,
 });
+const currentLinkDialogType = ref(''); // 当前链接弹窗类型, 可以为 shortLink 或 pathLink
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
@@ -33,8 +37,13 @@ export default function useFileLink() {
     /*
      * 打开生成链接弹窗
      */
-    const openGenerateLinkDialog = () => {
-        generateLinkDialogVisible.value = true;
+    const openGenerateLinkDialog = (type) => {
+        currentLinkDialogType.value = type;
+        if (type === 'pathLink') {
+            openGenerateLinkResultDialog();
+        } else {
+            generateLinkDialogVisible.value = true;
+        }
     };
 
     /**
@@ -95,54 +104,85 @@ export default function useFileLink() {
      *
      * @param files          要生成的直链列表
      */
-    const generateALlLink = (files) => {
+    const generateALlLink = async (files) => {
         generateLinkResultLoading.value = true;
 
+        let pathLinkList = [], shortLinkList = [];
+        if (currentLinkDialogType.value === 'pathLink' || currentLinkDialogType.value === 'all') {
+            pathLinkList = batchGetFilePathLink(files);
+        }
+
+        if (currentLinkDialogType.value === 'shortLink' || currentLinkDialogType.value === 'all') {
+            shortLinkList = await batchGetShortLink(files)
+        }
+
+        files.forEach((file, index) => {
+            let item = {
+                name: file.name,
+                size: fileSizeFormat(file.size),
+                time: file.time,
+                pathLink: pathLinkList[index],
+                shortLink: shortLinkList[index]
+            }
+
+            if (files.length === 1) {
+                // 生成二维码
+                const qrcode = encodeData({
+                    text: currentLinkDialogType.value === 'pathLink' ? pathLinkList[index] : shortLinkList[index],
+                    correctLevel: 2,
+                    isSpace: false
+                });
+                item.qrcode = {
+                    a1: svgToDataUri(rendererRect(qrcode)),
+                    a2: svgToDataUri(rendererRound(qrcode)),
+                    sp1: svgToDataUri(rendererDSJ(qrcode)),
+                    aa1: svgToDataUri(rendererLine(qrcode)),
+                    ab2: svgToDataUri(rendererFuncB(qrcode)),
+                }
+                item.currentImg = item.qrcode.a1;
+            }
+            dataList.value.push(item);
+        })
+        generateLinkResultLoading.value = false;
+    }
+
+    const getFilePathLink = (file) => {
+        return concatPath(globalConfigStore.serverAddress,
+                                 storageConfigStore.globalConfig.directLinkPrefix,
+                                 storageKey.value,
+                                 encodeAllIgnoreSlashes(storageConfigStore.folderConfig.rootPath),
+                                 file.path,
+                                 file.name);
+    }
+
+    const batchGetFilePathLink = (files) => {
+        let pathLinkList = [];
+        files.forEach((file) => {
+            pathLinkList.push(getFilePathLink(file));
+        })
+        return pathLinkList;
+    }
+
+    const batchGetShortLink = async (files) => {
+        let shortLinkList = [];
         let param = {
             storageKey: storageKey.value,
             paths: [],
             expireTime: generateLinkFormData.expireTime
         }
-
-        files.forEach((row) => {
-            let pathAndName = common.removeDuplicateSeparator("/" + row.path + "/" + row.name);
+        files.forEach((file) => {
+            let pathAndName = concatPath(file.path, file.name);
             param.paths.push(pathAndName);
         })
-
-        batchGenerateShortLinkReq(param).then((res) => {
-            let size = res.data.length;
-            res.data.forEach((item, index) => {
-                // 生成二维码
-                const qrcode = encodeData({
-                    text: storageConfigStore.permission.shortLink ? item.shortLink : item.pathLink,
-                    correctLevel: 2,
-                    isSpace: false
-                });
-                if (size === 1) {
-                    item.row = {
-                        name: files[index].name,
-                        size: common.fileSizeFormat(files[index].size),
-                        time: files[index].time
-                    };
-                    item.qrcode = {
-                        a1: svgToDataUri(rendererRect(qrcode)),
-                        a2: svgToDataUri(rendererRound(qrcode)),
-                        sp1: svgToDataUri(rendererDSJ(qrcode)),
-                        aa1: svgToDataUri(rendererLine(qrcode)),
-                        ab2: svgToDataUri(rendererFuncB(qrcode)),
-                    }
-                    item.currentImg = item.qrcode.a1;
-                } else {
-                    item.name = files[index].name
-                }
-                dataList.value.push(item);
-            })
-        }).finally(() => {
-            generateLinkResultLoading.value = false;
+        let res = await batchGenerateShortLinkReq(param);
+        res.data.forEach((item) => {
+            shortLinkList.push(item.shortLink);
         })
+        return shortLinkList;
     }
 
     return {
+        currentLinkDialogType,
         generateLinkDialogVisible,
         openGenerateLinkDialog,
         closeGenerateLinkDialog,

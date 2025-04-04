@@ -1,24 +1,9 @@
 // 请求加载
-import {githubInfoReq, loadConfigReq, downloadLogReq} from "~/api/admin-setting";
-import {logoutReq} from '~/api/login'
-import {useRequest} from "vue-request";
+import { downloadLogReq } from "~/api/admin/admin-setting";
 
 import dayjs from "dayjs";
 
 export default function useAdminLayout(router, route) {
-    // 站点设置加载, 主要用于右上角头像获取
-    let {data: siteSetting} = useRequest(loadConfigReq);
-    // 从 github 获取最新信息
-    let {data: githubLatestInfo, loading: githubLatestLoading} = useRequest(githubInfoReq, {
-        errorRetryCount: 3
-    });
-
-    // 注销
-    const logout = () => {
-        logoutReq().then(() => {
-            router.push('/login')
-        })
-    }
 
     /**
      * 日志下载
@@ -61,10 +46,7 @@ export default function useAdminLayout(router, route) {
     }
 
     return {
-        siteSetting,
-        githubLatestInfo, githubLatestLoading,
         logDownload,
-        logout,
         rebuildTitle
     }
 

@@ -1,25 +1,24 @@
-import {loadStorageFilterReq, saveStorageFilterReq} from "~/api/admin-storage";
-import util from "~/tool/common";
+import { isEmpty } from "~/utils";
+import {loadStorageFilterReq, saveStorageFilterReq} from "~/api/admin/admin-storage";
 
-let filterList = ref([]);
+let list = ref([]);
 let loading = ref(false);
 
 export default function useStorageFilter(router, route) {
     let currentStorageId = route.params.storageId;
 
-    const loadFilterData = () => {
+    const loadData = () => {
         loadStorageFilterReq(currentStorageId).then((response) => {
-            filterList.value = response.data;
-            if (filterList.value.length === 0) {
-                addFilterItem();
+            list.value = response.data;
+            if (list.value.length === 0) {
+                addItem();
             }
         });
     }
 
-    const saveFilterData = () => {
-
-        let notFill = filterList.value.find((value) => {
-            if (util.isEmpty(value.expression)) {
+    const saveData = () => {
+        let notFill = list.value.find((value) => {
+            if (isEmpty(value.expression)) {
                 ElMessage.warning('请检查数据填写是否完整');
                 return true;
             }
@@ -27,7 +26,7 @@ export default function useStorageFilter(router, route) {
 
         if (!notFill) {
             loading.value = true;
-            saveStorageFilterReq(currentStorageId, filterList.value).then(() => {
+            saveStorageFilterReq(currentStorageId, list.value).then(() => {
                 ElMessageBox.confirm('保存成功, 是否返回存储源列表？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -44,22 +43,22 @@ export default function useStorageFilter(router, route) {
         }
     }
 
-    const addFilterItem = () => {
-        filterList.value.push({
+    const addItem = () => {
+        list.value.push({
             mode: 'hidden',
             expression: '',
             storageId: currentStorageId,
-            description: '表达式 - ' + filterList.value.length
+            description: '表达式 - ' + list.value.length
         });
     }
 
-    const deleteFilterItem = (index) => {
-        filterList.value.splice(index, 1);
+    const deleteItem = (index) => {
+        list.value.splice(index, 1);
     }
 
     return {
-        loading, loadFilterData, filterList,
-        addFilterItem, deleteFilterItem,
-        saveFilterData
+        loading, loadData, list,
+        addItem, deleteItem,
+        saveData
     }
 }

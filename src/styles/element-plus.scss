@@ -1,0 +1,22 @@
+.el-form--inline {
+    .el-form-item {
+        & > .el-input, .el-cascader, .el-select, .el-autocomplete {
+            width: 200px;
+        }
+        & > .el-date-editor {
+            width: 300px;
+        }
+    }
+}
+
+.el-form {
+	.el-form-item {
+		.el-radio-group {
+			@apply w-full;
+		}
+
+		.el-form-item-tips {
+			@apply empty:mt-0 mt-2 text-sm w-full text-gray-400;
+		}
+	}
+}

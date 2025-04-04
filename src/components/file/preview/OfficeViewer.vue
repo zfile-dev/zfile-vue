@@ -6,34 +6,35 @@
 
 <script setup>
 import useStorageConfigStore from "~/stores/storage-config";
+import { getOnlyOfficeConfigTokenReq } from "~/api/home/only-office.js";
+import useRouterData from "~/composables/useRouterData";
+import { concatPath } from "~/utils";
+import useFilePwd from "~/composables/file/useFilePwd";
+let { getPathPwd } = useFilePwd();
 let storageConfigStore = useStorageConfigStore();
 
+let { storageKey, currentPath } = useRouterData();
+
 // 组件接收的属性：
-//  fileUrl:    文件下载路径
 //  fileName:   文件名
 const props = defineProps({
-  fileUrl: String,
   fileName: String
 });
 
 onMounted(() => {
   loadScript(`${storageConfigStore.globalConfig.onlyOfficeUrl}/web-apps/apps/api/documents/api.js`, () => {
-    const index = props.fileName.lastIndexOf('.');
-    const fileType = props.fileName.substr(index + 1);
-    const config = {
-      "document": {
-        "fileType": fileType,
-        "title": props.fileName,
-        "url": props.fileUrl,
-        "lang": "zh-CN"
-      },
-      "width": '100%',
-      "editorConfig": {
-        mode: 'view',
-        "lang": "zh-CN"
-      }
-    };
-    const docEditor = new DocsAPI.DocEditor("office-body", config);
+    let filePathAndName = concatPath(currentPath.value, props.fileName);
+
+    let fileInfo = {
+      storageKey: storageKey.value,
+      path: filePathAndName,
+      password: getPathPwd()
+    }
+
+    getOnlyOfficeConfigTokenReq(fileInfo).then(res => {
+      let jsonObj = res.data;
+      const docEditor = new DocsAPI.DocEditor("office-body", jsonObj);
+    })
   })
 })
 

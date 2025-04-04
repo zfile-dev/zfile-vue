@@ -1,5 +1,5 @@
 {
-	"baseUrl": "http://127.0.0.1:8080/",
+	"baseUrl": "http://127.0.0.1:8080",
 	"router": {
 		"mode": "history"
 	},
@@ -22,5 +22,49 @@
 		"mode": "full",
 		"gallery": true
 	},
-	"officePreview": {}
+	"officePreview": {},
+	"admin": {
+		"form": {
+			"mobile": {
+				"size": "small",
+				"labelWidth": "120px",
+				"labelPosition": "top"
+			},
+			"pc": {
+				"size": "default",
+				"labelWidth": "30%",
+				"labelPosition": "left"
+			}
+		},
+		"search": {
+			"mobile": {
+				"size": "small",
+				"spanSize": 24,
+				"labelPosition": "top"
+			},
+			"pc": {
+				"size": "default",
+				"spanSize": 8,
+				"labelPosition": "right"
+			}
+		},
+		"table": {
+			"mobile": {
+				"size": "small",
+				"pager": {
+					"size": "small",
+					"layout": "prev, pager, next",
+					"pagerCount": 5
+				}
+			},
+			"pc": {
+				"size": "default",
+				"pager": {
+					"size": "default",
+					"layout": "total, sizes, prev, pager, next, jumper",
+					"pagerCount": 7
+				}
+			}
+		}
+	}
 }

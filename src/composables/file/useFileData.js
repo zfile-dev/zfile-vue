@@ -1,14 +1,13 @@
 import {ElMessage} from "element-plus";
 import MessageBox from "~/components/messageBox/messageBox";
+import { concatPathAndEncodeAll } from "~/utils";
+
+import useFileContextMenu from "~/composables/file/useFileContextMenu";
+const { contextMenuTargetFile, contextMenuTargetBlank } = useFileContextMenu();
 
 import path from "path-browserify";
-import {removeDuplicateSlashes} from "fast-glob/out/managers/patterns";
 
-import {loadFileListReq, loadStorageConfigReq} from "~/api/home";
-
-import common from "~/common";
-import useCommon from "../useCommon";
-const { encodeAllIgnoreSlashes } = useCommon();
+import {loadFileListReq, loadStorageConfigReq} from "~/api/home/home";
 
 import useRouterData from "~/composables/useRouterData";
 let { routerRef, fullpath, storageKey, currentPath } = useRouterData()
@@ -18,6 +17,9 @@ let { getPathPwd, putPathPwd } = useFilePwd();
 
 import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
 const { storageListAsFileList } = useHeaderStorageList();
+
+import useFileLoading from "~/composables/file/useFileLoading";
+const { loading, firstLoading, basicLoading, skeletonLoading } = useFileLoading();
 
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
@@ -39,9 +41,6 @@ import useFileOperator from '~/composables/file/useFileOperator';
 
 // ------------- loading start ------------
 
-const loading = ref(false);
-// 是否是已经调用了首次 loading
-const firstLoading = ref(false);
 let skeletonData = reactive([]);
 if (skeletonData.length === 0) {
     // 动态配置骨架屏行数
@@ -59,8 +58,6 @@ let searchParam = reactive({
     orderBy: '',
     orderDirection: ''
 });
-
-const initStorageConfig = ref(false);
 
 import useFileSelect from "~/composables/file/useFileSelect";
 let { selectRows, clearSelection } = useFileSelect();
@@ -87,7 +84,7 @@ export default function useFileData() {
         let param = initParam || {};
         param.storageKey = storageKey.value;
         param.path = currentPath.value;
-        param.password = param.password || getPathPwd();
+        param.password = param.password || getPathPwd(null, param.init);
         param.orderBy = searchParam.orderBy || storageConfigStore.globalConfig.defaultSortField;
         param.orderDirection = searchParam.orderDirection || storageConfigStore.globalConfig.defaultSortOrder;
 
@@ -96,9 +93,7 @@ export default function useFileData() {
 
             let passwordPattern = response.data.passwordPattern;
 
-            if (initParam?.rememberPassword) {
-                putPathPwd(passwordPattern, param.password);
-            }
+            putPathPwd(passwordPattern, param.password, initParam?.rememberPassword);
 
             // 如果请求的 storageKey 和当前的 storageKey 不一致
             // 则表示再加载数据期间，修改了 storageKey, 为了防止数据错乱, 取消本次渲染.
@@ -133,13 +128,27 @@ export default function useFileData() {
 
             loadFileConfig(param);
         }).catch((error) => {
+            const onConfirm = (password, rememberPassword) => {
+                loadFile({password, rememberPassword});
+            };
+            const onCancel = () => {
+                if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.globalConfig.rootShowStorage === true) {
+                    fileDataStore.updateFileList(storageListAsFileList.value);
+                    routerRef.value.push("/");
+                    title.value = storageConfigStore.globalConfig.siteName + ' | 首页';
+                    loading.value = false;
+                } else {
+                    let parentPath = path.resolve(searchParam.path, '../');
+                    routerRef.value.push("/" + storageKey.value + parentPath);
+                }
+            };
             let data = error.response.data;
             // 如果需要密码或密码错误进行提示, 并弹出输入密码的框.
-            if (data.code === common.responseCode.INVALID_PASSWORD) {
+            if (data.code === constant.responseCode.INVALID_PASSWORD) {
                 ElMessage.warning('密码错误，请重新输入！');
-                popPassword();
-            } else if (data.code === common.responseCode.REQUIRED_PASSWORD) {
-                popPassword();
+                popPassword(onConfirm, onCancel);
+            } else if (data.code === constant.responseCode.REQUIRED_PASSWORD) {
+                popPassword(onConfirm, onCancel);
             } else {
                 ElMessage.error(data.msg);
             }
@@ -162,17 +171,21 @@ export default function useFileData() {
                 fileDataStore.updateOldStorageKey(storageKey.value);
             }
 
-        }).finally(() => {
-            initStorageConfig.value = true;
         });
     }
 
 
     // 点击文件时，判断是文件夹则进入文件夹，是文件则进行预览
-    const openRow = (row) => {
+    const openRow = (row, fromContextmenu) => {
         if (!row.name) {
             return;
         }
+
+        // 当右键菜单打开时, 点击文件时, 不进行任何操作. 应该关闭右键菜单.
+        if (!fromContextmenu && (contextMenuTargetFile.value === true || contextMenuTargetBlank.value === true)) {
+            return;
+        }
+
         fileDataStore.updateCurrentClickRow(row);
         // 如果是文件且格式支持预览, 则进行预览, 格式不支持预览, 则直接进行下载 (ftp 模式不支持预览, 全部是下载)
         if (row.type === 'FILE') {
@@ -181,69 +194,44 @@ export default function useFileData() {
             // 获取文件类型
             let fileType = row.fileType;
 
-
-            switch (fileType) {
-                case 'video': openVideo(); break;
-                case 'image': openImage(row); break;
-                case 'text': openText(); break;
-                case 'audio': openAudio(row); break;
-                case 'office': openOffice(row); break;
-                case 'pdf': openPdf(row); break;
-                case 'three3d': open3d(row); break;
-                default: batchDownloadFile(row);
+            if (storageConfigStore.folderConfig.permission.preview) {
+                switch (fileType) {
+                    case 'video': openVideo(); break;
+                    case 'image': openImage(row); break;
+                    case 'text': openText(); break;
+                    case 'audio': openAudio(row); break;
+                    case 'office': openOffice(row); break;
+                    case 'pdf': openPdf(row); break;
+                    case 'three3d': open3d(row); break;
+                    default: batchDownloadFile(row);
+                }
+            } else {
+                batchDownloadFile(row);
             }
 
             clearSelection();
         } else {
             if (row.type === 'ROOT') {
                 routerRef.value.push(row.path);
+                storageConfigStore.folderConfig.readmeText = '';
             } else if (row.type === 'BACK') {
-                let fullPath = removeDuplicateSlashes('/' + storageKey.value + '/' + row.path);
-                fullPath = encodeAllIgnoreSlashes(fullPath);
+                let fullPath = concatPathAndEncodeAll("/", storageKey.value, row.path);
                 routerRef.value.push(fullPath);
+                storageConfigStore.folderConfig.readmeText = '';
             } else {
-                let fullPath = removeDuplicateSlashes('/' + storageKey.value + '/' + row.path + '/' + row.name);
-                fullPath = encodeAllIgnoreSlashes(fullPath);
+                let fullPath = concatPathAndEncodeAll("/", storageKey.value, row.path, row.name);
                 routerRef.value.push(fullPath);
+                storageConfigStore.folderConfig.readmeText = '';
             }
         }
     }
-
-    // ------------- loading start ------------
-
-    // 是否启用骨架屏 loading
-    let skeletonLoading = computed(() => {
-        let skeletonEnable = globalConfigStore.zfileConfig.skeleton.enable;
-        let skeletonShow = globalConfigStore.zfileConfig.skeleton.show;
-
-        // 如果启用了骨架屏
-        if (skeletonEnable) {
-            // 如果骨架屏模式为是 '始终加载'
-            if (skeletonShow === 'always') {
-                return loading.value;
-            } else {  // 如果骨架屏模式为是仅 '首次加载'
-                // 已经首次加载后, 则不使用骨架屏
-                return firstLoading.value ? false : loading.value;
-            }
-        } else {    // 如果未启用骨架屏, 则直接返回 false
-            return false;
-        }
-    });
-    // 是否显示普通 loading
-    let basicLoading = computed(() => {
-        return skeletonLoading.value ? false : loading.value;
-    });
-
-    // ------------- loading end   ------------
-
-
 
 
     // ------------- folder password start ------------
 
 
     // 显示密码输入框
-    let popPassword = () => {
+    let popPassword = (onConfirm, onCancel) => {
         // 如果输入了密码, 则写入到 sessionStorage 缓存中, 并重新调用加载文件.
         MessageBox.prompt('此文件夹已加密，请输入密码：', '提示', {
             confirmButtonText: '确定',
@@ -251,24 +239,16 @@ export default function useFileData() {
             inputType: 'password',
             checkbox: true,
             defaultChecked: storageConfigStore.globalConfig.defaultSavePwd,
-            inputDefault: getPathPwd(),
+            inputDefault: getPathPwd(null, true),
             checkboxLabel: '记住密码',
             inputValidator(val) {
                 return !!val
             },
             inputErrorMessage: '密码不能为空.'
         }).then(({value, checkbox}) => {
-            loadFile({password: value, rememberPassword: checkbox});
+            onConfirm && onConfirm(value, checkbox);
         }).catch(() => {
-            if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.globalConfig.rootShowStorage === true) {
-                fileDataStore.updateFileList(storageListAsFileList.value);
-                routerRef.value.push("/");
-                title.value = storageConfigStore.globalConfig.siteName + ' | 首页';
-                loading.value = false;
-            } else {
-                let parentPath = path.resolve(searchParam.path, '../');
-                routerRef.value.push("/" + storageKey.value + parentPath);
-            }
+            onCancel && onCancel();
         });
     }
 
@@ -277,7 +257,7 @@ export default function useFileData() {
     return {
         loadFile, openRow, searchParam, sortChangeMethod,
         skeletonLoading, skeletonData, basicLoading, loading,
-        initStorageConfig, loadFileConfig
+        loadFileConfig, popPassword
     }
 
 }

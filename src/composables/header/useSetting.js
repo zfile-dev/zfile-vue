@@ -1,7 +1,6 @@
-const visible = ref(false);
+import { isMobile } from "~/utils";
 
-import useCommon from "~/composables/useCommon";
-const { isMobile } = useCommon();
+const visible = ref(false);
 
 // 获取默认值
 import useGlobalConfigStore from "~/stores/global-config";
@@ -10,7 +9,8 @@ let zfileConfig = globalConfigStore.zfileConfig;
 
 let baseData = {
     view: {
-        size: 2
+        size: 2,
+        type: 'table',
     },
     gallery: {
         column: isMobile.value ? zfileConfig.gallery.mobileColumn : zfileConfig.gallery.column,
@@ -40,6 +40,9 @@ const extend = (a, b) => {
 }
 
 const zfileSettingCache = useStorage('zfile-setting-cache', baseData);
+if (!zfileSettingCache.value.view.type) {
+	zfileSettingCache.value.view.type = 'table';
+}
 
 export default function useSetting() {
 

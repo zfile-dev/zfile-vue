@@ -5,11 +5,9 @@ import {
     switchCacheAutoRefreshReq,
     switchCacheEnableReq,
     switchEnableReq
-} from "~/api/admin-storage";
+} from "~/api/admin/admin-storage";
 import Sortable from "sortablejs";
-
-import useCommon from "~/composables/useCommon";
-const { isMobile } = useCommon();
+import { isMobile } from "~/utils";
 
 let cacheManageVisible = ref(false);
 let currentCacheManageId = ref();
@@ -77,7 +75,7 @@ export default function useStorageList(router) {
 
     // 切换存储源启用/关闭状态
     const switchEnableStatus = (row) => {
-        ElMessageBox.confirm(`是否确认${row.enable ? '停止' : '启用'}存储源。`, '提示', {
+        ElMessageBox.confirm(`是否确认${row.enable ? '停用' : '启用'}存储源。`, '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning',
@@ -85,7 +83,7 @@ export default function useStorageList(router) {
                 if (action === 'confirm') {
                     let enableStatus = row.enable ? 'disable' : 'enable';
                     switchEnableReq(row.id, enableStatus).then(() => {
-                        ElMessage.success((row.enable ? '停止' : '启用')  + '成功');
+                        ElMessage.success((row.enable ? '停用' : '启用')  + '成功');
                         row.enable = !row.enable;
                     })
                 }
@@ -109,6 +107,11 @@ export default function useStorageList(router) {
         })
     }
 
+    // 权限管理
+    const showPermissionPage = (row) => {
+        router.push('/admin/storage-premission/' + row.id);
+    }
+
     // 缓存管理
     const cacheManage = (row) => {
         currentCacheManageId.value = row.id;
@@ -125,6 +128,7 @@ export default function useStorageList(router) {
             case "filterManager": showFilterPage(command.storage); break;
             case "pwdManager":  showPasswordPage(command.storage); break;
             case "delete": deleteStorage(command.storage); break;
+            case "permissionManager": showPermissionPage(command.storage); break;
             case "copy": openCopyStorageDialog(command.storage); break;
         }
     }

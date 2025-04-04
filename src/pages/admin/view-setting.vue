@@ -1,199 +1,351 @@
 <template>
-	<div>
-		<z-form :model="data"
-	        v-loading="saveLoading"
-            v-if="data"
-	        element-loading-text="保存中...">
-		<template #form-title>
-			显示信息
-		</template>
-		<template #form-sub-title>
-			此页面显示网站前台的显示相关的信息
-		</template>
+	<div class="zfile-admin-view-setting-wrapper" v-loading="siteSettingLoading">
+		<el-tabs v-model="activeName">
+			<el-tab-pane label="使用习惯" name="a">
+				<el-form :model="siteSetting"
+						 v-loading="saveLoading"
+						 v-if="siteSetting"
+						 :label-width="globalConfigStore.adminForm.labelWidth"
+						 :label-position="globalConfigStore.adminForm.labelPosition"
+						 :size="globalConfigStore.adminForm.size"
+						 status-icon
+						 class="z-admin-form"
+						 element-loading-text="保存中...">
+					<el-form-item label="页面布局">
+						<el-radio-group v-model="siteSetting.layout">
+							<el-radio value="full">全屏</el-radio>
+							<el-radio value="center">居中</el-radio>
+							<el-radio value="card">卡片</el-radio>
+						</el-radio-group>
+					</el-form-item>
+
+          <el-form-item label="移动端页面布局">
+            <el-radio-group v-model="siteSetting.mobileLayout">
+              <el-radio value="full">全屏</el-radio>
+              <el-radio value="center">居中</el-radio>
+              <el-radio value="card">卡片</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+					<el-form-item label="根目录显示所有存储源">
+						<el-switch v-model="siteSetting.rootShowStorage" />
+						<div class="el-form-item-tips">
+							勾选则根目录显示所有存储源列表, 反之会自动显示第一个存储源的内容.
+						</div>
+					</el-form-item>
 
 
-		<z-form-item label="页面布局">
-			<el-radio v-model="data.layout" label="full">全屏</el-radio>
-			<el-radio v-model="data.layout" label="center">居中</el-radio>
-      <el-radio v-model="data.layout" label="card">卡片</el-radio>
-		</z-form-item>
+					<el-form-item label="输入文件夹密码时默认勾选保存密码">
+						<el-switch v-model="siteSetting.defaultSavePwd" />
+					</el-form-item>
 
-		<z-form-item label="根目录显示所有存储源">
-			<el-switch v-model="data.rootShowStorage"/>
-			<template #tips>
-				根目录是否显示所有存储源, 如果为 true, 则根目录显示所有存储源列表, 如果为 false, 则会自动跳转到第一个存储源.
-			</template>
-		</z-form-item>
+					<el-form-item label="文件操作习惯">
+						<el-radio v-model="siteSetting.fileClickMode" value="click">单击进入</el-radio>
+						<el-radio v-model="siteSetting.fileClickMode" value="dbclick">双击进入</el-radio>
+						<div class="el-form-item-tips">
+							控制文件和文件夹的点击习惯, 单击/双击打开文件夹或预览文件
+						</div>
+					</el-form-item>
 
+					<el-form-item label="默认最大显示文件数">
+						<el-input-number v-model="siteSetting.maxShowSize" :min="1" />
+						<div class="el-form-item-tips">
+							默认最大显示文件数, 用于控制文件夹中文件的显示数量，防止文件过多导致页面卡顿
+						</div>
+					</el-form-item>
 
-		<z-form-item label="默认保存输入的文件夹密码">
-			<el-switch v-model="data.defaultSavePwd"/>
-			<template #tips>
-				可设置是否默认保存输入的文件夹密码, 如果为 true, 则下次进入文件夹时会自动使用上次输入的密码，无需再次输入.
-			</template>
-		</z-form-item>
+					<el-form-item label="每次加载更多文件数">
+						<el-input-number v-model="siteSetting.loadMoreSize" :min="1" />
+						<div class="el-form-item-tips">
+							当想显示更多文件时，每次额外显示的文件数
+						</div>
+					</el-form-item>
 
-		<z-form-item label="文件操作习惯">
-			<el-radio v-model="data.fileClickMode" label="click">单击进入</el-radio>
-			<el-radio v-model="data.fileClickMode" label="dbclick">双击进入</el-radio>
-			<template #tips>
-				控制文件和文件夹的点击习惯, 单击/双击打开文件夹或预览文件
-			</template>
-		</z-form-item>
+					<el-form-item label="默认排序字段">
+						<el-radio v-model="siteSetting.defaultSortField" value="name">文件名</el-radio>
+						<el-radio v-model="siteSetting.defaultSortField" value="size">文件大小</el-radio>
+						<el-radio v-model="siteSetting.defaultSortField" value="time">修改时间</el-radio>
+						<div class="el-form-item-tips">
+							默认排序方式, 用于控制文件夹中文件的显示顺序
+						</div>
+					</el-form-item>
 
-    <z-form-item label="默认最大显示文件数">
-      <el-input-number v-model="data.maxShowSize" :min="1"/>
-      <template #tips>
-        默认最大显示文件数, 用于控制文件夹中文件的显示数量，防止文件过多导致页面卡顿
-      </template>
-    </z-form-item>
+					<el-form-item label="默认排序方式">
+						<el-radio v-model="siteSetting.defaultSortOrder" value="asc">升序</el-radio>
+						<el-radio v-model="siteSetting.defaultSortOrder" value="desc">降序</el-radio>
+						<div class="el-form-item-tips">
+							默认排序方式, 用于控制文件夹中文件的显示顺序（文件和文件夹会分别排序，且始终是文件夹在前）
+						</div>
+					</el-form-item>
 
-    <z-form-item label="每次加载更多文件数">
-      <el-input-number v-model="data.loadMoreSize" :min="1"/>
-      <template #tips>
-        当想显示更多文件时，每次额外显示的文件数
-      </template>
-    </z-form-item>
+					<el-form-item label="显示目录文档">
+						<el-switch v-model="siteSetting.showDocument" />
+						<div class="el-form-item-tips">
+							全局控制是否显示为存储源配置的目录文档
+						</div>
+					</el-form-item>
+				</el-form>
+			</el-tab-pane>
 
-    <z-form-item label="默认排序字段">
-      <el-radio v-model="data.defaultSortField" label="name">文件名</el-radio>
-      <el-radio v-model="data.defaultSortField" label="size">文件大小</el-radio>
-      <el-radio v-model="data.defaultSortField" label="time">修改时间</el-radio>
-      <template #tips>
-        默认排序方式, 用于控制文件夹中文件的显示顺序
-      </template>
-    </z-form-item>
+			<el-tab-pane label="预览类型" name="b">
+				<div class="pt-4">
+					<el-alert type="info">
+            <template #title>
+              <div>以下类型不区分大小，且不支持为空，为空会自动恢复至默认值，如果需要关闭某项的所有预览，可以随便写个不存在的格式。</div>
+              <div>且这里填写了类型，不代表前端就能预览成功，这依赖浏览器是否支持该编码的，ZFile 程序不负责解码或转码。简单的测试文件是否可在某浏览器预览的方式(不包含Office)是: 新建一个浏览器标签页, 把文件拖进去, 看看是否能正常显示。</div>
+            </template>
+          </el-alert>
+				</div>
+				<el-form :model="siteSetting"
+						 v-loading="saveLoading"
+						 v-if="siteSetting"
+						 :label-width="globalConfigStore.adminForm.labelWidth"
+						 :label-position="globalConfigStore.adminForm.labelPosition"
+						 :size="globalConfigStore.adminForm.size"
+						 status-icon
+						 class="z-admin-form"
+						 element-loading-text="保存中...">
+					<el-form-item label="视频文件后缀">
+						<el-input v-model="siteSetting.customVideoSuffix">
+              <template #suffix>
+                <el-tooltip content="恢复默认">
+                  <ArrowPathIcon class="w-4 cursor-pointer" @click="resetCustomSuffix('video')" />
+                </el-tooltip>
+              </template>
+            </el-input>
+						<div class="el-form-item-tips">
+							自定义识别为视频格式的文件后缀，多个用逗号分开，如 'mp4,avi,mkv',
+							在此列表中的将调用播放器打开（能否播放要取决于浏览器是否支持，现代浏览器一般只支持封装格式为 h.264 (mp4) 的编码格式）
+						</div>
+					</el-form-item>
 
-    <z-form-item label="默认排序方式">
-      <el-radio v-model="data.defaultSortOrder" label="asc">升序</el-radio>
-      <el-radio v-model="data.defaultSortOrder" label="desc">降序</el-radio>
-      <template #tips>
-        默认排序方式, 用于控制文件夹中文件的显示顺序
-      </template>
-    </z-form-item>
+					<el-form-item label="图像文件后缀">
+						<el-input v-model="siteSetting.customImageSuffix">
+              <template #suffix>
+                <el-tooltip content="恢复默认">
+                  <ArrowPathIcon class="w-4 cursor-pointer" @click="resetCustomSuffix('image')" />
+                </el-tooltip>
+              </template>
+            </el-input>
+					</el-form-item>
 
-		<z-form-item label="视频文件后缀">
-			<el-input v-model="data.customVideoSuffix"></el-input>
-			<template #tips>
-				自定义识别为视频格式的文件后缀，多个用逗号分开，如 'mp4,avi,mkv', 在此列表中的将调用播放器打开（能否播放要取决于浏览器是否支持，现代浏览器一般只支持封装格式为 h.264 (mp4) 的编码格式）
-			</template>
-		</z-form-item>
+					<el-form-item label="音频文件后缀">
+						<el-input v-model="siteSetting.customAudioSuffix">
+              <template #suffix>
+                <el-tooltip content="恢复默认">
+                  <ArrowPathIcon class="w-4 cursor-pointer" @click="resetCustomSuffix('audio')" />
+                </el-tooltip>
+              </template>
+            </el-input>
+					</el-form-item>
 
-		<z-form-item label="图像文件后缀">
-			<el-input v-model="data.customImageSuffix"></el-input>
-		</z-form-item>
+					<el-form-item label="文本文件后缀">
+						<el-input v-model="siteSetting.customTextSuffix">
+              <template #suffix>
+                <el-tooltip content="恢复默认">
+                  <ArrowPathIcon class="w-4 cursor-pointer" @click="resetCustomSuffix('text')" />
+                </el-tooltip>
+              </template>
+            </el-input>
+					</el-form-item>
 
-		<z-form-item label="音频文件后缀">
-			<el-input v-model="data.customAudioSuffix"></el-input>
-		</z-form-item>
+          <el-form-item label="Office文件后缀">
+            <el-input v-model="siteSetting.customOfficeSuffix">
+              <template #suffix>
+                <el-tooltip content="恢复默认">
+                  <ArrowPathIcon class="w-4 cursor-pointer" @click="resetCustomSuffix('text')" />
+                </el-tooltip>
+              </template>
+            </el-input>
+          </el-form-item>
 
-		<z-form-item label="文本文件后缀">
-			<el-input v-model="data.customTextSuffix"></el-input>
-		</z-form-item>
+				</el-form>
+			</el-tab-pane>
 
-    <z-form-item label="OnlyOffice 服务地址">
-      <el-input v-model="data.onlyOfficeUrl"></el-input>
-      <template #tips>
-        <div>OnlyOffice 服务地址，默认的公共服务不保证稳定性，推荐自行部署 OnlyOffice 服务. 部署教程：<a class="link" href="https://docs.zfile.vip/advanced#only-office" target="_blank">https://docs.zfile.vip/advanced#only-office</a></div>
-        <div>提示：进行预览的文件需 OnlyOffice 服务器可访问，如您的 OnlyOffice 在公网，要预览的文件在内网，则无法正常预览。</div>
-        <div>提示：根据浏览器安全规范，如您的 ZFile 是 https 协议的，OnlyOffice 服务也必须是 https 协议的，否则无法正常使用。</div>
-      </template>
-    </z-form-item>
+			<el-tab-pane label="OnlyOffice" name="c">
+				<el-form :model="siteSetting"
+						 v-loading="saveLoading"
+						 v-if="siteSetting"
+						 :label-width="globalConfigStore.adminForm.labelWidth"
+						 :label-position="globalConfigStore.adminForm.labelPosition"
+						 :size="globalConfigStore.adminForm.size"
+						 status-icon
+						 class="z-admin-form"
+						 element-loading-text="保存中...">
+					<el-form-item label="OnlyOffice 服务地址">
+						<el-input v-model="siteSetting.onlyOfficeUrl"></el-input>
+						<div class="el-form-item-tips">
+							<div>OnlyOffice 服务地址，默认的公共服务不保证稳定性，推荐自行部署 OnlyOffice 服务.
+								部署教程：<a class="link" href="https://docs.zfile.vip/advanced/only-office" target="_blank">https://docs.zfile.vip/advanced/only-office</a>
+							</div>
+							<ul class="list-disc mt-2 ml-4">
+								<li>预览：进行预览的文件需 OnlyOffice 服务能访问到，如您的 OnlyOffice在公网，要预览的文件在内网，则无法正常预览。
+									<a class="link" target="_blank" href="https://docs.zfile.vip/question/only-office-download-fail">
+										(为什么 OnlyOffice 预览失败？)
+									</a>
+								</li>
+								<li>保存：因保存功能依赖于 OnlyOffice 回调 ZFile 服务，所以需您的 ZFile 服务能被OnlyOffice 访问到。</li>
+								<li>浏览器安全规范：如您的 ZFile 是 https 协议的，OnlyOffice 服务也必须是 https协议的，否则无法正常使用。</li>
+							</ul>
+						</div>
+					</el-form-item>
 
-		<z-form-item label="显示文档区">
-			<el-switch v-model="data.showDocument"/>
-			<el-tooltip placement="right">
-				<template #content>
-					在文件列表下，显示当前文件夹的目录文档
-				</template>
-				<i class="el-icon-info zfile-info-tooltip"></i>
-			</el-tooltip>
-		</z-form-item>
+					<el-form-item label="OnlyOffice Secret">
+						<el-input v-model="siteSetting.onlyOfficeSecret"></el-input>
+						<div class="el-form-item-tips">
+							如果你部署的 OnlyOffice 需要开启 JWT Token 认证，可在此处填写 Secret，否则可以留空。查看OnlyOffice Secret 文档：
+							<a class="link" target="_blank" href="https://docs.zfile.vip/advanced/only-office#only-office-secret">
+								https://docs.zfile.vip/advanced/only-office#only-office-secret
+							</a>
+						</div>
+					</el-form-item>
+				</el-form>
+			</el-tab-pane>
 
-		<z-form-item label="显示公告">
-			<el-switch v-model="data.showAnnouncement"/>
-			<el-tooltip placement="right">
-				<template #content>
-					网站顶部，显示公告内容，支持 HTML 语法
-				</template>
-				<i class="el-icon-info zfile-info-tooltip"></i>
-			</el-tooltip>
-		</z-form-item>
+			<el-tab-pane label="公告" name="d">
+				<el-form :model="siteSetting"
+						 v-loading="saveLoading"
+						 v-if="siteSetting"
+						 :label-width="globalConfigStore.adminForm.labelWidth"
+						 :label-position="globalConfigStore.adminForm.labelPosition"
+						 :size="globalConfigStore.adminForm.size"
+						 status-icon
+						 class="z-admin-form"
+						 element-loading-text="保存中...">
+					<el-form-item label="显示公告">
+						<el-switch v-model="siteSetting.showAnnouncement" />
+					</el-form-item>
 
-		<z-form-item label="公告内容">
-			<v-md-editor v-model="data.announcement" height="400px"></v-md-editor>
-			<template #tips>
-				支持 Markdown 语法, 左右分栏, 所见即所得, 可以使用 HTML 语法
-			</template>
-		</z-form-item>
+					<el-form-item label="公告内容">
+						<v-md-editor v-model="siteSetting.announcement" height="400px"></v-md-editor>
+						<div class="el-form-item-tips">
+							支持 Markdown 语法, 左右分栏, 所见即所得, 可以使用 HTML 语法
+						</div>
+					</el-form-item>
+				</el-form>
+			</el-tab-pane>
 
-		<z-form-item label="自定义 CSS">
-			<el-input
-				type="textarea"
-        :autosize="{ minRows: 3 }"
-				placeholder="请输入自定义 CSS 内容"
-				v-model="data.customCss">
-			</el-input>
-			<template #tips>
-				自定义 CSS 内容, 无须写 &#60;style&#62;&#60;/style&#62; 标签
-			</template>
-		</z-form-item>
+			<el-tab-pane label="自定义 JS/CSS" name="e">
+				<el-form :model="siteSetting"
+						 v-loading="saveLoading"
+						 v-if="siteSetting"
+						 :label-width="globalConfigStore.adminForm.labelWidth"
+						 :label-position="globalConfigStore.adminForm.labelPosition"
+						 :size="globalConfigStore.adminForm.size"
+						 status-icon
+						 class="z-admin-form"
+						 element-loading-text="保存中...">
+					<el-form-item label="自定义 CSS">
+						<el-input
+							type="textarea"
+							:autosize="{ minRows: 3 }"
+							placeholder="请输入自定义 CSS 内容"
+							v-model="siteSetting.customCss">
+						</el-input>
+						<div class="el-form-item-tips">
+							自定义 CSS 内容, 无须写 &#60;style&#62;&#60;/style&#62; 标签
+						</div>
+					</el-form-item>
 
-		<z-form-item label="自定义 JS">
-			<el-input
-				type="textarea"
-        :autosize="{ minRows: 3 }"
-        placeholder="请输入自定义 JS 内容"
-				v-model="data.customJs">
-			</el-input>
-			<template #tips>
-					自定义 JS 脚本, &#60;script&#62;&#60;/script&#62; 可写可不写，会自动兼容.
-			</template>
-		</z-form-item>
+					<el-form-item label="自定义 JS">
+						<el-input
+							type="textarea"
+							:autosize="{ minRows: 3 }"
+							placeholder="请输入自定义 JS 内容"
+							v-model="siteSetting.customJs">
+						</el-input>
+						<div class="el-form-item-tips">
+							自定义 JS 脚本, &#60;script&#62;&#60;/script&#62; 可写可不写，会自动兼容.
+						</div>
+					</el-form-item>
+				</el-form>
+			</el-tab-pane>
+		</el-tabs>
 
-		<template #footer>
-			<el-button type="primary" size="default" :icon="CheckBadgeIcon" @click="saveData">保存设置</el-button>
-		</template>
-	</z-form>
+		<el-form-item :label-width="globalConfigStore.adminForm.labelWidth" class="admin-from-footer">
+			<el-button class="ml-auto" type="primary" :icon="CheckBadgeIcon" :loading="saveLoading" @click="saveData">保存设置</el-button>
+		</el-form-item>
 	</div>
 </template>
 
 <script setup>
+import { CheckBadgeIcon } from "@heroicons/vue/24/solid";
+import {  ArrowPathIcon } from "@heroicons/vue/24/outline";
+
+import useGlobalConfigStore from "~/stores/global-config";
+let globalConfigStore = useGlobalConfigStore();
+
+import { updateViewSettingReq } from "~/api/admin/admin-setting";
+
+import useAdminSetting from "~/composables/admin/useAdminSetting";
+const { siteSetting, siteSettingLoading, saveData, saveLoading } = useAdminSetting(updateViewSettingReq);
+watch(() => siteSetting.value, (val, oldVal) => {
+  if (oldVal === null) {
+    if (!siteSetting.value.customVideoSuffix) {
+      siteSetting.value.customVideoSuffix = constant.fileTypeMap.video.join(',');
+    }  if (!siteSetting.value.customImageSuffix) {
+      siteSetting.value.customImageSuffix = constant.fileTypeMap.image.join(',');
+    }  if (!siteSetting.value.customAudioSuffix) {
+      siteSetting.value.customAudioSuffix = constant.fileTypeMap.audio.join(',');
+    }  if (!siteSetting.value.customTextSuffix) {
+      siteSetting.value.customTextSuffix = constant.fileTypeMap.text.join(',');
+    }  if (!siteSetting.value.customOfficeSuffix) {
+      siteSetting.value.customOfficeSuffix = constant.fileTypeMap.office.join(',');
+    }
+  }
+});
+
+const activeName = ref("a");
+
 // markdown editor 组件懒加载, 节约首屏打开时间
 const VMdEditor = defineAsyncComponent(() => {
 	return new Promise((resolve, reject) => {
-		;(async function () {
+		;(async function() {
 			try {
-				const res = await import('@kangc/v-md-editor')
-				await import('@kangc/v-md-editor/lib/style/base-editor.css');
-				await import('@kangc/v-md-editor/lib/theme/style/vuepress.css');
-
-				const vuepressTheme = await import('@kangc/v-md-editor/lib/theme/vuepress.js');
-				const Prism = await import('prismjs');
-
-				res.use(vuepressTheme, {
-					Prism,
+				const res = await import("@kangc/v-md-editor");
+				await import("@kangc/v-md-editor/lib/style/base-editor.css");
+				import('@kangc/v-md-editor/lib/theme/style/github.css');
+				const githubTheme = await import('@kangc/v-md-editor/lib/theme/github.js');
+				const hljs = await import('highlight.js');
+				res.use(githubTheme, {
+					Hljs: hljs.HighlightJS,
 				});
-
 				resolve(res)
 			} catch (error) {
-				reject(error)
+				reject(error);
 			}
-		})()
-	})
-})
+		})();
+	});
+});
 
-
-import {CheckBadgeIcon} from '@heroicons/vue/24/solid'
-
-import useViewSetting from "~/composables/admin/view/useViewSetting";
-const { data, saveData, saveLoading } = useViewSetting();
-
+const resetCustomSuffix = (type) => {
+  if (type === 'video') {
+    siteSetting.value.customVideoSuffix = constant.fileTypeMap.video.join(',');
+  } else if (type === 'image') {
+    siteSetting.value.customImageSuffix = constant.fileTypeMap.image.join(',');
+  } else if (type === 'audio') {
+    siteSetting.value.customAudioSuffix = constant.fileTypeMap.audio.join(',');
+  } else if (type === 'text') {
+    siteSetting.value.customTextSuffix = constant.fileTypeMap.text.join(',');
+  } else if (type === 'office') {
+    siteSetting.value.customOfficeSuffix = constant.fileTypeMap.office.join(',');
+  }
+}
 </script>
 
-<style scoped>
-.zfile-info-tooltip {
-	line-height: 32px;
+<style scoped lang="scss">
+.zfile-admin-view-setting-wrapper {
+
+	// 修正 el-tabs 给的 padding
+	:deep(.el-tabs__content) {
+		margin-top: -20px;
+	}
+
+	// 内部表单不再有 padding
+	:deep(.el-form) {
+		padding: 0;
+	}
+
 }
 </style>
 

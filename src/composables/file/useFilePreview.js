@@ -5,23 +5,24 @@ import useGlobalConfigStore from "~/stores/global-config";
 let globalConfigStore = useGlobalConfigStore();
 
 import useFileDataStore from "~/stores/file-data";
+import useTextViewerDialog from "~/composables/file/useTextViewerDialog";
+import usePdfViewerDialog from "~/composables/file/usePdfViewerDialog";
+import useVideoPlayerDialog from "~/composables/file/useVideoPlayerDialog";
+import useOfficeViewerDialog from "~/composables/file/useOfficeViewerDialog";
+import useThree3dPreviewDialog from "~/composables/file/useThree3dPreviewDialog";
+
 let fileDataStore = useFileDataStore();
 
-// 视频预览, 打开 dialog.
-export let dialogVideoVisible = ref(false);
-// 文本预览
-export let dialogTextVisible = ref(false);
-// office 预览
-export let dialogOfficeVisible = ref(false);
-// pdf 预览
-export let dialogPdfVisible = ref(false);
-// 3d 预览
-export let dialog3dVisible = ref(false);
+const { openDialogWithData: openTextDialog } = useTextViewerDialog();
+const { openDialogWithData: openPdfDialog } = usePdfViewerDialog();
+const { openDialogWithData: openVideoDialog } = useVideoPlayerDialog();
+const { openDialogWithData: openOfficeDialog } = useOfficeViewerDialog();
+const { openDialogWithData: open3DDialog } = useThree3dPreviewDialog();
 
 export default function useFilePreview() {
 
     const openVideo = () => {
-        dialogVideoVisible.value = true;
+        openVideoDialog(fileDataStore.currentClickRow.name);
     }
 
     const openAudio = () => {
@@ -51,29 +52,29 @@ export default function useFilePreview() {
     }
 
     const openText = () => {
-        dialogTextVisible.value = true;
+        openTextDialog(fileDataStore.currentClickRow.name, fileDataStore.currentClickRow.url);
     }
 
     const openOffice = () => {
-        dialogOfficeVisible.value = true;
+        openOfficeDialog(fileDataStore.currentClickRow.name);
     }
 
     const openPdf = () => {
-        dialogPdfVisible.value = true;
+        openPdfDialog(fileDataStore.currentClickRow.name, fileDataStore.currentClickRow.url);
     }
 
     const open3d = () => {
-        dialog3dVisible.value = true;
+        open3DDialog(fileDataStore.currentClickRow.name, fileDataStore.currentClickRow.url);
     }
 
     return {
-        openVideo, dialogVideoVisible,
-        openText, dialogTextVisible,
-        openOffice, dialogOfficeVisible,
+        openVideo,
+        openText,
+        openOffice,
         openImage,
         openAudio,
-        openPdf, dialogPdfVisible,
-        open3d, dialog3dVisible
+        openPdf,
+        open3d
     }
 
 }

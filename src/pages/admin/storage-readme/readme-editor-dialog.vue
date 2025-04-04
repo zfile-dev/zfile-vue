@@ -1,5 +1,6 @@
 <template>
-	<el-dialog v-model="isShow" :destroy-on-close="true"
+	<el-dialog append-to-body
+             v-model="isShow" :destroy-on-close="true"
 	           @close="closeDialog"
 	           :title="props.title"
 	           :show-close="false"
@@ -16,9 +17,7 @@
 	</el-dialog>
 </template>
 
-
 <script setup>
-
 // markdown editor 组件懒加载, 节约首屏打开时间
 const VMdEditor = defineAsyncComponent(() => {
 	return new Promise((resolve, reject) => {
@@ -26,15 +25,12 @@ const VMdEditor = defineAsyncComponent(() => {
 			try {
 				const res = await import('@kangc/v-md-editor')
 				await import('@kangc/v-md-editor/lib/style/base-editor.css');
-				await import('@kangc/v-md-editor/lib/theme/style/vuepress.css');
-
-				const vuepressTheme = await import('@kangc/v-md-editor/lib/theme/vuepress.js');
-				const Prism = await import('prismjs');
-
-				res.use(vuepressTheme, {
-					Prism,
+				import('@kangc/v-md-editor/lib/theme/style/github.css');
+				const githubTheme = await import('@kangc/v-md-editor/lib/theme/github.js');
+				const hljs = await import('highlight.js');
+				res.use(githubTheme, {
+					Hljs: hljs.HighlightJS,
 				});
-
 				resolve(res)
 			} catch (error) {
 				reject(error)
@@ -42,7 +38,6 @@ const VMdEditor = defineAsyncComponent(() => {
 		})()
 	})
 })
-
 
 const readmeText = ref('');
 const isShow = true;

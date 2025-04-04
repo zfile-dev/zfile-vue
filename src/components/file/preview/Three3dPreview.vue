@@ -1,11 +1,12 @@
 <template>
-  <div>
+  <div ref="el">
     <div class="float-right mb-1">
       <span>背景颜色: </span>
       <el-color-picker v-model="color" show-alpha :predefine="predefineColors" />
     </div>
     <vue3dLoader
       v-if="loadFinish"
+      :key="resizeCount"
       class="h-[75vh] clear-right"
       :fileType="fileSuffix"
       :mtlPath="mtlPath"
@@ -17,13 +18,19 @@
 </template>
 
 <script setup>
+import { useResizeObserver } from '@vueuse/core'
+const el = ref(null)
+const resizeCount = ref(0);
+
+useResizeObserver(el, () => {
+  resizeCount.value++;
+})
+
+import { concatPath, getFileNameIgnoreExt, getFileSuffix } from "~/utils";
 import { vue3dLoader } from "vue-3d-loader";
 
 import useFilePwd from "~/composables/file/useFilePwd";
 let { getPathPwd } = useFilePwd();
-
-import useFilePreview from "~/composables/file/useFilePreview";
-const { dialogVideoVisible, dialogTextVisible, dialogPdfVisible, dialogOfficeVisible, dialog3dVisible } = useFilePreview();
 
 import useRouterData from "~/composables/useRouterData";
 let { currentPath, storageKey } = useRouterData();
@@ -31,8 +38,10 @@ let { currentPath, storageKey } = useRouterData();
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
-import { loadFileItemReq } from "~/api/home";
-import common from "~/common";
+import useGlobalConfigStore from "~/stores/global-config";
+let globalConfigStore = useGlobalConfigStore();
+
+import { loadFileItemReq } from "~/api/home/home";
 
 const loadFinish = ref(false);
 let mtlPath = ref();
@@ -49,34 +58,33 @@ onMounted(() => {
   init();
 })
 
-let fileSuffix = common.getFileSuffix(props.fileName);
+let fileSuffix = getFileSuffix(props.fileName);
 let fileLinkUrl = ref();
 
 const init = async () => {
 
   // 完整路径
-  let pathAndName = common.removeDuplicateSeparator(`${currentPath.value}/${props.fileName}`);
+  let pathAndName = concatPath(currentPath.value, props.fileName);
 
   // 完整直链路径
-  fileLinkUrl.value = common.removeDuplicateSeparator(storageConfigStore.globalConfig.domain + "/" +
-    storageConfigStore.globalConfig.directLinkPrefix + "/" +
-    storageKey.value + "/" +
-    pathAndName);
 
-  if (fileSuffix === ".obj") {
-    let basicName = common.getFileName(props.fileName);
+  fileLinkUrl.value = concatPath(globalConfigStore.serverAddress,
+                                  storageConfigStore.globalConfig.directLinkPrefix,
+                                  storageKey.value,
+                                  pathAndName);
 
-    let mtlPathAndName = common.removeDuplicateSeparator(`${currentPath.value}/${basicName}.mtl`);
+  if (fileSuffix === "obj") {
+    let basicName = getFileNameIgnoreExt(props.fileName);
 
     let mtlFileItemParam = {
       storageKey: storageKey.value,
-      path: mtlPathAndName,
+      path: concatPath(currentPath.value, `${basicName}.mtl`),
       password: getPathPwd()
     }
 
     let fileItemResult = await loadFileItemReq(mtlFileItemParam);
 
-    if (fileItemResult?.data?.code === 0) {
+    if (fileItemResult?.data?.code === constant.responseCode.SUCCESS) {
       console.log('检测到当前存在 mtl 纹理文件: ' + mtlFileItemParam, fileItemResult);
       mtlPath.value = fileItemResult.data.data.url;
     }

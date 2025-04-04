@@ -4,7 +4,7 @@
     <div
       class="copy-btn code-data-copy"
       @click="copyMessage">
-      <svg-icon name="copy2"/>
+      <i-ic-baseline-content-copy />
     </div>
   </div>
 </template>

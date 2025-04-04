@@ -1,4 +1,4 @@
-import { removeDuplicateSlashes } from "fast-glob/out/managers/patterns";
+import { concatPathAndEncodeAll } from "~/utils";
 import useHeaderStorageList from "./useHeaderStorageList";
 
 import useStorageConfigStore from "~/stores/storage-config";
@@ -7,8 +7,7 @@ let storageConfigStore = useStorageConfigStore();
 import useRouterData from "~/composables/useRouterData";
 let { fullpath, storageKey } = useRouterData();
 
-import useCommon from "~/composables/useCommon";
-const { encodeAllIgnoreSlashes } = useCommon();
+
 
 // 面包屑数据
 let breadcrumbData = ref([]);
@@ -38,7 +37,7 @@ export default function useBreadcrumb() {
             if (storageByKey) {
                 breadcrumbData.value.push({
                     name: storageByKey.name,
-                    href: encodeAllIgnoreSlashes('/' + storageByKey.key)
+                    href: concatPathAndEncodeAll('/', storageByKey.key)
                 })
             }
         }
@@ -48,7 +47,7 @@ export default function useBreadcrumb() {
 								if (item) {
 									let breadcrumbItem = {
 											name: item,
-											href: encodeAllIgnoreSlashes(removeDuplicateSlashes('/' + storageKey.value + '/' + arr.slice(0, index + 1).join('/'))),
+											href: concatPathAndEncodeAll('/', storageKey.value, arr.slice(0, index + 1).join('/')),
 											disable: index === arr.length - 1
 									}
 									breadcrumbData.value.push(breadcrumbItem);

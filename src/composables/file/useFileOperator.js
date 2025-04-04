@@ -1,12 +1,10 @@
 import {
     batchDeleteReq,
     newFolderReq,
-    renameFileReq,
-    renameFolderReq,
-} from "~/api/file-operator";
-
-import useFileDataStore from "~/stores/file-data";
-let fileDataStore = useFileDataStore();
+    renameFileReq, renameFolderReq,
+    moveFolderReq, moveFileReq,
+    copyFileReq, copyFolderReq
+} from "~/api/home/file-operator";
 
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
@@ -21,10 +19,13 @@ let { selectRows, selectRow, selectFolders, selectFiles } = useFileSelect();
 import useFilePwd from "~/composables/file/useFilePwd";
 let { getPathPwd } = useFilePwd();
 
-// 检测浏览器类型
-import uaBrowser from 'ua-browser'
+import useBatchOperatorResult from "~/composables/file/useBatchOperatorResult";
+let { open:openBatchOperatorResultDialog } = useBatchOperatorResult();
+
 import { ElLoading } from "element-plus";
-const browserInfo = uaBrowser();
+
+import selectFolder from "~/components/file/selectFolder";
+
 
 export default function useFileOperator() {
 
@@ -35,6 +36,9 @@ export default function useFileOperator() {
      * @param {Object} row 已选择的文件
      */
     const batchDownloadFile = (row) => {
+        if (storageConfigStore.folderConfig.permission.download === false) {
+            return;
+        }
         if (!selectRows.value && selectRows.value.length === 0) {
             ElMessage.warning("请至少选择一个文件");
             return;
@@ -42,35 +46,11 @@ export default function useFileOperator() {
 
         let confirmMsg;
 
-        const checkBrowser = () => {
-            let result = {
-                isChrome: false,
-                tips: ''
-            }
-
-            let currentBrowser = browserInfo.browser;
-            let currentBrowserVersion = browserInfo.version;
-
-            if (currentBrowser === 'Chrome') {
-                result.isChrome = true;
-            } else {
-                result.tips = `<br><span class="text-gray-500 text-xs">检测到当前浏览器为 <b>${currentBrowser}-${currentBrowserVersion}</b>, 可能不支持此功能，建议使用谷歌浏览器!</span>`;
-            }
-            return result;
-        }
-
-        const checkBrowserResult = checkBrowser();
-
         if (row?.name) {
             confirmMsg = `是否确认下载文件 <span class="text-blue-500">${row.name}</span> ？`;
         } else if (selectRows.value.length === 1) {
             confirmMsg = `是否确认下载文件 <span class="text-blue-500">${selectRows.value[0].name}</span> ？`;
             row = selectRows.value[0];
-        } else if (selectRows.value.length > 1) {
-            confirmMsg = `是否确认批量下载 ${selectRows.value.length} 个文件？`;
-            if (!checkBrowserResult.isChrome) {
-                confirmMsg += checkBrowserResult.tips;
-            }
         }
 
         ElMessageBox.confirm(confirmMsg, '提示', {
@@ -78,20 +58,19 @@ export default function useFileOperator() {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'info',
-            callback: (action) => {
+            callback: (val) => {
+                let action = '';
+                if (val instanceof Object) {
+                    action = val.action;
+                } else if (typeof val === 'string') {
+                    action = val;
+                }
+
                 if (action === 'confirm') {
                     // 单个文件下载, 直接下载
                     if (row?.name) {
                         console.log('进行指定文件下载, 文件:', row);
                         downloadFileUseWindowOpenMode(row.url)
-                    } else {
-                        // 批量下载
-                        selectRows.value.forEach((item) => {
-                            if (item.type === 'FILE') {
-                                console.log('批量选中文件下载, 文件:', item);
-                                downloadFileUseIframeMode(item.url);
-                            }
-                        })
                     }
                 }
             }
@@ -124,8 +103,11 @@ export default function useFileOperator() {
     }
 
     // 新建文件夹
-    const newFolder = () => {
-        ElMessageBox.prompt(`在 <b>${currentPath.value}</b> 下创建文件夹，请输入要创建的文件夹名称`, '提示', {
+    const newFolder = (basePath) => new Promise((resolve, reject) => {
+        if (basePath === null || typeof basePath !== 'string') {
+            basePath = currentPath.value;
+        }
+        ElMessageBox.prompt(`在 <b>${basePath}</b> 下创建文件夹，请输入要创建的文件夹名称`, '提示', {
             dangerouslyUseHTMLString: true,
             confirmButtonText: '确定',
             cancelButtonText: '取消',
@@ -136,23 +118,28 @@ export default function useFileOperator() {
                 }
 
                 if (val.includes("/")) {
-                    return '文件夹名称不能包含 /';
+                    return '文件夹名称不能包含 / (不支持多级创建)';
                 }
                 return true;
             },
-        }).then(({value}) => {
+        }).then(({ value }) => {
             let param = {
                 storageKey: storageKey.value,
-                path: currentPath.value,
+                path: basePath,
                 name: value
             }
             newFolderReq(param).then(() => {
                 ElMessage.success('创建成功');
+                resolve();
+            }).catch(() => {
+                reject();
             }).finally(() => {
                 loadFile();
             });
+        }).catch(() => {
+            reject();
         });
-    }
+    });
 
     // 重命名文件夹
     const rename = () => {
@@ -161,6 +148,11 @@ export default function useFileOperator() {
             ElMessage.warning('请先选中一个文件或文件夹！');
             return;
         }
+        if (row.type === 'FOLDER' && !storageConfigStore.folderConfig.metadata.supportRenameFolder) {
+            ElMessage.warning('当前存储源不支持重命名文件夹！');
+            return;
+        }
+
         ElMessageBox.prompt(`将 <b>${row.name}</b> 修改为：`, '提示', {
             dangerouslyUseHTMLString: true,
             confirmButtonText: '确定',
@@ -201,17 +193,71 @@ export default function useFileOperator() {
         });
     }
 
-    // 移动至重命名
-    const moveTo = () => {
-        ElMessage.warning("暂未实现");
-    }
-
     // 复制至
     const copyTo = () => {
-        ElMessage.warning("暂未实现");
+        if (selectFolders.value.length > 0 && !storageConfigStore.folderConfig.metadata.supportCopyFolder) {
+            ElMessage.warning('当前存储源不支持复制文件夹！');
+            return;
+        }
+        moveOrCopy('复制', selectRow.value?.type === 'FILE' ? copyFileReq : copyFolderReq);
     }
 
+    // 移动至重命名
+    const moveTo = () => {
+        if (selectFolders.value.length > 0 && !storageConfigStore.folderConfig.metadata.supportMoveFolder) {
+            ElMessage.warning('当前存储源不支持移动文件夹！');
+            return;
+        }
+        moveOrCopy('移动', selectRow.value?.type === 'FILE' ? moveFileReq : moveFolderReq);
+    }
 
+    const moveOrCopy = (title, reqFun) => {
+        const nameList = selectRows.value.map(item => item.name);
+        selectFolder(title, storageKey.value, currentPath.value, ({ value:path, callback }) => {
+            if (path === currentPath.value) {
+                ElMessage.warning('你选择的目标文件夹与源文件夹相同！');
+                callback.stopLoading();
+                return;
+            }
+
+            let param = {
+                storageKey: storageKey.value,
+                path: currentPath.value,
+                nameList: nameList,
+                targetPath: path,
+                targetNameList: nameList,
+                srcPathPassword: getPathPwd(currentPath.value),
+                targetPathPassword: getPathPwd(path)
+            }
+
+            reqFun(param).then((res) => {
+                let data = res.data;
+                let hasFail = false;
+                for (let item of data) {
+                    if (item.success === false) {
+                        hasFail = true;
+                    }
+                }
+                if (hasFail) {
+                    ElMessageBox.confirm(`部分文件${title}失败，是否查看详情？`, '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        closeOnClickModal: false,
+                        closeOnPressEscape: false,
+                        type: 'warning'
+                    }).then(() => {
+                        openBatchOperatorResultDialog(data);
+                    });
+                } else {
+                    ElMessage.success(`${title}成功`);
+                }
+            }).finally(() => {
+                callback.stopLoading();
+                callback.closeDialog();
+                loadFile();
+            });
+        });
+    }
 
     // 删除相关 start
     const batchDelete = () => {
@@ -226,8 +272,6 @@ export default function useFileOperator() {
 
         let deleteConfirmMsg = selectRows.value.length === 1 ? '是否确认删除 ' : '是否确认批量删除 ';
 
-        let notSupportDeleteNotEmptyFolderType = ['s3', 'tencent', 'aliyun', 'qiniu', 'minio', 'huawei', 'upyun'];
-
         if (selectFolders.value.length > 0) {
             deleteConfirmMsg += (' ' + selectFolders.value.length + ' 个文件夹');
         }
@@ -240,8 +284,8 @@ export default function useFileOperator() {
             deleteConfirmMsg += (selectFiles.value.length + ' 个文件');
         }
 
-        if (selectFolders.value.length > 0 && notSupportDeleteNotEmptyFolderType.includes(fileDataStore.currentStorageSource.type.key)) {
-            deleteConfirmMsg += (' (不支持删除非空文件夹)');
+        if (selectFolders.value.length > 0 && !storageConfigStore.folderConfig.metadata.supportDeleteNotEmptyFolder) {
+            deleteConfirmMsg += ('<span class="font-bold text-red-400">(不支持删除非空文件夹)</span>');
         }
 
         deleteConfirmMsg += "?"
@@ -250,6 +294,7 @@ export default function useFileOperator() {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             draggable: true,
+            dangerouslyUseHTMLString: true,
             callback: action => {
                 if (action === 'confirm') {
                     let param = {
@@ -273,10 +318,29 @@ export default function useFileOperator() {
                     })
 
                     batchDeleteReq(param).then((res) => {
-                        ElMessage.success(res.msg);
-                        loadFile();
+                        let data = res.data;
+                        let hasFail = false;
+                        for (let item of data) {
+                            if (item.success === false) {
+                                hasFail = true;
+                            }
+                        }
+                        if (hasFail) {
+                            ElMessageBox.confirm('部分文件删除失败，是否查看详情？', '提示', {
+                                confirmButtonText: '确定',
+                                cancelButtonText: '取消',
+                                closeOnClickModal: false,
+                                closeOnPressEscape: false,
+                                type: 'warning'
+                            }).then(() => {
+                                openBatchOperatorResultDialog(data);
+                            });
+                        } else {
+                            ElMessage.success("删除成功");
+                        }
                     }).finally(() => {
                         loadingInstance.close();
+                        loadFile();
                     });
                 }
             }

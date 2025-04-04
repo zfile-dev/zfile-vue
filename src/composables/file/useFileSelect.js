@@ -1,27 +1,33 @@
 const selectRows = ref([]);
-let vueInstance = null;
+const selectFun = ref({
+  clearSelection: null,
+  toggleRowSelection: null,
+  toggleAllSelection: null
+})
 
-export default function useFileSelect(currentInstance) {
 
-  if (currentInstance) {
-    vueInstance = currentInstance;
+export default function useFileSelect() {
+
+  const initSelectFun = (clearSelection, toggleRowSelection, toggleAllSelection) => {
+    selectFun.value.clearSelection = clearSelection;
+    selectFun.value.toggleRowSelection = toggleRowSelection;
+    selectFun.value.toggleAllSelection = toggleAllSelection;
   }
 
   const clearSelection = () => {
-    vueInstance.proxy.$refs.fileTableRef.clearSelection();
+    selectFun.value.clearSelection();
   }
 
   const toggleRowSelection = (row, selected) => {
     if (row?.type === 'BACK') {
       return;
     }
-    vueInstance.proxy.$refs.fileTableRef.toggleRowSelection(row, selected);
+    selectFun.value.toggleRowSelection(row, selected);
   }
 
   const toggleAllSelection = () => {
-    vueInstance.proxy.$refs.fileTableRef.toggleAllSelection();
+    selectFun.value.toggleAllSelection();
   }
-
 
   // 文件是否可被选择
   const checkSelectable = (row) => {
@@ -72,16 +78,21 @@ export default function useFileSelect(currentInstance) {
     let isMultiSelect = selectRowsLength > 1;
     let isAllFile = selectFilesLength === selectRowsLength;
     let isAllFolder = selectFoldersLength === selectRowsLength;
+    let isSingleSelectFile = isSingleSelect && selectFilesLength === 1;
+    let isSingleSelectFolder = isSingleSelect && selectFoldersLength === 1;
 
     return {
       isSingleSelect,
       isMultiSelect,
       isAllFile,
-      isAllFolder
+      isAllFolder,
+      isSingleSelectFile,
+      isSingleSelectFolder
     };
   });
 
   return {
+    initSelectFun,
     checkSelectable, tableRowClassName, selectRowsChange,
     selectRow, selectRows,
     selectFiles, selectFolders,

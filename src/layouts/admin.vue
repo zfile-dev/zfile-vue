@@ -1,261 +1,240 @@
 <template>
-  <Disclosure as="nav" class="bg-white shadow" v-slot="{ open }">
-    <div class="max-w-7xl mx-auto px-4 xl:px-0">
-      <div class="relative flex justify-between h-16">
-        <div class="absolute inset-y-0 left-0 flex items-center md:hidden">
-          <!-- Mobile menu button -->
-          <DisclosureButton
-            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
-            <span class="sr-only">Open main menu</span>
-            <Bars3Icon v-if="!open" class="block h-6 w-6" aria-hidden="true"/>
-            <XMarkIcon v-else class="block h-6 w-6" aria-hidden="true"/>
-          </DisclosureButton>
-        </div>
-        <div class="flex-1 flex items-center justify-center md:items-stretch md:justify-start">
-          <el-popover
-            placement="bottom"
-            width="200"
-            :disabled="githubLatestLoading"
-            trigger="hover">
-            <div v-if="githubLatestInfo?.data" class="zfile-admin-index-version-info text-center">
-              <div v-html="`当前版本：v${common.version}`"></div>
-              <div v-html="`最新版：v${githubLatestInfo.data.tag_name}`"></div>
-              <div v-html="`发布时间: ${common.dateFormat(githubLatestInfo.data.published_at)}`"></div>
-              <br>
-              文档地址：
-              <el-link href="http://docs.zhaojun.im/zfile" target="_blank"
-                       class="zfile-word-aux zfile-margin-left-unset">点击进入
-              </el-link>
-              <br>
-              后端源码地址：
-              <el-link href="https://github.com/zhaojun1998/zfile" target="_blank"
-                       class="zfile-word-aux zfile-margin-left-unset">点击进入
-              </el-link>
-              <br>
-              前端源码地址：
-              <el-link href="https://github.com/zhaojun1998/zfile-vue" target="_blank"
-                       class="zfile-word-aux zfile-margin-left-unset">点击进入
-              </el-link>
-            </div>
+  <!--
+    This example requires updating your template:
 
-            <template #reference>
-              <div @click="common.openPage('/')" class="cursor-pointer flex-shrink-0 flex items-center">
-                <img class="block lg:hidden h-8 w-auto" src="../assets/icons/zfile-basic.svg"
-                     alt="Workflow"/>
-                <img class="hidden lg:block h-8 w-auto" src="../assets/icons/zfile-horizontal.svg"
-                     alt="Workflow"/>
-                <el-badge :is-dot="githubLatestInfo?.data?.tag_name && common.version !== githubLatestInfo?.data?.tag_name" class="hidden lg:block text-sm font-bold word ml-1 tracking-wider">
-                  {{common.version}}
-                </el-badge>
+    ```
+    <html class="h-full bg-white">
+    <body class="h-full">
+    ```
+  -->
+  <div class="h-full">
+    <TransitionRoot as="template" :show="sidebarOpen">
+      <Dialog as="div" class="relative z-50 lg:hidden" @close="sidebarOpen = false">
+        <TransitionChild as="template" enter="transition-opacity ease-linear duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="transition-opacity ease-linear duration-300" leave-from="opacity-100" leave-to="opacity-0">
+          <div class="fixed inset-0 bg-gray-900/80" />
+        </TransitionChild>
+
+        <div class="fixed inset-0 flex">
+          <TransitionChild as="template" enter="transition ease-in-out duration-300 transform" enter-from="-translate-x-full" enter-to="translate-x-0" leave="transition ease-in-out duration-300 transform" leave-from="translate-x-0" leave-to="-translate-x-full">
+            <DialogPanel class="relative mr-16 flex w-full max-w-xs flex-1">
+              <TransitionChild as="template" enter="ease-in-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in-out duration-300" leave-from="opacity-100" leave-to="opacity-0">
+                <div class="absolute left-full top-0 flex w-16 justify-center pt-5">
+                  <button type="button" class="-m-2.5 p-2.5" @click="sidebarOpen = false">
+                    <span class="sr-only">Close sidebar</span>
+                    <XMarkIcon class="h-6 w-6 text-white" aria-hidden="true" />
+                  </button>
+                </div>
+              </TransitionChild>
+              <!-- Sidebar component, swap this element with another sidebar if you like -->
+              <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
+                <div class="flex h-16 shrink-0 items-center">
+                  <img class="h-8 w-auto" src="../assets/icons/zfile-horizontal.svg" alt="Your Company" />
+                </div>
+                <nav class="flex flex-1 flex-col">
+                  <ul role="list" class="flex flex-1 flex-col gap-y-7">
+                    <li>
+                      <ul role="list" class="-mx-2 space-y-1">
+                        <li v-for="item in navigation" :key="item.id">
+                          <router-link :to="item.href" :class="[item.href === route.path ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
+                            <component :is="item.icon" :class="[item.href === route.path ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600', 'h-6 w-6 shrink-0']" aria-hidden="true" />
+                            {{ item.name }}
+                          </router-link>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <div class="text-xs font-semibold leading-6 text-gray-400">链接管理</div>
+                      <ul role="list" class="-mx-2 mt-2 space-y-1">
+                        <li v-for="item in links" :key="item.id">
+                          <router-link :to="item.href" :class="[item.href === route.path ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
+                            <component :is="item.icon" :class="[item.href === route.path ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600', 'h-6 w-6 shrink-0']" aria-hidden="true" />
+                            <span class="truncate">{{ item.name }}</span>
+                          </router-link>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <div class="text-xs font-semibold leading-6 text-gray-400">系统设置</div>
+                      <ul role="list" class="-mx-2 mt-2 space-y-1">
+                        <li v-for="item in settings" :key="item.id" @click="item.onClick">
+                          <router-link :to="item.href" :class="[item.href === route.path ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
+                            <component :is="item.icon" :class="[item.href === route.path ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600', 'h-6 w-6 shrink-0']" aria-hidden="true" />
+                            <span class="truncate">{{ item.name }}</span>
+                          </router-link>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </nav>
               </div>
-            </template>
-          </el-popover>
+            </DialogPanel>
+          </TransitionChild>
+        </div>
+      </Dialog>
+    </TransitionRoot>
 
-          <div class="hidden lg:ml-6 md:flex md:space-x-4 justify-center flex-1 lg:flex-none">
-            <!-- Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-            <router-link to="/admin/site-setting"
-                         :class="currentActive === '/admin/site-setting' ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
-                         class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-              <el-icon size="18px">
-                <i-ep-setting class="mr-1"/>
-              </el-icon>
-              基本设置
-            </router-link>
-            <router-link to="/admin/storage-list"
-                         :class="currentActive.startsWith('/admin/storage') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
-                         class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-              <el-icon size="18px">
-                <i-ep-folder class="mr-1"/>
-              </el-icon>
-              存储源设置
-            </router-link>
-            <router-link to="/admin/view-setting"
-                         :class="currentActive === '/admin/view-setting' ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
-                         class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-              <el-icon size="18px">
-                <i-ep-view class="mr-1"/>
-              </el-icon>
-              显示设置
-            </router-link>
-
-            <el-dropdown>
-              <router-link to="/admin/download-link"
-                           :class="currentActive.includes('/admin/download-link') ? 'border-indigo-500 text-gray-900' : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'"
-                           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                <el-icon size="18px">
-                  <i-ep-link class="mr-1"/>
-                </el-icon>
-                链接管理
-                <el-icon class="el-icon--right">
-                  <i-ep-arrow-down />
-                </el-icon>
-              </router-link>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item :icon="Bars3CenterLeftIcon">
-                    <router-link to="/admin/download-link">短链管理</router-link>
-                  </el-dropdown-item>
-                  <el-dropdown-item :icon="Tickets">
-                    <router-link to="/admin/download-link/log">下载日志</router-link>
-                  </el-dropdown-item>
-                  <el-dropdown-item :icon="Setting">
-                    <router-link to="/admin/download-link/setting">直/短链设置</router-link>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-
-
-            <div @click="logDownload"
-                 class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-              <el-icon size="18px">
-                <i-ep-download class="mr-1"/>
-              </el-icon>
-              日志下载
-            </div>
+    <!-- Static sidebar for desktop -->
+    <div class="hidden lg:fixed lg:inset-y-0 lg:z-auto lg:flex lg:w-72 lg:flex-col">
+      <!-- Sidebar component, swap this element with another sidebar if you like -->
+      <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
+        <div class="flex h-16 shrink-0 items-center">
+          <div @click="openHomePage" class="cursor-pointer flex-shrink-0 flex items-center">
+            <img class="h-8 w-auto" src="../assets/icons/zfile-horizontal.svg" alt="ZFile" />
+          </div>
+          <div @click="openChangeLog" class="cursor-pointer flex-shrink-0 flex items-center">
+            <el-badge class="hidden lg:block text-sm font-bold word ml-1 tracking-wider">
+              {{constant.version}}
+            </el-badge>
           </div>
         </div>
-        <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-          <!-- Profile dropdown -->
-          <Menu as="div" class="ml-3 relative">
-            <div>
-              <MenuButton
-                class="border-2 bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <span class="sr-only">Open user menu</span>
-                <img v-if="siteSetting?.data?.avatar" class="h-8 w-8 rounded-full"
-                     :src="siteSetting.data.avatar"
-                     alt=""/>
-                <img v-else class="h-8 w-8 rounded-full"
-                     src="../assets/image/avator.png"
-                     alt=""/>
-              </MenuButton>
-            </div>
-            <transition enter-active-class="transition ease-out duration-200"
-                        enter-from-class="transform opacity-0 scale-95"
-                        enter-to-class="transform opacity-100 scale-100"
-                        leave-active-class="transition ease-in duration-75"
-                        leave-from-class="transform opacity-100 scale-100"
-                        leave-to-class="transform opacity-0 scale-95">
-              <MenuItems
-                class="z-10 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div class="cursor-pointer border-b">
-                  <MenuItem @click="common.openPage('https://docs.zfile.vip')" v-slot="{ active }">
-                    <div
-                      :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
-                      ZFile Docs
-                    </div>
-                  </MenuItem>
-                  <MenuItem @click="common.openPage('https://github.com/zhaojun1998/zfile')" v-slot="{ active }">
-                    <div
-                      :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
-                      ZFile Github
-                    </div>
-                  </MenuItem>
-                </div>
-                <MenuItem v-slot="{ active }">
-                  <router-link to="/admin/security-setting"
-                               :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
-                    安全设置
+        <nav class="flex flex-1 flex-col">
+          <ul role="list" class="flex flex-1 flex-col gap-y-7">
+            <li>
+              <ul role="list" class="-mx-2 space-y-1">
+                <li v-for="item in navigation" :key="item.id">
+                  <router-link :to="item.href" :class="[item.href === route.path ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
+                    <component :is="item.icon" :class="[item.href === route.path ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600', 'h-6 w-6 shrink-0']" aria-hidden="true" />
+                    {{ item.name }}
                   </router-link>
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <router-link to="/admin/update-password"
-                               :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">
-                    修改密码
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="text-xs font-semibold leading-6 text-gray-400">链接管理</div>
+              <ul role="list" class="-mx-2 mt-2 space-y-1">
+                <li v-for="item in links" :key="item.id">
+                  <router-link :to="item.href" :class="[item.href === route.path ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
+                    <component :is="item.icon" :class="[item.href === route.path ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600', 'h-6 w-6 shrink-0']" aria-hidden="true" />
+                    <span class="truncate">{{ item.name }}</span>
                   </router-link>
-                </MenuItem>
-                <MenuItem @click="logout" v-slot="{ active }">
-                  <a href="#"
-                     :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']">注销</a>
-                </MenuItem>
-              </MenuItems>
-            </transition>
-          </Menu>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <div class="text-xs font-semibold leading-6 text-gray-400">系统设置</div>
+              <ul role="list" class="-mx-2 mt-2 space-y-1">
+                <li v-for="item in settings" :key="item.id" @click="item.onClick">
+                  <router-link :to="item.href" :class="[item.href === route.path ? 'bg-gray-50 text-indigo-600' : 'text-gray-700 hover:text-indigo-600 hover:bg-gray-50', 'group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold']">
+                    <component :is="item.icon" :class="[item.href === route.path ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600', 'h-6 w-6 shrink-0']" aria-hidden="true" />
+                    <span class="truncate">{{ item.name }}</span>
+                  </router-link>
+                </li>
+              </ul>
+            </li>
+            <li class="mt-auto flex justify-center space-x-5 px-6 mb-5">
+              <a class="cursor-pointer" title="Github" target="_blank" href="https://github.com/zfile-dev/zfile">
+                <img class="w-8 h-8" src="../assets/icons/github.svg" />
+              </a>
+              <a class="cursor-pointer" title="ZFile 文档" target="_blank" href="https://github.com/zfile-dev/zfile">
+                <BookOpenIcon class="w-8 h-8" />
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <div class="sticky top-0 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+      <button type="button" class="-m-2.5 p-2.5 text-gray-700 lg:hidden" @click="sidebarOpen = true">
+        <span class="sr-only">Open sidebar</span>
+        <Bars3Icon class="h-6 w-6" aria-hidden="true" />
+      </button>
+      <div class="mx-auto flex space-x-2">
+        <div @click="openHomePage" class="cursor-pointer flex-shrink-0 flex items-center">
+          <img class="h-8 w-auto" src="../assets/icons/zfile-basic.svg" alt="ZFile" />
+        </div>
+        <div @click="openChangeLog" class="cursor-pointer flex-shrink-0 flex items-center">
+          <el-badge class="hidden lg:block text-sm font-bold word tracking-wider">
+            {{constant.version}}
+          </el-badge>
         </div>
       </div>
     </div>
 
-    <DisclosurePanel class="md:hidden">
-      <div class="pt-2 pb-4 space-y-1">
-        <!-- Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" -->
-        <DisclosureButton
-          :class="currentActive === '/admin/site-setting' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
-          as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-          <router-link to="/admin/site-setting">基本设置</router-link>
-        </DisclosureButton>
-        <DisclosureButton
-          :class="currentActive.startsWith('/admin/storage') ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
-          as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-          <router-link to="/admin/storage-list">存储源设置</router-link>
-        </DisclosureButton>
-        <DisclosureButton
-          :class="currentActive === '/admin/view-setting' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
-          as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-          <router-link to="/admin/view-setting">显示设置</router-link>
-        </DisclosureButton>
-        <DisclosureButton
-          :class="currentActive === '/admin/download-link' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
-          as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-          <router-link to="/admin/download-link">短链管理</router-link>
-        </DisclosureButton>
-        <DisclosureButton
-          :class="currentActive === '/admin/download-link/log' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
-          as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-          <router-link to="/admin/download-link/log">下载日志</router-link>
-        </DisclosureButton>
-        <DisclosureButton
-          :class="currentActive === '/admin/download-link/setting' ? 'bg-indigo-50 border-indigo-500 text-indigo-700' : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700'"
-          as="a" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-          <router-link to="/admin/download-link/setting">直/短链设置</router-link>
-        </DisclosureButton>
-        <DisclosureButton
-          @click="logDownload"
-          as="span" class="block pl-3 pr-4 py-2 border-l-4 text-base font-medium border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700">
-          日志下载
-        </DisclosureButton>
+    <main class="admin-main-content pb-16 sm:pt-10 sm:pb-26 lg:py-10 lg:pl-72 bg-gray-50 h-full overflow-y-auto">
+      <div class="bg-white shadow h-full min-h-full sm:mx-10 sm:h-auto sm:rounded-lg sm:px-6 lg:px-8 ">
+        <div class="box animate__animated animate__fadeIn z-admin-body-wrapper">
+          <router-view />
+        </div>
       </div>
-    </DisclosurePanel>
-  </Disclosure>
-
-  <div class="p-0 sm:p-10 pb-16 sm:pb-26 bg-gray-100 h-full overflow-y-auto border-t-2">
-    <div class="max-w-7xl mx-auto bg-white shadow h-full sm:h-auto sm:rounded-lg">
-      <router-view class="box animate__animated h-full sm:h-auto overflow-auto animate__fadeIn"/>
-    </div>
+    </main>
   </div>
-
 </template>
 
 <script setup>
+import { openPage } from "~/utils";
 import useAdminLayout from "~/composables/admin/layout/admin-layout";
+import {
+  Dialog, DialogPanel, TransitionChild, TransitionRoot
+} from "@headlessui/vue";
+
+import useAdminSetting from "~/composables/admin/useAdminSetting";
+const { siteSetting } = useAdminSetting();
 
 import {
-  Disclosure, DisclosureButton, DisclosurePanel,
-  Menu, MenuButton, MenuItem, MenuItems
-} from '@headlessui/vue';
+  DocumentTextIcon, Cog8ToothIcon, XMarkIcon,
+  Bars3Icon, CircleStackIcon, EyeIcon,
+  BookOpenIcon, UsersIcon, ShieldCheckIcon, ArrowRightOnRectangleIcon,
+  DocumentArrowDownIcon, TableCellsIcon,
+  PresentationChartBarIcon, ComputerDesktopIcon, ArrowLeftOnRectangleIcon
+} from "@heroicons/vue/24/outline";
+import { logoutReq } from "~/api/home/user";
 
-import { Bars3CenterLeftIcon, XMarkIcon, Bars3Icon } from '@heroicons/vue/24/outline'
-
-import { Setting, Tickets } from '@element-plus/icons-vue';
-
-import common from "~/common";
 let router = useRouter();
 let route = useRoute();
 
-const { siteSetting,
-  githubLatestInfo, githubLatestLoading,
-  logDownload,
-  logout, rebuildTitle } = useAdminLayout(router, route);
+const sidebarOpen = ref(false)
 
 /**
  * 记录当前切换到的路由, 并修改标题
  */
-let currentActive = computed(() => route.path);
+const { rebuildTitle, logDownload } = useAdminLayout(router, route);
 
 watch(() => route.path, () => {
   rebuildTitle();
 }, {
   immediate: true
 })
+
+const navigation = ref([
+  { id: 1, name: '站点设置', href: '/admin/site-setting', icon: Cog8ToothIcon },
+  { id: 2, name: '存储源设置', href: '/admin/storage-list', icon: CircleStackIcon },
+  { id: 3, name: '显示设置', href: '/admin/view-setting', icon: EyeIcon },
+])
+const links = ref([
+  { id: 1, name: '直/短链设置', href: '/admin/download-link/setting', icon: Cog8ToothIcon },
+  { id: 2, name: '短链管理', href: '/admin/download-link', icon: TableCellsIcon },
+  { id: 3, name: '下载日志', href: '/admin/download-link/log', icon: DocumentTextIcon },
+])
+
+const settings = ref([
+  { id: 1, name: '用户管理', href: '/admin/user-list', icon: UsersIcon },
+  { id: 2, name: '安全设置', href: '/admin/security-setting', icon: ArrowRightOnRectangleIcon },
+  { id: 3, name: '访问控制', href: '/admin/access', icon: ShieldCheckIcon },
+  { id: 2, name: '登录日志', href: '/admin/login-log', icon: DocumentTextIcon },
+  { id: 4, name: '系统日志下载', href: '#', icon: DocumentArrowDownIcon, onClick: logDownload },
+  { id: 5, name: '注销登录', href: '#', icon: ArrowLeftOnRectangleIcon, onClick: () => {
+      logoutReq().then(res => {
+        router.push('/login');
+      })
+    }
+  }
+])
+
+
+const openHomePage = () => {
+  if (siteSetting.value.siteAdminLogoTargetMode === '_self') {
+    window.location.href = '/';
+  } else {
+    openPage('/');
+  }
+}
+
+const openChangeLog = () => {
+  if (siteSetting.value.siteAdminVersionOpenChangeLog) {
+    openPage('https://docs.zfile.vip/changelog/pro/');
+  }
+}
 
 </script>
 

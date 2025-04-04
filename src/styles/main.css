@@ -1,4 +1,6 @@
-@import './md.css';
+@import './element-plus.scss';
+@import './admin.scss';
+@import './error-page.css';
 
 html,
 body,
@@ -58,13 +60,13 @@ body,
 }
 
 
-.icon {
-	width: 1em;
-	height: 1em;
-	vertical-align: -0.15em;
-	fill: currentColor;
-	overflow: hidden;
-}
+/*.icon {*/
+/*	width: 1em;*/
+/*	height: 1em;*/
+/*	vertical-align: -0.15em;*/
+/*	fill: currentColor;*/
+/*	overflow: hidden;*/
+/*}*/
 
 .dragging-over *{
 	pointer-events: none;
@@ -97,15 +99,16 @@ body,
 	}
 }
 
-@media screen and (max-width: 500px) {
-	.el-dialog {
-		width: 90% !important;
-	}
 
-	.el-dialog .el-dialog__body {
-		max-height: 80vh;
-		overflow-y: auto;
-		overflow-x: hidden;
+/* 所有 dialog 不显示本身的滚动条，需内部容器自实现滚动 */
+.el-overlay-dialog {
+	overflow: hidden !important;
+}
+
+@media screen and (max-width: 500px) {
+	/* 移动端 所有 dialog 最小宽度 90%（默认为 50%，不适合移动端） */
+	.el-dialog {
+		min-width: 90%;
 	}
 }
 
@@ -128,3 +131,12 @@ body,
 /*	background-color: #343a40;*/
 /*}*/
 /*@import 'element-plus/theme-chalk/dark/css-vars.css';*/
+
+
+.zfile-logo-css {
+	visibility: hidden;
+}
+
+.zfile-code {
+	@apply bg-gray-100 text-gray-800 px-2 py-1 rounded-lg select-all;
+}

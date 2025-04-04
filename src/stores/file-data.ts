@@ -1,7 +1,8 @@
+// @ts-ignore
+import { getFileType, getFileIconName } from "../utils";
 import { defineStore } from 'pinia'
 
 // @ts-ignore
-import common from "~/common";
 import useStorageConfigStore from "./storage-config";
 
 // 当前存储源的配置信息，数据来源为服务端配置。请求存储源后会获取其配置信息。
@@ -36,7 +37,7 @@ const useFileDataStore = defineStore('fileDataStore', {
           }
           let name = item.name;
           let suffix = name.substr(name.lastIndexOf('.') + 1).toLowerCase();
-          return common.constant.fileTypeMap[type].indexOf(suffix) !== -1;
+          return constant.fileTypeMap[type].indexOf(suffix) !== -1;
         });
       };
     },
@@ -49,15 +50,15 @@ const useFileDataStore = defineStore('fileDataStore', {
       tableData.forEach((item:any) => {
         // 生成图标
         if (!item.icon) {
-          item['icon'] = common.getFileIconName(item);
+          item['icon'] = getFileIconName(item);
         }
         if (item.preview !== null) {
           // 获取文件类型
-          let fileType = common.getFileType(item.name);
+          let fileType = getFileType(item.name);
           if (fileType) {
             // 获取文件是否可预览
             item['fileType'] = fileType;
-            item.preview = common.constant.previewFileType.indexOf(fileType) !== -1;
+            item.preview = constant.previewFileType.indexOf(fileType) !== -1;
           } else {
             item.preview = false;
           }

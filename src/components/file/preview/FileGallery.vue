@@ -21,7 +21,7 @@
                  v-show="loadedList.includes(colItem.name)"
                  class="zfile-gallery-img-hover-info">
               <span class="zfile-gallery-img-text">{{colItem.name}}</span>
-              <span class="zfile-gallery-img-text">{{common.fileSizeFormat(colItem.size)}}</span>
+              <span class="zfile-gallery-img-text">{{fileSizeFormat(colItem.size)}}</span>
             </div>
             <div
               v-show="loadedList.includes(colItem.name)"
@@ -42,8 +42,9 @@
 </template>
 
 <script setup>
+import { fileSizeFormat } from "~/utils";
 import {computed, reactive, ref} from "vue";
-import common from "~/common";
+
 
 import 'lazysizes';
 import useGlobalConfigStore from "~/stores/global-config";

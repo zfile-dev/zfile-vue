@@ -3,7 +3,7 @@
     <el-skeleton class="w-full h-[40vh] sm:h-[80vh]" animated>
       <template #template>
         <div class="flex justify-center items-center h-full loading">
-          <svg-icon name="file-type-video" class="w-12 h-12"></svg-icon>
+          <i-custom-file-type-video class="w-16 h-16" />
         </div>
       </template>
     </el-skeleton>
@@ -12,7 +12,7 @@
 
 <script setup>
 onMounted(() => {
-  document.querySelector(".el-dialog .el-dialog__title").innerHTML = '加载中...';
+  document.querySelector(".el-dialog .z-dialog-title").innerHTML = '加载中...';
 })
 </script>
 

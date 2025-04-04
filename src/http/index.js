@@ -1,10 +1,12 @@
 import axios from 'axios'
 import {ElMessage} from 'element-plus';
 import useGlobalConfigStore from "~/stores/global-config";
+import MessageBox from "~/components/messageBox/messageBox";
 
+let globalConfigStore = useGlobalConfigStore();
 // 创建 axios 的一个实例
 const instance = axios.create({
-    baseURL: useGlobalConfigStore().zfileConfig.baseUrl, //接口统一域名
+    baseURL: globalConfigStore.zfileConfig.baseUrl, //接口统一域名
     timeout: 0, //设置超时
     headers: {
         'Content-Type': 'application/json;charset=UTF-8;',
@@ -16,9 +18,10 @@ instance.interceptors.request.use((config) => {
     // 每次发送请求之前判断是否存在 token，如果存在，则统一在 http 请求的 header 都加上 token，不用每次请求都手动添加了
     const token = window.localStorage.getItem('zfile-token');
     // 非外部链接，才增加 token 到请求头
-    if (!config.url.startsWith("http")) {
+    if (!config.url.startsWith("http") || config.containToken === true) {
         token && (config.headers['zfile-token'] = token)
         config.headers['axios-request'] = true
+        config.headers['axios-from'] = globalConfigStore.serverAddress
     }
     // console.log('开始请求的 url 为：', config.url, '\n时间为：', new Date().getTime())
     // requestTimeCache[config.url] = new Date().getTime();
@@ -39,43 +42,15 @@ instance.interceptors.response.use((response) => {
         return response;
     }
 
-    if (response.data.code !== 0) {
-
-        if (response.data.code === 401) {
-            router.push('/login');
-        }
+    if (response.data.code !== constant.responseCode.SUCCESS) {
 
         if (response.config.showDefaultMsg !== false) {
-
-            if (response.data.code === 400) {
-                let errorObj = response.data.data;
-
-                let keys = Object.keys(errorObj);
-
-                let message;
-                if (keys.length > 1) {
-                    message = '非法参数！<br>';
-                    keys.forEach((key) => {
-                        message += `字段[${key}]: ${errorObj[key]}<br>`
-                    })
-                } else {
-                    message = errorObj[keys[0]];
-                }
-
-                ElMessage({
-                    type: 'error',
-                    dangerouslyUseHTMLString: true,
-                    grouping: true,
-                    message: message
-                })
-            } else {
-                ElMessage({
-                    type: 'error',
-                    dangerouslyUseHTMLString: true,
-                    grouping: true,
-                    message: response.data.msg
-                })
-            }
+            ElMessage({
+                type: 'error',
+                dangerouslyUseHTMLString: true,
+                grouping: true,
+                message: response.data.msg
+            })
         }
 
         return Promise.reject(response);
@@ -86,23 +61,78 @@ instance.interceptors.response.use((response) => {
     if(error.response && error.response.status){
         const responseDataCode = error.response.data.code;
 
-        if (responseDataCode === 401) {
-            window.location.href = '/login';
+        if (responseDataCode === constant.responseCode.BAD_REQUEST) {
+            let errorObj = error.response.data.data;
+
+            let message;
+            if (errorObj) {
+                let keys = Object.keys(errorObj);
+
+                if (keys.length > 1) {
+                    message = '非法参数！<br>';
+                    keys.forEach((key) => {
+                        message += `字段[${key}]: ${errorObj[key]}<br>`
+                    })
+                } else {
+                    message = errorObj[keys[0]];
+                }
+            } else {
+                message = error.response.data.msg;
+            }
+
+            ElMessage({
+                type: 'error',
+                dangerouslyUseHTMLString: true,
+                grouping: true,
+                message: message
+            })
+            return Promise.reject(error);
+        }
+
+        if (responseDataCode === constant.responseCode.UNAUTHORIZED) {
+            window.location.href = '/login?redirect=' + window.location.pathname + window.location.search + window.location.hash;
+            return;
+        }
+
+        if (responseDataCode === constant.responseCode.FORBIDDEN) {
+            MessageBox.confirm('您没有权限访问此资源，是否前往登录？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                window.location.href = '/login?redirect=' + window.location.pathname + window.location.search + window.location.hash;
+            }).catch(() => {
+            });
         }
 
         if (error.response.config.showDefaultMsg !== false) {
             if (responseDataCode) {
+                if (responseDataCode.startsWith(constant.responseCode.PRO_CHECK_PREFIX)) {
+                    MessageBox.confirm(`授权校验异常, 错误信息: <font color="red">${error.response.data.msg}</font>，是否前往后台查看授权设置？`, '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        dangerouslyUseHTMLString: true,
+                        type: 'info'
+                    }).then(() => {
+                        window.location.href = '/admin';
+                    }).catch(() => {
+                    });
+                } else {
+                    ElMessage({
+                        type: 'error',
+                        grouping: true,
+                        message: error.response.data.msg
+                    })
+                }
+            }  else {
+                let msg = '请求失败，请联系管理员';
+                if (error.response.status === 403) {
+                    msg = error.response.data;
+                }
                 ElMessage({
                     type: 'error',
                     grouping: true,
-                    message: error.response.data.msg
-                })
-
-            } else {
-                ElMessage({
-                    type: 'error',
-                    grouping: true,
-                    message: '请求失败，请联系管理员'
+                    message: msg
                 })
             }
         }

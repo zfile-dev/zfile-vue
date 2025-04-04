@@ -1,14 +1,14 @@
 # Z-File
 
-此仓库是 ZFile 4.0 前端 Vue 仓库, 使用技术为 Vue3、Pinia、VueRoute、Axios、Element Plus 等.
+此项目是一个在线文件目录的程序, 支持各种对象存储和本地存储, 使用定位是个人放常用工具下载, 或做公共的文件库. 不会向多账户方向开发.
 
 预览地址: [http://zfile.vip](http://zfile.vip)
 后端代码: [https://github.com/zhaojun1998/zfile](https://github.com/zhaojun1998/zfile)
 
 ## 访问地址
 
-用户前台: http://127.0.0.1:3000/
+用户前台: http://127.0.0.1:8080/main
 
-初始安装: http://127.0.0.1:3000/install
+初始安装: http://127.0.0.1:8080/install
 
-管理后台: http://127.0.0.1:3000/admin
+管理后台: http://127.0.0.1:8080/admin

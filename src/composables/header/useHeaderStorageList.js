@@ -1,4 +1,9 @@
-import { getSourceListReq } from "~/api/header";
+import { getSourceListReq } from "~/api/home/home";
+
+import MessageBox from "~/components/messageBox/messageBox";
+
+import useFileLoading from "~/composables/file/useFileLoading";
+const { loading } = useFileLoading();
 
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
@@ -28,14 +33,24 @@ export default function useHeaderStorageList() {
 
                 // 如果没有存储源, 则直接提示是否添加
                 if (storageList.value.length === 0) {
-                    ElMessageBox.confirm('当前无可用存储源，是否跳转至管理员页面添加存储源？', '提示', {
-                        confirmButtonText: '确定', cancelButtonText: '取消', type: 'info', callback: action => {
-                            if (action === 'confirm') {
-                                routerRef.value.push('/login');
-                            }
+                    let msg = '当前无可用存储源，是否前往登录页面？';
+                    let isBasicUser = storageConfigStore.loginInfo.isLogin && !storageConfigStore.loginInfo.isAdmin;
+                    let isAdmin = storageConfigStore.loginInfo.isLogin && storageConfigStore.loginInfo.isAdmin;
+                    if (isBasicUser) {
+                        msg = '您当前没有可用存储源，请联系管理员添加存储源';
+                    } else if (isAdmin) {
+                        msg = '当前无可用存储源，是否前往后台添加存储源？';
+                    }
+										MessageBox.confirm(msg, '提示', {
+												confirmButtonText: '确定',
+												cancelButtonText: '取消',
+												type: 'info'
+										}).then(() => {
+                        if (!isBasicUser) {
+                            routerRef.value.push('/login')
                         }
-                    });
-                    return;
+										}).catch(() => {});
+										return;
                 }
 
                 rootPathAction(rootShowStorage);
@@ -61,6 +76,7 @@ export default function useHeaderStorageList() {
             if (rootShowStorage) {
                 fileDataStore.updateFileList(storageListAsFileList.value);
                 document.title = storageConfigStore.globalConfig.siteName + ' | 首页';
+                loading.value = false;
             } else {
                 routerToFirstStorage();
             }
@@ -94,6 +110,7 @@ export default function useHeaderStorageList() {
 
             // 如果切换到了新存储源，且没有指定路径，则进行切换
             if ((newVal && !fullpath.value) || oldVal !== undefined) {
+                storageConfigStore.folderConfig.readmeText = '';
                 routerRef.value.push('/' + newVal);
                 refreshCurrentStorageSource();
             }

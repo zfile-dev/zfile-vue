@@ -6,6 +6,9 @@
 import Index from '~/pages/admin/storage-edit/index.vue'
 </script>
 
+<style scoped>
+
+</style>
 
 <route lang="yaml">
 meta:

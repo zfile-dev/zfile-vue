@@ -12,10 +12,12 @@
 		"resolveJsonModule": true,
 		"moduleResolution": "node",
 		"useDefineForClassFields": true,
-		"baseUrl": "."
+		"baseUrl": ".",
+		"paths": {
+			"~/*": ["src/*"]
+		}
 	},
 	"include": [
-		"srcipts",
 		"presets",
 		"src/**/*.js",
 		"src/**/*.ts",

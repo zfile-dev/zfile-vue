@@ -7,12 +7,11 @@
 <script setup>
 import {marked} from 'marked';
 import { computed, onMounted, onUpdated, ref } from "vue";
-import hljs from 'highlight.js';
+import hljs from "highlight.js/lib/core";
 import 'highlight.js/styles/github.css';
 import 'github-markdown-css';
 
-
-import {getFileTextFromServerReq, getFileTextReq} from "~/api/common";
+import { getFileTextReq } from "~/api/home/common";
 
 let props = defineProps({
 	fileUrl: String,
@@ -23,15 +22,16 @@ const fileContent = ref('');
 
 onMounted(() => {
 	let fileUrl = props.fileUrl;
-	getFileTextReq(fileUrl).then((res) => {
+	getFileTextReq(fileUrl, 'text').then((res) => {
 		fileContent.value = res.data;
 	}).catch((e) => {
-		console.log(`加载文本文件: [${props.fileName}] - [${props.fileUrl}] 失败, 尝试从服务端加载.`, e);
-    alert('加载文件预览器失败，请检测文件下载链接是否正常');
-    ElMessage.warning({
-      message: `加载文件预览器失败，请检测文件下载链接是否正常或是否限制了跨域访问， ${fileUrl}`,
-      duration: 0
-    });
+    ElMessage({
+      message: `加载文本文件失败. 请检查此地址是否有效或是否限制了跨域访问.`,
+      type: 'error',
+      duration: 0,
+      showClose: true,
+      grouping: true
+    })
   });
 })
 
@@ -77,7 +77,7 @@ onUpdated(() => {
 
 <style scoped>
 .content {
-  padding: 10px 20px;
+  padding: 10px 0;
 }
 
 .content .markdown-body >>> pre {
@@ -90,7 +90,7 @@ onUpdated(() => {
 }
 
 .dialog-scroll {
-	height: calc(80vh);
+	height: 80vh;
 	overflow-y: auto;
 	overflow-x: hidden;
 	margin: 0;

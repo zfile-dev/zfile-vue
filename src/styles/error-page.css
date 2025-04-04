@@ -1,0 +1,26 @@
+.error-body {
+	@apply flex flex-wrap h-screen text-center justify-around items-center;
+}
+
+.err-code {
+    @apply text-7xl mb-5;
+}
+
+.err-content {
+    @apply text-2xl h-10;
+}
+
+.err-cover {
+    @apply h-auto max-w-full max-h-full w-[600px] mx-24;
+}
+
+.error-desc {
+	@apply font-bold flex-1 w-72;
+}
+
+.error-btn {
+	@apply rounded-lg transition text-xl mt-8 px-5 py-3 active:scale-90 active:transform;
+    --tw-shadow-color: 8, 145, 178;
+    --tw-shadow: 0 4px 6px -1px rgba(var(--tw-shadow-color), 0.1), 0 2px 4px -1px rgba(var(--tw-shadow-color), 0.06);
+    box-shadow: 0 0 #0000, 0 0 #0000, 0 0 #0000, var(--tw-shadow);
+}

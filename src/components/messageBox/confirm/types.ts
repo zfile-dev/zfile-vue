@@ -8,5 +8,8 @@ export interface Props {
   confirmButtonText?: String;
   cancelButtonText?: String;
   dangerouslyUseHTMLString?: Boolean;
-
+  showCancelButton?: Boolean;
+  showCloseButton?: Boolean;
+  closeOnClickModal?: Boolean;
+  closeOnPressEscape?: Boolean;
 }

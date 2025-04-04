@@ -1,12 +1,12 @@
 <template>
 	<div>
 		<div class="artplayer-app"></div>
-    <div class="zfile-video-switch-tools" v-if="currentVideo && common.isMobile.value">
-      <el-button :disabled="!getPrevAndNextVideo(currentVideo.name).prev" :icon="IconPrev" @click="playPrevVideo">上一个视频</el-button>
-      <el-button :disabled="!getPrevAndNextVideo(currentVideo.name).next" :icon="IconNext" @click="playNextVideo">下一个视频</el-button>
+    <div class="zfile-video-switch-tools" v-if="currentVideo && isMobile">
+      <el-button :disabled="!getPrevAndNextVideo(currentVideo.name)?.prev" :icon="IconPrev" @click="playPrevVideo">上一个视频</el-button>
+      <el-button :disabled="!getPrevAndNextVideo(currentVideo.name)?.next" :icon="IconNext" @click="playNextVideo">下一个视频</el-button>
     </div>
 		<div class="zfile-video-tools" :class="hiddenTools ? 'hidden-important' : ''">
-			<template v-if="storageConfigStore.permission.download">
+			<template v-if="storageConfigStore.folderConfig.permission.download">
         <div class="zfile-video-tools-item" @click="openTarget('download')">
           <el-tooltip placement="top">
             <template #content>
@@ -88,23 +88,17 @@
 </template>
 
 <script setup>
+import Mpegts from "mpegts.js";
+import Hls from 'hls.js/dist/hls.light.min';
 import Artplayer from "artplayer";
-let common = useCommon();
-let route = useRoute();
+import artplayerPluginDanmuku from "artplayer-plugin-danmuku";
+import { isMobile, getFileName } from "~/utils";
 
-
-import useFilePwd from "~/composables/file/useFilePwd";
-let { getPathPwd } = useFilePwd();
-
+import IconPrev from '~icons/material-symbols/skip-previous';
+import IconNext from '~icons/material-symbols/skip-next';
 
 import useRouterData from "~/composables/useRouterData";
-let { currentPath, storageKey } = useRouterData();
-
-import { loadFileItemReq } from "~/api/home";
-
-import IconPrev from '~icons/custom/prev';
-import IconNext from '~icons/custom/next';
-
+let { storageKey } = useRouterData();
 
 import useFileDataStore from "~/stores/file-data";
 let fileDataStore = useFileDataStore();
@@ -112,141 +106,32 @@ let fileDataStore = useFileDataStore();
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
-// 获取视频列表, 如果是当前视频, 则设置为默认勾选.
-const getVideoList = (currentName) => {
-	let result = [];
-	fileDataStore.filterFileByType('video').forEach(file => {
-		result.push({
-			default: file.name === currentName,
-			html: file.name,
-			url: file.url
-		});
-	});
+let route = useRoute();
 
-	return result;
-}
-
-let currentVideo = ref(null);
-
-const openTarget = (mode) => {
-	switch (mode) {
-    case 'download':
-			window.location = currentVideo.value.url;
-			break;
-		case 'thunder':
-			window.location = `thunder://${btoa('AA' + currentVideo.value.url + 'ZZ')}`;
-			break;
-		case 'motrix':
-			window.location = `motrix://new-task?uri=${encodeURIComponent(currentVideo.value.url)}&out=${encodeURIComponent(currentVideo.value.name)}`;
-			break;
-		case 'potplayer':
-			window.location = `potplayer://${currentVideo.value.url}`;
-			break;
-		case 'iina':
-			window.location = `iina://weblink?url=${encodeURIComponent(currentVideo.value.url)}`;
-			break;
-		case 'vlc':
-			window.location = `vlc://${currentVideo.value.url}`;
-			break;
-		case 'nplayer':
-			window.location = `nplayer-${currentVideo.value.url}`;
-			break;
-		case 'mxplayer':
-			window.location = 'intent:' + currentVideo.value.url + '#Intent;package=com.mxtech.videoplayer.ad;S.title=' + currentVideo.value.name +';end';
-			break;
-		case 'mxplayer-pro':
-			window.location = 'intent:' + currentVideo.value.url + '#Intent;package=com.mxtech.videoplayer.pro;S.title=' + currentVideo.value.name +';end';
-			break;
-	}
-}
-
-
-// 获取上一个和下一个视频, 没有则返回空
-const getPrevAndNextVideo = (currentName) => {
-	let videoList = fileDataStore.filterFileByType('video');
-
-	clearExceedProgress();
-	for (let i = 0; i < videoList.length; i++){
-		let videoItem = videoList[i];
-		if (videoItem.name === currentName) {
-			return {
-				prev: videoList[i - 1] || null,
-				next: videoList[i + 1] || null
-			}
-		}
-	}
-}
-
-// 清楚超过进度的视频缓存, 防止再次播放时直接结束.
-const clearExceedProgress = () => {
-	let playProgress = JSON.parse(localStorage.getItem('_h5_player_play_progress_'));
-	if (playProgress) {
-		for (let key of Object.keys(playProgress)) {
-			if (key.endsWith(playProgress[key].progress)) {
-				delete playProgress[key];
-			}
-		}
-		localStorage.setItem('_h5_player_play_progress_', JSON.stringify(playProgress));
-	}
-}
-
-
-// 字幕列表, 如果是当前视频, 则设置为默认勾选.
-const getSubtitles = (currentName) => {
-	let subtitleList = [];
-	fileDataStore.fileList.find((item) => {
-    let currentNameBase = currentName.split('.')[0];
-		let name = item.name;
-		if (name === (currentName + ".vtt") ||
-			name === (currentName + ".srt") ||
-			name === (currentName + ".ass") ||
-      name === (currentNameBase + ".vtt") ||
-      name === (currentNameBase + ".srt") ||
-      name === (currentNameBase + ".ass")) {
-			subtitleList.push({
-				default: subtitleList.length === 0,
-				url: item.url,
-				html: name
-			})
-		}
-	});
-
-	if (subtitleList.length > 0) {
-		subtitleList.push({
-			url: '',
-			html: '关闭字幕'
-		})
-	}
-
-	return subtitleList;
-}
-
-let hiddenIcon = '<i class="art-icon art-icon-not-hidden"><svg t="1662978336444" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="968" width="128" height="128"><path d="M711.456 377.184c32.736 31.52 60.928 72.256 84.64 122.208a40.64 40.64 0 0 1 0 34.72c-63.776 135.04-160.48 202.528-290.112 202.528-46.752 0-89.248-8.832-127.456-26.464l37.184-37.184c27.52 10.048 57.6 15.104 90.272 15.104 108.864 0 188.48-55.168 244.608-171.296-21.088-43.584-45.44-78.56-73.44-105.28l34.304-34.336z m13.024-122.816l28.768 28.8a5.376 5.376 0 0 1 0 7.616L272.96 771.04a5.408 5.408 0 0 1-7.648 0l-28.8-28.8a5.376 5.376 0 0 1 0-7.616l71.36-71.36c-35.84-32.384-66.56-75.392-92.032-129.088a40.64 40.64 0 0 1 0-34.72C279.68 364.48 376.384 296.96 505.984 296.96c50.752 0 96.448 10.4 137.12 31.168l73.76-73.728a5.376 5.376 0 0 1 7.616 0z m-218.496 91.136c-108.8 0-188.416 55.168-244.608 171.296 22.944 47.36 49.792 84.608 80.928 112.096l56.256-56.256a118.688 118.688 0 0 1 160.576-160.576l47.424-47.424c-30.336-12.832-63.776-19.136-100.576-19.136z m-70.016 137.088a75.616 75.616 0 0 0-4.64 57.28l95.04-95.04a75.616 75.616 0 0 0-90.4 37.76z m60.416 109.504a75.456 75.456 0 0 0 82.144-82.112l35.616-35.616a118.72 118.72 0 0 1-153.376 153.344l35.616-35.616z" p-id="969"></path></svg></i>';
-let notHiddenIcon = '<i class="art-icon art-icon-hidden"><svg t="1662978261880" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4451" width="128" height="128"><path d="M512.032 648a136.128 136.128 0 0 1-136-136c0-74.976 60.992-136 136-136s136 61.024 136 136a136.128 136.128 0 0 1-136 136z m0-224c-48.544 0-88 39.456-88 88s39.456 88 88 88 88-39.456 88-88-39.456-88-88-88z" p-id="4452"></path><path d="M512.032 743.616a327.68 327.68 0 0 1-231.872-95.616L142.88 512l137.28-136a327.68 327.68 0 0 1 231.872-95.584c87.328 0 169.664 33.952 231.872 95.584l137.28 136-137.28 136a327.52 327.52 0 0 1-231.872 95.616zM206.528 512l107.424 101.952c53.152 52.672 123.488 81.696 198.048 81.696s144.896-29.024 198.08-81.696L817.536 512l-107.424-101.952c-53.152-52.672-123.488-81.696-198.048-81.696s-144.896 29.024-198.08 81.696L206.528 512z" p-id="4453"></path></svg></i>';
+let hiddenIcon = '<i class="art-icon art-icon-hidden"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="m16.1 13.3l-1.45-1.45q.225-1.175-.675-2.2t-2.325-.8L10.2 7.4q.425-.2.863-.3T12 7q1.875 0 3.188 1.313T16.5 11.5q0 .5-.1.938t-.3.862Zm3.2 3.15l-1.45-1.4q.95-.725 1.688-1.587T20.8 11.5q-1.25-2.525-3.588-4.013T12 6q-.725 0-1.425.1T9.2 6.4L7.65 4.85q1.025-.425 2.1-.638T12 4q3.775 0 6.725 2.087T23 11.5q-.575 1.475-1.513 2.738T19.3 16.45Zm.5 6.15l-4.2-4.15q-.875.275-1.762.413T12 19q-3.775 0-6.725-2.087T1 11.5q.525-1.325 1.325-2.463T4.15 7L1.4 4.2l1.4-1.4l18.4 18.4l-1.4 1.4ZM5.55 8.4q-.725.65-1.325 1.425T3.2 11.5q1.25 2.525 3.588 4.013T12 17q.5 0 .975-.063t.975-.137l-.9-.95q-.275.075-.525.113T12 16q-1.875 0-3.188-1.312T7.5 11.5q0-.275.038-.525t.112-.525L5.55 8.4Zm7.975 2.325ZM9.75 12.6Z"/></svg></i>';
+let notHiddenIcon = '<i class="art-icon art-icon-not-hidden"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path d="M12 16q1.875 0 3.188-1.313T16.5 11.5q0-1.875-1.313-3.188T12 7q-1.875 0-3.188 1.313T7.5 11.5q0 1.875 1.313 3.188T12 16Zm0-1.8q-1.125 0-1.913-.788T9.3 11.5q0-1.125.788-1.913T12 8.8q1.125 0 1.913.788T14.7 11.5q0 1.125-.787 1.913T12 14.2Zm0 4.8q-3.65 0-6.65-2.038T1 11.5q1.35-3.425 4.35-5.463T12 4q3.65 0 6.65 2.038T23 11.5q-1.35 3.425-4.35 5.463T12 19Zm0-7.5Zm0 5.5q2.825 0 5.188-1.488T20.8 11.5q-1.25-2.525-3.613-4.013T12 6Q9.175 6 6.812 7.488T3.2 11.5q1.25 2.525 3.613 4.013T12 17Z"/></svg></i>';
 let videoListIcon = '<i class="art-icon art-icon-video-list"><svg t="1650551038453" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="12028" width="20" height="20"><path d="M111.395066 179.64038l801.208844 0 0 87.866187-801.208844 0 0-87.866187Z" p-id="12029"></path><path d="M111.395066 468.067418l801.208844 0 0 87.866187-801.208844 0 0-87.866187Z" p-id="12030"></path><path d="M111.395066 756.493433l801.208844 0 0 87.866187-801.208844 0 0-87.866187Z" p-id="12031"></path></svg></i>';
 let subtitleIcon = '<i class="art-icon art-icon-subtitle"><svg xmlns="http://www.w3.org/2000/svg" height="22" width="22" viewBox="0 0 48 48">\n' +
 	'    <path d="M0 0h48v48H0z" fill="none"></path>\n' +
 	'    <path d="M40 8H8c-2.21 0-4 1.79-4 4v24c0 2.21 1.79 4 4 4h32c2.21 0 4-1.79 4-4V12c0-2.21-1.79-4-4-4zM8 24h8v4H8v-4zm20 12H8v-4h20v4zm12 0h-8v-4h8v4zm0-8H20v-4h20v4z"></path>\n' +
 	'</svg></i>';
 
-let nextVideoIcon = '<i class="art-icon art-icon-next-video"><svg height="25" width="25"  viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path></svg></i>';
-let prevVideoIcon = '<i class="art-icon art-icon-prev-video" style="transform: scale(-1,1);"><svg height="25" width="25"  viewBox="0 0 22 22"><path d="M16 5a1 1 0 00-1 1v4.615a1.431 1.431 0 00-.615-.829L7.21 5.23A1.439 1.439 0 005 6.445v9.11a1.44 1.44 0 002.21 1.215l7.175-4.555a1.436 1.436 0 00.616-.828V16a1 1 0 002 0V6C17 5.448 16.552 5 16 5z"></path></svg></i>';
-
-import Mpegts from "mpegts.js";
-
-import Hls from 'hls.js';
+let nextVideoIcon = '<i class="art-icon art-icon-prev-video"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="m6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></i>';
+let prevVideoIcon = '<i class="art-icon art-icon-next-video"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg></i>';
 
 const autoPlayNextVideo = useStorage('zfile-video-auto-player-next', false);
 const autoPlayVideo = useStorage('zfile-video-auto-player', false);
 const hiddenTools = useStorage('zfile-video-hiddle-tools', false);
 
 let art = null;
+let hlsInstance = null;
+let currentVideo = ref(null);
 const initArtPlayer = async (name, url) => {
   currentVideo.value = {
     name,
     url
   }
-  document.querySelector(".zfile-video-dialog .el-dialog__title").innerHTML = name;
+  document.querySelector(".zfile-video-player-dialog .z-dialog-title").innerHTML = name;
   if (art) {
     art.destroy();
   }
@@ -257,27 +142,6 @@ const initArtPlayer = async (name, url) => {
     videoType = 'flv';
   } else if (name.toLowerCase().endsWith('m3u8')) {
     videoType = 'm3u8';
-  }
-
-  // 兼容 h5ai_dplayer https://github.com/Pearlulu/h5ai_dplayer
-  // 取 __{video_name}__/video.m3u8 完整路径
-  let originPathAndName = common.removeDuplicateSeparator(`${currentPath.value}/${name}`);
-  let m3u8PathAndName = common.removeDuplicateSeparator(`${currentPath.value}/__${name}__/video.m3u8`);
-
-  let m3u8FileItemParam = {
-    storageKey: storageKey.value,
-    path: m3u8PathAndName,
-    password: getPathPwd()
-  }
-
-  let h5aiDplayerMode = false;
-
-  let fileItemResult = await loadFileItemReq(m3u8FileItemParam);
-
-  if (fileItemResult?.data?.code === 0) {
-    console.log('检测到当前为 h5ai_dplayer 兼容模式, 替换播放文件为: ' + m3u8PathAndName);
-    videoType = 'm3u8';
-    h5aiDplayerMode = true;
   }
 
   let options = {
@@ -322,10 +186,10 @@ const initArtPlayer = async (name, url) => {
       },
       m3u8: function(video, url) {
         if (Hls.isSupported()) {
-          const hls = new Hls({
+          hlsInstance = new Hls({
             xhrSetup: (xhr, hlsUrl) => {
               // 根据 URL 获取文件名
-              let fileName = hlsUrl.substring(hlsUrl.lastIndexOf('/') + 1);
+              let fileName = getFileName(hlsUrl);
               // 如果不是当前的视频 URL, 那就是切片的 URL.
               if (hlsUrl !== url) {
                 let realUrl = fileDataStore.getFileUrlByName(fileName);
@@ -337,8 +201,8 @@ const initArtPlayer = async (name, url) => {
               }
             }
           });
-          hls.loadSource(url);
-          hls.attachMedia(video);
+          hlsInstance.loadSource(url);
+          hlsInstance.attachMedia(video);
         } else {
           const canPlay = video.canPlayType('application/vnd.apple.mpegurl');
           if (canPlay === 'probably' || canPlay == 'maybe') {
@@ -349,14 +213,14 @@ const initArtPlayer = async (name, url) => {
         }
       },
     },
-    contextmenu: [
+    contextmenu: storageConfigStore.folderConfig.permission.download ? [
       {
         html: '下载',
         click: function() {
           window.open(url);
         },
       },
-    ],
+    ] : [],
     settings: [
       {
         html: '自动播放',
@@ -395,14 +259,6 @@ const initArtPlayer = async (name, url) => {
     ],
     controls: [
       {
-        position: 'right',
-        html: hiddenTools.value ? hiddenIcon : notHiddenIcon,
-        click: function (_, event) {
-          hiddenTools.value = !hiddenTools.value;
-          event.target.parentNode.parentNode.innerHTML = (hiddenTools.value ? hiddenIcon : notHiddenIcon);
-        },
-      },
-      {
         name: 'video-list',
         position: 'right',
         html: videoListIcon,
@@ -412,8 +268,27 @@ const initArtPlayer = async (name, url) => {
           return videoListIcon;
         },
       }
-    ]
+    ],
+    plugins: []
   };
+
+  let danmukuUrl = getDanmukuUrl(name);
+  if (danmukuUrl) {
+    options.plugins.push(artplayerPluginDanmuku({
+      danmuku: danmukuUrl,
+    }));
+  }
+
+  if (isMobile.value === false) {
+    options.controls.push({
+      position: 'right',
+      html: hiddenTools.value ? hiddenIcon : notHiddenIcon,
+      click: function (_, event) {
+        hiddenTools.value = !hiddenTools.value;
+        event.target.parentNode.parentNode.innerHTML = (hiddenTools.value ? hiddenIcon : notHiddenIcon);
+      },
+    })
+  }
 
   let subtitles = getSubtitles(name);
   if (subtitles.length > 0) {
@@ -454,10 +329,10 @@ const initArtPlayer = async (name, url) => {
   art.on('destory', () => {
   })
 
-  if (common.isMobile.value === false) {
+  if (isMobile.value === false) {
     art.on('ready', () => {
       let prevAndNextVideo = getPrevAndNextVideo(art.option.title);
-      if (prevAndNextVideo.prev) {
+      if (prevAndNextVideo?.prev) {
         art.controls.add({
           name: 'prev-video',
           position: 'left',
@@ -469,7 +344,7 @@ const initArtPlayer = async (name, url) => {
           }
         })
       }
-      if (prevAndNextVideo.next) {
+      if (prevAndNextVideo?.next) {
         art.controls.add({
           name: 'next-video',
           position: 'left',
@@ -495,16 +370,136 @@ const initArtPlayer = async (name, url) => {
   }
 }
 
+// 获取视频列表, 如果是当前视频, 则设置为默认勾选.
+const getVideoList = (currentName) => {
+  let result = [];
+  fileDataStore.filterFileByType('video').forEach(file => {
+    result.push({
+      default: file.name === currentName,
+      html: file.name,
+      url: file.url
+    });
+  });
+
+  return result;
+}
+
+const openTarget = (mode) => {
+  switch (mode) {
+    case 'download':
+      window.location = currentVideo.value.url;
+      break;
+    case 'thunder':
+      window.location = `thunder://${btoa('AA' + currentVideo.value.url + 'ZZ')}`;
+      break;
+    case 'motrix':
+      window.location = `motrix://new-task?uri=${encodeURIComponent(currentVideo.value.url)}&out=${encodeURIComponent(currentVideo.value.name)}`;
+      break;
+    case 'potplayer':
+      window.location = `potplayer://${currentVideo.value.url}`;
+      break;
+    case 'iina':
+      window.location = `iina://weblink?url=${encodeURIComponent(currentVideo.value.url)}`;
+      break;
+    case 'vlc':
+      window.location = `vlc://${currentVideo.value.url}`;
+      break;
+    case 'nplayer':
+      window.location = `nplayer-${currentVideo.value.url}`;
+      break;
+    case 'mxplayer':
+      window.location = 'intent:' + currentVideo.value.url + '#Intent;package=com.mxtech.videoplayer.ad;S.title=' + currentVideo.value.name +';end';
+      break;
+    case 'mxplayer-pro':
+      window.location = 'intent:' + currentVideo.value.url + '#Intent;package=com.mxtech.videoplayer.pro;S.title=' + currentVideo.value.name +';end';
+      break;
+  }
+}
+
+// 清楚超过进度的视频缓存, 防止再次播放时直接结束.
+const clearExceedProgress = () => {
+  let playProgress = JSON.parse(localStorage.getItem('_h5_player_play_progress_'));
+  if (playProgress) {
+    for (let key of Object.keys(playProgress)) {
+      if (key.endsWith(playProgress[key].progress)) {
+        delete playProgress[key];
+      }
+    }
+    localStorage.setItem('_h5_player_play_progress_', JSON.stringify(playProgress));
+  }
+}
+
+// 字幕列表, 如果是当前视频, 则设置为默认勾选.
+const getSubtitles = (currentName) => {
+  let subtitleList = [];
+  fileDataStore.fileList.find((item) => {
+    let currentNameBase = currentName.split('.')[0];
+    let name = item.name;
+    if (name === (currentName + ".vtt") ||
+      name === (currentName + ".srt") ||
+      name === (currentName + ".ass") ||
+      name === (currentNameBase + ".vtt") ||
+      name === (currentNameBase + ".srt") ||
+      name === (currentNameBase + ".ass")) {
+      subtitleList.push({
+        default: subtitleList.length === 0,
+        url: item.url,
+        html: name
+      })
+    }
+  });
+
+  if (subtitleList.length > 0) {
+    subtitleList.push({
+      url: '',
+      html: '关闭字幕'
+    })
+  }
+
+  return subtitleList;
+}
+
+// 获取弹幕文件
+const getDanmukuUrl = (currentName) => {
+  // 查找第一个文件名是视频名.xml 的
+  let file =  fileDataStore.fileList.find((item) => {
+    let currentNameBase = currentName.split('.')[0];
+    let name = item.name;
+    if (name === (currentName + ".xml") || name === (currentNameBase + ".xml")) {
+      return true;
+    }
+  })
+
+  if (file) {
+    return file.url;
+  }
+}
+
+// 获取上一个和下一个视频, 没有则返回空
+const getPrevAndNextVideo = (currentName) => {
+  let videoList = fileDataStore.filterFileByType('video');
+
+  clearExceedProgress();
+  for (let i = 0; i < videoList.length; i++){
+    let videoItem = videoList[i];
+    if (videoItem.name === currentName) {
+      return {
+        prev: videoList[i - 1] || null,
+        next: videoList[i + 1] || null
+      }
+    }
+  }
+}
 
 const playNextVideo = () => {
-  const nextVideo = getPrevAndNextVideo(art.option.title).next;
+  const nextVideo = getPrevAndNextVideo(art.option.title)?.next;
   if (nextVideo) {
     initArtPlayer(nextVideo.name, nextVideo.url);
   }
 }
 
 const playPrevVideo = () => {
-  const prevVideo = getPrevAndNextVideo(art.option.title).prev;
+  const prevVideo = getPrevAndNextVideo(art.option.title)?.prev;
   if (prevVideo) {
     initArtPlayer(prevVideo.name, prevVideo.url);
   }
@@ -513,37 +508,32 @@ const playPrevVideo = () => {
 onMounted(() => {
 	initArtPlayer(fileDataStore.currentClickRow.name, fileDataStore.currentClickRow.url);
 })
+
+onUnmounted(() => {
+  if (art) {
+    art.destroy(true);
+  }
+  if (hlsInstance) {
+    hlsInstance.destroy();
+  }
+})
 </script>
 
 <style scoped lang="scss">
 .artplayer-app {
 	@apply h-[40vh] md:h-[60vh] lg:h-[70vh];
 
-	:deep(.art-controls svg) {
-		height: initial;
-		width: initial;
-	}
-
   :deep(.art-controls .art-control) {
-    min-height: 14px;
-    min-width: 14px;
+    @apply min-w-[14px] min-h-[14px] sm:min-w-[46px] sm:min-h-[46px];
     .art-icon {
       width: 28px;
     }
   }
 
-  :deep(.art-video-player) {
-
-    .art-control-fullscreenWeb {
-      @apply hidden md:block;
-    }
-
-    &.art-fullscreen {
-      .art-control-fullscreenWeb {
-        @apply block;
-      }
-    }
+  :deep(.art-controls-center) {
+    @apply hidden sm:flex #{!important};
   }
+
 }
 
 .zfile-video-switch-tools {

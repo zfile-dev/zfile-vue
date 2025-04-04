@@ -6,6 +6,10 @@
 import BasicSetting from "~/pages/admin/download-link/basic-setting.vue";
 </script>
 
+<style scoped>
+
+</style>
+
 <route lang="yaml">
 meta:
   layout: admin

@@ -1,7 +1,7 @@
 <template>
   <img id="zfile-home-logo" @click="openLink" v-if="storageConfigStore.globalConfig.siteHomeLogo"
        :src="storageConfigStore.globalConfig.siteHomeLogo"
-       class="my-auto h-6 mr-2">
+       class="my-auto h-6 mr-2 cursor-pointer">
 </template>
 
 <script setup>

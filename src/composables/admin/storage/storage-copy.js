@@ -1,4 +1,4 @@
-import { copyStorageReq, existStorageKeyReq } from "~/api/admin-storage";
+import { copyStorageReq, existStorageKeyReq } from "~/api/admin/admin-storage";
 
 const formData = reactive({
   toName: '',
@@ -19,8 +19,7 @@ const rules = {
           return;
         }
 
-        let systemNames = ['admin', 'file', 'login', 'install', 's', 'onedrive', 'api', 'sharepoint', 's3', 'webdav'];
-        if (systemNames.includes(value)) {
+        if (constant.systemNames.includes(value)) {
           callback(new Error('不可占用系统级名称，请修改。'));
           return;
         }
