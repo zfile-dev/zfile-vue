@@ -205,9 +205,13 @@ export default function useFileUpload() {
                     }
                 }
 
-                await handleCreateFolders(createdFolderSet).finally(() => {
-                    createFoldersLoadingInstance.close();
-                });
+				if (storageConfigStore.folderConfig.metadata.needCreateFolderBeforeUpload === true) {
+					await handleCreateFolders(createdFolderSet).finally(() => {
+						createFoldersLoadingInstance.close();
+					});
+				} else {
+					createFoldersLoadingInstance.close();
+				}
 
                 // 如果去除所有空文件夹下没有文件, 则直接返回
                 if (fileList.length === 0) {
