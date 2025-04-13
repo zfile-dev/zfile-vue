@@ -1,5 +1,7 @@
 import { useKeyModifier } from '@vueuse/core'
 
+import { isMobile, isNotMobile } from "~/utils";
+
 import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
@@ -107,7 +109,13 @@ export default function useTableOperator() {
         let isClickSelection = event.type === 'selection';
 
         // 如果点击的是文件或文件夹, 且点击的不是 checkbox 列, 且操作习惯是单击打开, 则打开文件/文件夹
-        if (!isClickSelection && storageConfigStore.globalConfig.fileClickMode === 'click') {
+        if (!isClickSelection &&
+					(
+						(isNotMobile.value && storageConfigStore.globalConfig.fileClickMode === 'click')
+						||
+						(isMobile.value && storageConfigStore.globalConfig.mobileFileClickMode === 'click')
+					)
+				) {
             openRow(row);
             return;
         }

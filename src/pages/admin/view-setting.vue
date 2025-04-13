@@ -47,6 +47,14 @@
 						</div>
 					</el-form-item>
 
+					<el-form-item label="移动端文件操作习惯">
+						<el-radio v-model="siteSetting.mobileFileClickMode" value="click">单击进入</el-radio>
+						<el-radio v-model="siteSetting.mobileFileClickMode" value="dbclick">双击进入</el-radio>
+						<div class="el-form-item-tips">
+							控制文件和文件夹的点击习惯, 单击/双击打开文件夹或预览文件
+						</div>
+					</el-form-item>
+
 					<el-form-item label="默认最大显示文件数">
 						<el-input-number v-model="siteSetting.maxShowSize" :min="1" />
 						<div class="el-form-item-tips">

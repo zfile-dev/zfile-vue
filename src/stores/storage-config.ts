@@ -20,6 +20,7 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
         tableSize: 'small',
         rootShowStorage: true,
         fileClickMode: 'dbclick',
+		mobileFileClickMode: 'dbclick',
         showDocument: false,
         debugMode: false,
         icp: '',
