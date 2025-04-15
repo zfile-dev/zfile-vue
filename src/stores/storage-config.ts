@@ -59,6 +59,7 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
           supportMoveFolder: null,
           supportCopyFolder: null,
           supportDeleteNotEmptyFolder: null,
+          needCreateFolderBeforeUpload: null,
         },
         rootPath: null,
       }
