@@ -5,8 +5,8 @@
         <el-form-item label="选中的文件">
           <el-tag type="success">{{ selectRows.length }} 个</el-tag>
         </el-form-item>
-        <el-form-item label="直链有效期">
-          <el-select v-model="generateLinkFormData.expireTime" placeholder="请选择直链有效期">
+        <el-form-item label="短链有效期">
+          <el-select v-model="generateLinkFormData.expireTime" placeholder="请选择短链有效期">
             <el-option
               v-for="item in storageConfigStore.globalConfig.linkExpireTimes"
               :key="item.seconds"
