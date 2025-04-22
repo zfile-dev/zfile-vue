@@ -126,29 +126,27 @@
                             <i-mdi-key class="w-4 h-4 mr-2 text-gray-500" name="key" />
                             重置管理员密码
                         </el-dropdown-item>
-                        <template v-show="route.params.storageKey">
-                            <el-dropdown-item v-if="storageConfigStore.permission.newFolder" @click="newFolder">
-                                <i-lucide-folder-plus class="w-4 h-4 mr-2 text-gray-500" name="add-folder" />
-                                新建文件夹
-                            </el-dropdown-item>
-                            <el-dropdown-item v-if="storageConfigStore.permission.upload" @click="openUploadDialog">
-                                <i-ci-file-upload class="w-4 h-4 mr-2 text-gray-500" name="upload" />
-                                上传文件
-                            </el-dropdown-item>
-                            <el-dropdown-item v-if="storageConfigStore.permission.uploadFolder"
-                                              @click="openUploadFolderDialog">
-                                <i-ci-folder-upload class="w-4 h-4 mr-2 text-gray-500" name="upload-folder" />
-                                上传文件夹
-                            </el-dropdown-item>
-                            <el-dropdown-item v-if="!fileDataStore.imgMode" @click="fileDataStore.imgMode = true">
-                                <i-ri-image-line class="w-4 h-4 mr-2 text-gray-500" name="image" />
-                                打开画廊模式
-                            </el-dropdown-item>
-                            <el-dropdown-item v-else-if="fileDataStore.imgMode" @click="fileDataStore.imgMode = false">
-                                <i-ri-image-line class="w-4 h-4 mr-2 text-blue-500" name="image" />
-                                关闭画廊模式
-                            </el-dropdown-item>
-                        </template>
+						<el-dropdown-item v-if="route.params.storageKey && storageConfigStore.permission.newFolder" @click="newFolder">
+							<i-lucide-folder-plus class="w-4 h-4 mr-2 text-gray-500" name="add-folder" />
+							新建文件夹
+						</el-dropdown-item>
+						<el-dropdown-item v-if="route.params.storageKey && storageConfigStore.permission.upload" @click="openUploadDialog">
+							<i-ci-file-upload class="w-4 h-4 mr-2 text-gray-500" name="upload" />
+							上传文件
+						</el-dropdown-item>
+						<el-dropdown-item v-if="route.params.storageKey && storageConfigStore.permission.uploadFolder"
+										  @click="openUploadFolderDialog">
+							<i-ci-folder-upload class="w-4 h-4 mr-2 text-gray-500" name="upload-folder" />
+							上传文件夹
+						</el-dropdown-item>
+						<el-dropdown-item v-if="route.params.storageKey && !fileDataStore.imgMode" @click="fileDataStore.imgMode = true">
+							<i-ri-image-line class="w-4 h-4 mr-2 text-gray-500" name="image" />
+							打开画廊模式
+						</el-dropdown-item>
+						<el-dropdown-item v-else-if="route.params.storageKey && fileDataStore.imgMode" @click="fileDataStore.imgMode = false">
+							<i-ri-image-line class="w-4 h-4 mr-2 text-blue-500" name="image" />
+							关闭画廊模式
+						</el-dropdown-item>
                         <el-dropdown-item @click="openSettingVisible">
                             <Cog8ToothIcon class="w-4 h-4 mr-2 text-gray-500"></Cog8ToothIcon>
                             更多设置
