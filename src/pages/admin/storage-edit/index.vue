@@ -201,6 +201,11 @@
           <el-input v-else v-model="storageItem.storageSourceAllParam[item.key]"/>
         </template>
 
+        <!-- 通用 textarea -->
+        <template v-else-if="item.type === 'textarea'">
+          <el-input type="textarea" v-model="storageItem.storageSourceAllParam[item.key]" />
+        </template>
+
         <div v-else>
           服务端配置错误, 字段 {{ item.key }} 类型为 {{ item.type }}, 不支持此类型的渲染.
         </div>
@@ -353,6 +358,7 @@ let useInitData = () => {
       secretId: null,
       username: null,
       password: null,
+      privateKey: null,
       basePath: "",
       domain: "",
       listId: "",
