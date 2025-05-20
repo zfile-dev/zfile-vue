@@ -76,6 +76,7 @@ defineExpose({
 
 <style scoped lang="scss">
 :deep(.zfile-update-pwd-dialog) {
+	@apply max-w-[90%];
   .el-dialog__body {
     @apply py-5;
   }
