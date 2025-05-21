@@ -37,20 +37,18 @@ export default function useHeaderStorageList() {
                     let isBasicUser = storageConfigStore.loginInfo.isLogin && !storageConfigStore.loginInfo.isAdmin;
                     let isAdmin = storageConfigStore.loginInfo.isLogin && storageConfigStore.loginInfo.isAdmin;
                     if (isBasicUser) {
-                        msg = '您当前没有可用存储源，请联系管理员添加存储源';
+                        msg = '';
+						ElMessage.warning('您当前没有可用存储源，请联系管理员添加存储源');
                     } else if (isAdmin) {
-                        msg = '当前无可用存储源，是否前往后台添加存储源？';
+						MessageBox.confirm('当前无可用存储源，是否前往后台添加存储源？', '提示', {
+							confirmButtonText: '确定',
+							cancelButtonText: '取消',
+							type: 'info'
+						}).then(() => {
+							routerRef.value.push('/login')
+						});
                     }
-										MessageBox.confirm(msg, '提示', {
-												confirmButtonText: '确定',
-												cancelButtonText: '取消',
-												type: 'info'
-										}).then(() => {
-                        if (!isBasicUser) {
-                            routerRef.value.push('/login')
-                        }
-										}).catch(() => {});
-										return;
+					return;
                 }
 
                 rootPathAction(rootShowStorage);
