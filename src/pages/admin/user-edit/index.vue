@@ -17,7 +17,8 @@
     <el-form-item :size="globalConfigStore.adminForm.size" label="用户名" prop="username">
       <el-input :readonly="data.id === 2" v-model="data.username">
         <template #suffix>
-          <span v-if="data.id === 1">内置管理员用户</span>
+          <span v-if="data.id === 0">内置虚拟新用户</span>
+          <span v-else-if="data.id === 1">内置管理员用户</span>
           <span v-else-if="data.id === 2">内置匿名用户</span>
           <span v-else>普通用户</span>
         </template>

@@ -66,9 +66,12 @@
 					<div class="flex justify-between space-x-2">
 						<span>{{ scope.row.username }}</span>
 						<span>
-						  <el-tag v-if="scope.row.id === adminId" effect="dark">管理员</el-tag>
-						  <el-tag v-else-if="scope.row.id === guestId" effect="dark" type="success">匿名用户</el-tag>
-						  <el-tag v-else>普通用户</el-tag>
+							<el-tooltip v-if="scope.row.id === newUserTemplateId"  content="表示单点登录新用户或新注册用户默认的权限，如果关闭右侧的启用状态表示不允许新用户注册/单点登录新用户">
+						  		<el-tag effect="dark" type="info">虚拟新用户</el-tag>
+							</el-tooltip>
+							<el-tag v-else-if="scope.row.id === adminId" effect="dark">管理员</el-tag>
+							<el-tag v-else-if="scope.row.id === guestId" effect="dark" type="success">匿名用户</el-tag>
+							<el-tag v-else>普通用户</el-tag>
 						</span>
 					</div>
 				</template>
@@ -142,6 +145,7 @@ let router = useRouter();
 
 const adminId = 1;
 const guestId = 2;
+const newUserTemplateId = 0;
 
 const searchParam = reactive({
   username: '',
