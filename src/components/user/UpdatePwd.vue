@@ -10,6 +10,7 @@
   <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
     <el-form-item label="原密码" prop="oldPassword">
       <el-input v-model="form.oldPassword" type="password" show-password></el-input>
+	  <div class="el-form-item-tips">单点登录未主动设置过密码的用户，可不填写原密码。</div>
     </el-form-item>
     <el-form-item label="新密码" prop="newPassword">
       <el-input v-model="form.newPassword" type="password" show-password></el-input>
@@ -28,9 +29,6 @@ import ZDialog from "~/components/common/dialog/ZDialog.vue";
 import useDialogFn from "~/components/common/dialog/useDialogWithForm";
 
 const rules = ref({
-  oldPassword: [
-    { required: true, message: '请输入原密码', trigger: ['change', 'blur'] }
-  ],
   newPassword: [
     { required: true, message: '请输入新密码', trigger: ['change', 'blur'] }
   ],
