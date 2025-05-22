@@ -49,6 +49,16 @@
 								</div>
 							</el-form-item>
 
+							<el-form-item class="!mb-0">
+								<div class="flex w-full space-x-4 items-center justify-center" >
+									<a v-for="item in ssoList" :key="item.provider" class="cursor-pointer inline" :href="concatPath(globalConfigStore.serverAddress, 'sso', item.provider, 'login')">
+										<el-tooltip :content="item.name">
+											<auto-icon class="inline" :icon="item.icon" />
+										</el-tooltip>
+									</a>
+								</div>
+							</el-form-item>
+
 							<el-form-item class="box animate__animated animate__fadeInUp">
 								<div class="flex justify-between w-full">
                   <el-checkbox v-model="remember" label="记住密码" />
@@ -82,6 +92,7 @@
 
 <script setup>
 import { checkLoginReq, loginReq, loginVerifyImgReq, loginVerifyModeReq } from "~/api/home/user";
+import { loadSsoLoginListReq } from "~/api/home/login";
 
 import { CheckBadgeIcon, QuestionMarkCircleIcon } from "@heroicons/vue/24/solid";
 import { PhotoIcon, UserIcon, KeyIcon, CheckIcon } from "@heroicons/vue/24/outline";
@@ -89,6 +100,10 @@ import { installStatusReq } from "~/api/home/install";
 
 let router = useRouter();
 let loading = ref(false);
+
+import useGlobalConfigStore from "~/stores/global-config";
+import { concatPath } from "~/utils";
+let globalConfigStore = useGlobalConfigStore();
 
 const rememberStorage = useStorage('zfile-login-storage', {
   remember: false,
@@ -182,6 +197,7 @@ const loadLoginVerifyCodeImgData = () => {
 };
 
 
+const ssoList = ref([])
 onMounted(() => {
 	installStatusReq().then((response) => {
 		if (!response.data) {
@@ -196,6 +212,10 @@ onMounted(() => {
 		if (isLogin && isAdmin) {
 			router.push("/admin");
 		}
+	});
+
+	loadSsoLoginListReq().then((response) => {
+		ssoList.value = response.data;
 	});
 
 	loadLoginVerifyMode();

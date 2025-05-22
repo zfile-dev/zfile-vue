@@ -73,7 +73,7 @@
 		"codemirror": "^6.x",
 		"dayjs": "^1.11.7",
 		"detect-file-encoding-and-language": "^2.4.0",
-		"element-plus": "^2.9.3",
+		"element-plus": "^2.9.10",
 		"file-saver": "^2.0.5",
 		"github-markdown-css": "^5.2.0",
 		"highlight.js": "^11.8.0",

@@ -209,6 +209,7 @@ const links = ref([
 
 const settings = ref([
   { id: 1, name: '用户管理', href: '/admin/user-list', icon: UsersIcon },
+  { id: 2, name: '单点登录', href: '/admin/sso', icon: UsersIcon },
   { id: 2, name: '安全设置', href: '/admin/security-setting', icon: ArrowRightOnRectangleIcon },
   { id: 3, name: '访问控制', href: '/admin/access', icon: ShieldCheckIcon },
   { id: 2, name: '登录日志', href: '/admin/login-log', icon: DocumentTextIcon },

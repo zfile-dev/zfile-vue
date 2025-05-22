@@ -16,6 +16,7 @@ declare global {
   const allowShortcuts: typeof import('../../src/composables/file/useTableOperator.js')['allowShortcuts']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
+  const baseSsoConfig: typeof import('../../src/composables/admin/sso/sso.js')['baseSsoConfig']
   const computed: typeof import('vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
   const computedEager: typeof import('@vueuse/core')['computedEager']
@@ -46,8 +47,6 @@ declare global {
   const dockerfile: typeof import('../../src/components/vue-codemirror/lang-code/dockerfile/index')['default']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
-  const elTableColumnPlus: typeof import('../../src/components/table/el-table-column-plus.vue')['default']
-  const elTablePlus: typeof import('../../src/components/table/el-table-plus.vue')['default']
   const encodings: typeof import('../../src/components/vue-codemirror/encodings')['default']
   const erlang: typeof import('../../src/components/vue-codemirror/lang-code/erlang/index')['default']
   const extendRef: typeof import('@vueuse/core')['extendRef']
@@ -55,7 +54,6 @@ declare global {
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
-  const getHardwareCode: typeof import('../../src/composables/admin/site/getHardwareCode.js')['default']
   const globalConfig: typeof import('../../src/stores/global-config')['default']
   const go: typeof import('../../src/components/vue-codemirror/lang-code/go/index')['default']
   const h: typeof import('vue')['h']
@@ -145,6 +143,7 @@ declare global {
   const shallowRef: typeof import('vue')['shallowRef']
   const shell: typeof import('../../src/components/vue-codemirror/lang-code/shell/index')['default']
   const sql: typeof import('../../src/components/vue-codemirror/lang-code/sql/index')['default']
+  const ssoDocs: typeof import('../../src/composables/admin/sso/sso.js')['ssoDocs']
   const storageConfig: typeof import('../../src/stores/storage-config')['default']
   const storageCopy: typeof import('../../src/composables/admin/storage/storage-copy.js')['default']
   const storageFilter: typeof import('../../src/composables/admin/storage/storage-filter.js')['default']
@@ -318,7 +317,6 @@ declare global {
   const useScriptTag: typeof import('@vueuse/core')['useScriptTag']
   const useScroll: typeof import('@vueuse/core')['useScroll']
   const useScrollLock: typeof import('@vueuse/core')['useScrollLock']
-  const useSearch: typeof import('../../src/composables/header/useSearch.js')['default']
   const useSessionStorage: typeof import('@vueuse/core')['useSessionStorage']
   const useSetting: typeof import('../../src/composables/header/useSetting.js')['default']
   const useShare: typeof import('@vueuse/core')['useShare']
@@ -326,6 +324,7 @@ declare global {
   const useSorted: typeof import('@vueuse/core')['useSorted']
   const useSpeechRecognition: typeof import('@vueuse/core')['useSpeechRecognition']
   const useSpeechSynthesis: typeof import('@vueuse/core')['useSpeechSynthesis']
+  const useSsoConfig: typeof import('../../src/composables/admin/sso/useSsoConfig.js')['default']
   const useStepper: typeof import('@vueuse/core')['useStepper']
   const useStorage: typeof import('@vueuse/core')['useStorage']
   const useStorageAsync: typeof import('@vueuse/core')['useStorageAsync']
@@ -389,7 +388,6 @@ declare global {
   const whenever: typeof import('@vueuse/core')['whenever']
   const xml: typeof import('../../src/components/vue-codemirror/lang-code/xml/index')['default']
   const yaml: typeof import('../../src/components/vue-codemirror/lang-code/yaml/index')['default']
-  const zipStream: typeof import('../../src/composables/file/zip-stream.js')['default']
 }
 // for type re-export
 declare global {
@@ -422,6 +420,7 @@ declare module 'vue' {
     readonly allowShortcuts: UnwrapRef<typeof import('../../src/composables/file/useTableOperator.js')['allowShortcuts']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
+    readonly baseSsoConfig: UnwrapRef<typeof import('../../src/composables/admin/sso/sso.js')['baseSsoConfig']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
     readonly computedEager: UnwrapRef<typeof import('@vueuse/core')['computedEager']>
@@ -548,6 +547,7 @@ declare module 'vue' {
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
     readonly shell: UnwrapRef<typeof import('../../src/components/vue-codemirror/lang-code/shell/index')['default']>
     readonly sql: UnwrapRef<typeof import('../../src/components/vue-codemirror/lang-code/sql/index')['default']>
+    readonly ssoDocs: UnwrapRef<typeof import('../../src/composables/admin/sso/sso.js')['ssoDocs']>
     readonly storageConfig: UnwrapRef<typeof import('../../src/stores/storage-config')['default']>
     readonly storageCopy: UnwrapRef<typeof import('../../src/composables/admin/storage/storage-copy.js')['default']>
     readonly storageFilter: UnwrapRef<typeof import('../../src/composables/admin/storage/storage-filter.js')['default']>
@@ -728,6 +728,7 @@ declare module 'vue' {
     readonly useSorted: UnwrapRef<typeof import('@vueuse/core')['useSorted']>
     readonly useSpeechRecognition: UnwrapRef<typeof import('@vueuse/core')['useSpeechRecognition']>
     readonly useSpeechSynthesis: UnwrapRef<typeof import('@vueuse/core')['useSpeechSynthesis']>
+    readonly useSsoConfig: UnwrapRef<typeof import('../../src/composables/admin/sso/useSsoConfig.js')['default']>
     readonly useStepper: UnwrapRef<typeof import('@vueuse/core')['useStepper']>
     readonly useStorage: UnwrapRef<typeof import('@vueuse/core')['useStorage']>
     readonly useStorageAsync: UnwrapRef<typeof import('@vueuse/core')['useStorageAsync']>

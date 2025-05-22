@@ -102,8 +102,8 @@ dependencies:
     specifier: ^2.4.0
     version: 2.4.0
   element-plus:
-    specifier: ^2.9.3
-    version: 2.9.3(vue@3.3.4)
+    specifier: ^2.9.10
+    version: 2.9.10(vue@3.3.4)
   file-saver:
     specifier: ^2.0.5
     version: 2.0.5
@@ -146,9 +146,6 @@ dependencies:
   sortablejs:
     specifier: ^1.15.0
     version: 1.15.0
-  streamsaver:
-    specifier: ^2.0.6
-    version: 2.0.6
   ua-browser:
     specifier: ^0.1.7
     version: 0.1.7
@@ -5294,8 +5291,8 @@ packages:
     resolution: {integrity: sha512-8rY8HdCxuSVY8wku3i/eDac4g1b4cSbruzocenrqBlzqruAZYHjQCHIjC66dLR9DXhEHTojsC4EjhZ8KmzwXqA==}
     dev: true
 
-  /element-plus@2.9.3(vue@3.3.4):
-    resolution: {integrity: sha512-6tSLp5XytDS4TMZ0P3aGZnr7MXTagfNycepNfIDitd9IgwM9y01+Ssu6mglNi8RiXYhek6LBWNOd/cvpIO12+w==}
+  /element-plus@2.9.10(vue@3.3.4):
+    resolution: {integrity: sha512-W2v9jWnm1kl/zm4bSvCh8aFCVlxvhG3fmqiDZwyd6WQiWGE595J/mpjcCggEr+49QDgIymhXrpPMOPPSARUbng==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:
@@ -9270,10 +9267,6 @@ packages:
     dependencies:
       internal-slot: 1.0.5
     dev: true
-
-  /streamsaver@2.0.6:
-    resolution: {integrity: sha512-LK4e7TfCV8HzuM0PKXuVUfKyCB1FtT9L0EGxsFk5Up8njj0bXK8pJM9+Wq2Nya7/jslmCQwRK39LFm55h7NBTw==}
-    dev: false
 
   /strict-uri-encode@1.1.0:
     resolution: {integrity: sha512-R3f198pcvnB+5IpnBlRkphuE9n46WyVl8I39W/ZUTZLz4nqSP/oLYUrcnJrw462Ds8he4YKMov2efsTIw1BDGQ==}

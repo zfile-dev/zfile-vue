@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AdminFormHeader: typeof import('./../../src/components/admin-form-header.vue')['default']
     AudioPlayer: typeof import('./../../src/components/file/preview/AudioPlayer.vue')['default']
+    AutoIcon: typeof import('./../../src/components/AutoIcon.vue')['default']
     BackTop: typeof import('./../../src/components/BackTop.vue')['default']
     BatchOperatorResult: typeof import('./../../src/components/file/BatchOperatorResult.vue')['default']
     Breadcrumb: typeof import('./../../src/components/file/Breadcrumb.vue')['default']
@@ -47,6 +48,7 @@ declare module 'vue' {
     ElForm: typeof import('element-plus/es')['ElForm']
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElHeader: typeof import('element-plus/es')['ElHeader']
+    ElIcon: typeof import('element-plus/es')['ElIcon']
     ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']

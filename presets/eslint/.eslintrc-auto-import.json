@@ -448,6 +448,9 @@
     "useId": true,
     "useModel": true,
     "useTemplateRef": true,
-    "open115Util": true
+    "open115Util": true,
+    "baseSsoConfig": true,
+    "ssoDocs": true,
+    "useSsoConfig": true
   }
 }
