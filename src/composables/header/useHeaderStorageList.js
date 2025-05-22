@@ -37,8 +37,7 @@ export default function useHeaderStorageList() {
                     let isBasicUser = storageConfigStore.loginInfo.isLogin && !storageConfigStore.loginInfo.isAdmin;
                     let isAdmin = storageConfigStore.loginInfo.isLogin && storageConfigStore.loginInfo.isAdmin;
                     if (isBasicUser) {
-                        msg = '';
-						ElMessage.warning('您当前没有可用存储源，请联系管理员添加存储源');
+						ElMessage.warning('您当前没有可用存储源，请联系管理员为当前用户添加存储源权限');
                     } else if (isAdmin) {
 						MessageBox.confirm('当前无可用存储源，是否前往后台添加存储源？', '提示', {
 							confirmButtonText: '确定',
