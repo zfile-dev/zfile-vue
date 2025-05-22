@@ -10,7 +10,7 @@ export const baseSsoConfig = {
 		"userInfoUrl": "https://api.github.com/user",
 		"scope": "user:email",
 		"bindingField": "email",
-		"enabled": false
+		"enabled": true
 	},
 	gitee: {
 		"provider": "gitee",
@@ -23,7 +23,7 @@ export const baseSsoConfig = {
 		"userInfoUrl": "https://gitee.com/api/v5/user",
 		"scope": "user_info",
 		"bindingField": "login",
-		"enabled": false
+		"enabled": true
 	},
 	gitlab: {
 		"provider": "gitlab",
@@ -36,7 +36,7 @@ export const baseSsoConfig = {
 		"userInfoUrl": "https://gitlab.com/api/v4/user",
 		"scope": "openid email",
 		"bindingField": "email",
-		"enabled": false
+		"enabled": true
 	},
 	logto_cloud: {
 		"provider": "logto_cloud",
@@ -49,6 +49,6 @@ export const baseSsoConfig = {
 		"userInfoUrl": "https://你的账号前缀.logto.app/oidc/me",
 		"scope": "openid email",
 		"bindingField": "email",
-		"enabled": false
+		"enabled": true
 	}
 };

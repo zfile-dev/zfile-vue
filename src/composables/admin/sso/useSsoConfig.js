@@ -131,7 +131,7 @@ export default function useSsoConfig() {
 			userInfoUrl: '',
 			scope: '',
 			bindingField: '',
-			enabled: false,
+			enabled: true,
 		})
 		currentSsoProvider.value = index
 	}
