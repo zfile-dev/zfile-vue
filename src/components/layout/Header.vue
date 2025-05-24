@@ -56,7 +56,7 @@
                 </el-tooltip>
 
                 <!-- 上传 -->
-                <el-dropdown v-if="storageConfigStore.permission.upload || storageConfigStore.permission.newFolder"
+                <el-dropdown v-if="route.params.storageKey && (storageConfigStore.permission.upload || storageConfigStore.permission.newFolder)"
                              trigger="click"
                              popper-class="zfile-header-dropdown">
                     <div v-show="route.params.storageKey">
