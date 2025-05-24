@@ -108,14 +108,25 @@
 				<div class="text-gray-400 text-sm mt-10">
 					Tips: 设置会自动保存，刷新后仍有效.
 				</div>
+
+				<div class="zfile-index-setting-drawer-group">
+					<div class="zfile-index-setting-drawer-title">其他</div>
+					<div class="flex justify-between my-auto">
+						<div class="text-base font-medium">清理缓存</div>
+							<TrashIcon @click="clearPwdCache" class="w-6 h-6 text-red-500 cursor-pointer" />
+					</div>
+				</div>
 			</div>
 		</el-drawer>
 	</div>
 </template>
 
 <script setup>
+import useFilePwd from "~/composables/file/useFilePwd";
+let { clearPwdCache } = useFilePwd();
+
 import { isMobile } from "~/utils";
-import { Bars3Icon, Squares2X2Icon } from '@heroicons/vue/24/solid'
+import { Bars3Icon, Squares2X2Icon, TrashIcon } from '@heroicons/vue/24/solid'
 
 import useSetting from "~/composables/header/useSetting";
 const { visible, zfileSettingCache } = useSetting();

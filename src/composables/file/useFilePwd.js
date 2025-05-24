@@ -69,9 +69,15 @@ export default function useFilePwd() {
     return '';
   };
 
+	const clearPwdCache = () => {
+		zfilePasswordCache.value = {};
+		fullZFilePasswordCache.value = {};
+	}
+
   return {
     putPathPwd,
-    getPathPwd
+    getPathPwd,
+	clearPwdCache
   }
 
 }
