@@ -160,7 +160,8 @@
         </el-select>
 
         <!-- s3 存储器列表 -->
-        <el-select allow-create
+        <el-select
+					allow-create
           :filterable="isNotMobile"
           v-else-if="item.key === 'bucketName' && bucketList?.length > 0"
           placeholder="请选择存储器列表"
@@ -356,6 +357,7 @@ let useInitData = () => {
       username: null,
       password: null,
       privateKey: null,
+      passphrase: null,
       basePath: "",
       domain: "",
       listId: "",

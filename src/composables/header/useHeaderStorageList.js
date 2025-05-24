@@ -33,7 +33,6 @@ export default function useHeaderStorageList() {
 
                 // 如果没有存储源, 则直接提示是否添加
                 if (storageList.value.length === 0) {
-                    let msg = '当前无可用存储源，是否前往登录页面？';
                     let isBasicUser = storageConfigStore.loginInfo.isLogin && !storageConfigStore.loginInfo.isAdmin;
                     let isAdmin = storageConfigStore.loginInfo.isLogin && storageConfigStore.loginInfo.isAdmin;
                     if (isBasicUser) {

@@ -9,7 +9,6 @@
         <div class="zfile-header-right box animate__animated animate__fadeIn">
             <!-- 功能区 -->
             <div class="zfile-header-btn" v-if="isNotMobile">
-
                 <!-- debug 模式 -->
                 <template v-if="storageConfigStore.globalConfig.debugMode">
                     <el-tooltip placement="bottom">
@@ -194,20 +193,16 @@ import { isMobile, isNotMobile } from "~/utils";
 
 // 存储源列表.
 import useHeaderStorageList from "~/composables/header/useHeaderStorageList";
-
 const { loadStorageSourceList, currentStorageKey, storageList } = useHeaderStorageList();
 
 // 面包屑数据和操作
 import useBreadcrumb from "~/composables/header/useHeaderBreadcrumb";
-
 const { buildBreadcrumbData, breadcrumbData } = useBreadcrumb();
 
 import useStorageConfigStore from "~/stores/storage-config";
-
 let storageConfigStore = useStorageConfigStore();
 
 import useFileDataStore from "~/stores/file-data";
-
 let fileDataStore = useFileDataStore();
 
 onMounted(() => {
@@ -240,15 +235,12 @@ watch(() => route.params.storageKey, (value) => {
 
 
 import useFileOperator from "~/composables/file/useFileOperator";
-
 const { newFolder } = useFileOperator();
 
 import useFileUpload from "~/composables/file/useFileUpload";
-
 const { openUploadDialog, openUploadFolderDialog, uploadProgressInfoStatistics } = useFileUpload();
 
 import useSetting from "~/composables/header/useSetting";
-
 const { openSettingVisible } = useSetting();
 
 // 监听存储源设置 -> 默认打开图片模式, 如果为是, 则打开图片模式.
@@ -340,7 +332,6 @@ const logout = () => {
 const toAdmin = () => {
     router.push("/admin/site-setting");
 };
-
 </script>
 
 <style scoped lang="scss">
