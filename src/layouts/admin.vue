@@ -174,9 +174,8 @@ const { siteSetting } = useAdminSetting();
 import {
   DocumentTextIcon, Cog8ToothIcon, XMarkIcon,
   Bars3Icon, CircleStackIcon, EyeIcon,
-  BookOpenIcon, UsersIcon, ShieldCheckIcon, ArrowRightOnRectangleIcon,
-  DocumentArrowDownIcon, TableCellsIcon,
-  PresentationChartBarIcon, ComputerDesktopIcon, ArrowLeftOnRectangleIcon
+  BookOpenIcon, UsersIcon, UserGroupIcon, ShieldCheckIcon, ArrowRightOnRectangleIcon,
+  DocumentArrowDownIcon, TableCellsIcon, ArrowLeftOnRectangleIcon
 } from "@heroicons/vue/24/outline";
 import { logoutReq } from "~/api/home/user";
 
@@ -209,7 +208,7 @@ const links = ref([
 
 const settings = ref([
   { id: 1, name: '用户管理', href: '/admin/user-list', icon: UsersIcon },
-  { id: 2, name: '单点登录', href: '/admin/sso', icon: UsersIcon },
+  { id: 2, name: '单点登录', href: '/admin/sso', icon: UserGroupIcon },
   { id: 2, name: '安全设置', href: '/admin/security-setting', icon: ArrowRightOnRectangleIcon },
   { id: 3, name: '访问控制', href: '/admin/access', icon: ShieldCheckIcon },
   { id: 2, name: '登录日志', href: '/admin/login-log', icon: DocumentTextIcon },
