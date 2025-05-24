@@ -1,5 +1,6 @@
 <template>
   <div ref="fileRef" class="zfile-card-file-view-wrapper box animate__animated animate__fadeIn"
+	   v-if="!fileDataStore.imgMode"
        v-loading="basicLoading"
        element-loading-text="拼命加载中"
        element-loading-background="rgba(255, 255, 255, 0.6)"
