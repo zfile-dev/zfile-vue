@@ -121,6 +121,10 @@ watch(() => [route.params.storageKey, route.params.fullpath], () => {
 
 const loadUserRootPath = () => {
 	return new Promise((resolve, reject) => {
+		if (!route.params.storageKey) {
+			resolve();
+			return;
+		}
 		loadUserRootPathReq(route.params.storageKey).then((res) => {
 			storageConfigStore.updateUserRootPath(res.data);
 			resolve(res.data);
