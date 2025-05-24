@@ -62,6 +62,9 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
           needCreateFolderBeforeUpload: null,
         },
         rootPath: null,
+      },
+      user: {
+      	rootPath: '',
       }
     }
   },
@@ -98,6 +101,9 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
     }
   },
   actions: {
+	updateUserRootPath(val: string) {
+		this.user.rootPath = val;
+	},
     updateGlobalConfig(val: any) {
       this.globalConfig = val;
     },

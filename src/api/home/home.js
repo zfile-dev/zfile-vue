@@ -17,6 +17,14 @@ export const loadStorageConfigReq = (data) => {
 	})
 }
 
+// 获取用户存储源基目录
+export const loadUserRootPathReq = (storageKey) => {
+	return axios({
+		url: `/api/site/config/userRootPath/${storageKey}`,
+		method: "get",
+	})
+}
+
 // 获取已启用的存储源列表
 export const getSourceListReq = (data) => {
 	return axios({

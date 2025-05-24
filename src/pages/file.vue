@@ -101,18 +101,35 @@ const { zfileSettingCache } = useSetting();
 import useFileLink from "~/composables/file/useFileLink";
 import TableFileView from "~/components/file/view/TableFileView.vue";
 import CardFileView from "~/components/file/view/CardFileView.vue";
+import {loadUserRootPathReq} from "~/api/home/home";
 const { generateLinkDialogVisible } = useFileLink();
 
 // 初始化时，加载文件列表
 onBeforeMount(() => {
-	loadFile({ init: true});
+	loadUserRootPath().then(() => {
+		loadFile({ init: true});
+	})
 })
 
 // 切换存储源或路径时，重新加载文件列表
 let route = useRoute();
 watch(() => [route.params.storageKey, route.params.fullpath], () => {
-	loadFile({ init: true});
+	loadUserRootPath().then(() => {
+		loadFile({ init: true});
+	})
 })
+
+const loadUserRootPath = () => {
+	return new Promise((resolve, reject) => {
+		loadUserRootPathReq(route.params.storageKey).then((res) => {
+			storageConfigStore.updateUserRootPath(res.data);
+			resolve(res.data);
+		}).catch((err) => {
+			reject(err);
+		});
+	});
+}
+
 </script>
 
 <style lang="scss" scoped>

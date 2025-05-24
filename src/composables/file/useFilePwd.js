@@ -1,11 +1,14 @@
 import { minimatch } from 'minimatch'
 import useRouterData from "~/composables/useRouterData";
-import { removeDuplicateSeparator } from "~/utils";
+import {concatPath, removeDuplicateSeparator} from "~/utils";
 
 let { storageKey, currentPath } = useRouterData()
 
 const zfilePasswordCache = useStorage('zfile-pwd-cache', {});
 const fullZFilePasswordCache = useStorage('zfile-pwd-full-cache', {}, sessionStorage);
+
+import useStorageConfigStore from "~/stores/storage-config";
+let storageConfigStore = useStorageConfigStore();
 
 export default function useFilePwd() {
 
@@ -41,9 +44,10 @@ export default function useFilePwd() {
   let getPathPwd = (path, ignoreTempPassword) => {
     // 如果没传递 path，则使用当前路径
     let currentPathValue = path || currentPath.value;
-
+	// 用户存储源基目录
+	let rootPath = storageConfigStore.user.rootPath;
     // 自动修正为标准路径
-    currentPathValue = removeDuplicateSeparator('/' + currentPathValue + "/");
+    currentPathValue = concatPath('/', rootPath, currentPathValue, '/');
 
     // 如果全量密码缓存为空，则自动初始化为当前密码缓存
     if (Object.keys(fullZFilePasswordCache.value).length === 0 && Object.keys(zfilePasswordCache.value).length !== 0) {
