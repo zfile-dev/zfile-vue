@@ -76,6 +76,7 @@ export default function useFilePwd() {
 	const clearPwdCache = () => {
 		zfilePasswordCache.value = {};
 		fullZFilePasswordCache.value = {};
+		ElMessage.success('操作成功')
 	}
 
   return {

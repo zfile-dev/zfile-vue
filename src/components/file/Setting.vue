@@ -112,7 +112,7 @@
 				<div class="zfile-index-setting-drawer-group">
 					<div class="zfile-index-setting-drawer-title">其他</div>
 					<div class="flex justify-between my-auto">
-						<div class="text-base font-medium">清理缓存</div>
+						<div class="text-base font-medium">清理密码文件夹缓存</div>
 							<TrashIcon @click="clearPwdCache" class="w-6 h-6 text-red-500 cursor-pointer" />
 					</div>
 				</div>
