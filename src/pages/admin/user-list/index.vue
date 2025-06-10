@@ -64,11 +64,18 @@
 			<el-table-column-plus sortable="custom" min-width="200px" prop="username" label="用户名">
 				<template #default="scope">
 					<div class="flex justify-between space-x-2">
-						<span>{{ scope.row.username }}</span>
 						<span>
+							{{ scope.row.username }}
 							<el-tooltip v-if="scope.row.id === newUserTemplateId"  content="表示单点登录新用户或新注册用户默认的权限，如果关闭右侧的启用状态表示不允许新用户注册/单点登录新用户">
-						  		<el-tag effect="dark" type="info">虚拟新用户</el-tag>
+								<QuestionMarkCircleIcon v-if="scope.row.id === newUserTemplateId" class="inline w-4 text-gray-500" />
 							</el-tooltip>
+
+							<el-tooltip v-if="scope.row.id === guestId"  content="表示未登录用户可使用的权限">
+								<QuestionMarkCircleIcon v-if="scope.row.id === guestId" class="inline w-4 text-gray-500" />
+							</el-tooltip>
+						</span>
+						<span>
+				      <el-tag v-if="scope.row.id === newUserTemplateId" effect="dark" type="info">虚拟新用户</el-tag>
 							<el-tag v-else-if="scope.row.id === adminId" effect="dark">管理员</el-tag>
 							<el-tag v-else-if="scope.row.id === guestId" effect="dark" type="success">匿名用户</el-tag>
 							<el-tag v-else>普通用户</el-tag>
@@ -130,6 +137,7 @@
 
 <script setup>
 import { MagnifyingGlassIcon, ArrowPathIcon, TrashIcon, PlusIcon, ClipboardDocumentIcon } from "@heroicons/vue/24/outline";
+import { QuestionMarkCircleIcon } from "@heroicons/vue/24/solid";
 import { dateValueFormat, defaultTime, shortcuts } from "~/utils";
 
 import { getUserListReq, deleteUserReq, updateUserEnableReq } from "~/api/admin/admin-user";
