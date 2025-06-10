@@ -178,7 +178,7 @@ const checkAdminStoragePermission = () => {
 			}).then(res => {
 				let data = res.data;
 				if (data.length > 0) {
-					let user = data[0];
+					let user = data[1];
 					if (user.userStorageSourceList?.length === 0) {
 						ElMessageBox.confirm(`检测到你有 ${storageSize} 个存储源，但没有给管理员分配任何存储源，是否前往配置？（不配置将无法访问存储源）`, "提示", {
 							confirmButtonText: "确定",
