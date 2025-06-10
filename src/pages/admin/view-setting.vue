@@ -196,6 +196,9 @@
 								<li>浏览器安全规范：如您的 ZFile 是 https 协议的，OnlyOffice 服务也必须是 https协议的，否则无法正常使用。</li>
 							</ul>
 						</div>
+						<div v-if="loopbackAddressTipShow" class="text-red-500 leading-none mt-2">
+							提示：检测到当前 ZFile 服务地址 {{ currentHostname }} 属于环回地址，如果你的 OnlyOffice 部署在 Docker 中，将无法正常进行预览，请切换为局域网地址或其他 OnlyOffice 在 Docker 容器内可访问的地址。
+						</div>
 					</el-form-item>
 
 					<el-form-item label="OnlyOffice Secret">
@@ -339,6 +342,17 @@ const resetCustomSuffix = (type) => {
     siteSetting.value.customOfficeSuffix = constant.fileTypeMap.office.join(',');
   }
 }
+
+const loopbackAddressTipShow = ref(false);
+const currentHostname = ref(window.location.hostname);
+onMounted(() => {
+	const hostname = window.location.hostname;
+
+	if (hostname === 'localhost' || hostname === '127.0.0.1') {
+		loopbackAddressTipShow.value = true;
+	}
+})
+
 </script>
 
 <style scoped lang="scss">
