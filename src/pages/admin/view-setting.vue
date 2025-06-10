@@ -266,7 +266,8 @@
 							v-model="siteSetting.customJs">
 						</el-input>
 						<div class="el-form-item-tips">
-							自定义 JS 脚本, &#60;script&#62;&#60;/script&#62; 可写可不写，会自动兼容.
+							自定义 JS 脚本, &#60;script&#62;&#60;/script&#62; 可写可不写，会自动兼容.<br>
+							<span class="text-red-400">注意：如果你网站配置了防火墙，可能会被当成恶意请求拦截而保存失败。</span>
 						</div>
 					</el-form-item>
 				</el-form>
