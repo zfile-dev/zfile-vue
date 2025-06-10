@@ -287,13 +287,6 @@ let copyText = (shortLink) => {
 let openLink = (shortLink) => {
 	window.open(shortLink);
 };
-
-
-// 比较直链是否过期, 输入时间格式为 2023-05-01 18:33
-let isExpiredDate = (date) => {
-	let now = dayjs().format('YYYY-MM-DD HH:mm');
-	return dayjs(date).isBefore(now);
-};
 </script>
 
 <style scoped lang="scss">
