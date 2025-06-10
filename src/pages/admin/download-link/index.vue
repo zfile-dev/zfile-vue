@@ -89,8 +89,8 @@
 				<template #default="scope">
 					<div class="space-x-2">
 						<span>{{ scope.row.shortKey }}</span>
-						<i-ic-baseline-content-copy @click="copyText(scope.row.shortKey)" class="inline cursor-pointer" />
-						<i-material-symbols-open-in-new @click="openLink(scope.row.shortKey)" class="inline cursor-pointer text-blue-500 text-sm" />
+						<i-ic-baseline-content-copy @click="copyText(scope.row.shortLink)" class="inline cursor-pointer" />
+						<i-material-symbols-open-in-new @click="openLink(scope.row.shortLink)" class="inline cursor-pointer text-blue-500 text-sm" />
 					</div>
 				</template>
 			</el-table-column>
@@ -275,8 +275,8 @@ const batchExportLink = () => {
 /**
  *  复制直链
  */
-let copyText = (text) => {
-	toClipboard(concatPath(globalConfigStore.serverAddress, "s", text)).then(() => {
+let copyText = (shortLink) => {
+	toClipboard(shortLink).then(() => {
 		ElMessage.success("复制成功");
 	});
 };
@@ -285,7 +285,7 @@ let copyText = (text) => {
  * 打开短链
  */
 let openLink = (shortLink) => {
-	window.open(concatPath(globalConfigStore.serverAddress, "s", shortLink));
+	window.open(shortLink);
 };
 
 

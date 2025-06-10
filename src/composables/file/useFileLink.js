@@ -1,12 +1,9 @@
-import { concatPath, encodeAllIgnoreSlashes, fileSizeFormat } from "~/utils";
-import { batchGenerateShortLinkReq } from "~/api/home/home";
+import { concatPath, fileSizeFormat } from "~/utils";
+import { batchGeneratePathLinkReq, batchGenerateShortLinkReq } from "~/api/home/home";
 
 import { toClipboard } from '@soerenmartius/vue3-clipboard'
 import { encodeData, rendererRect, rendererRound,
     rendererDSJ, rendererLine, rendererFuncB } from 'beautify-qrcode';
-
-import useGlobalConfigStore from "~/stores/global-config";
-let globalConfigStore = useGlobalConfigStore();
 
 const generateLinkLoading = ref(false);
 const generateLinkDialogVisible = ref(false);
@@ -14,9 +11,6 @@ const generateLinkFormData = reactive({
     expireTime: null,
 });
 const currentLinkDialogType = ref(''); // 当前链接弹窗类型, 可以为 shortLink 或 pathLink
-
-import useStorageConfigStore from "~/stores/storage-config";
-let storageConfigStore = useStorageConfigStore();
 
 import useRouterData from "~/composables/useRouterData";
 let { storageKey } = useRouterData()
@@ -109,7 +103,7 @@ export default function useFileLink() {
 
         let pathLinkList = [], shortLinkList = [];
         if (currentLinkDialogType.value === 'pathLink' || currentLinkDialogType.value === 'all') {
-            pathLinkList = batchGetFilePathLink(files);
+            pathLinkList = await batchGetFilePathLink(files);
         }
 
         if (currentLinkDialogType.value === 'shortLink' || currentLinkDialogType.value === 'all') {
@@ -146,19 +140,20 @@ export default function useFileLink() {
         generateLinkResultLoading.value = false;
     }
 
-    const getFilePathLink = (file) => {
-        return concatPath(globalConfigStore.serverAddress,
-                                 storageConfigStore.globalConfig.directLinkPrefix,
-                                 storageKey.value,
-                                 encodeAllIgnoreSlashes(storageConfigStore.folderConfig.rootPath),
-                                 file.path,
-                                 file.name);
-    }
-
-    const batchGetFilePathLink = (files) => {
+    const batchGetFilePathLink = async (files) => {
         let pathLinkList = [];
+        let param = {
+            storageKey: storageKey.value,
+            paths: [],
+            expireTime: 0
+        }
         files.forEach((file) => {
-            pathLinkList.push(getFilePathLink(file));
+            let pathAndName = concatPath(file.path, file.name);
+            param.paths.push(pathAndName);
+        })
+        let res = await batchGeneratePathLinkReq(param);
+        res.data.forEach((item) => {
+            pathLinkList.push(item.address);
         })
         return pathLinkList;
     }
@@ -176,7 +171,7 @@ export default function useFileLink() {
         })
         let res = await batchGenerateShortLinkReq(param);
         res.data.forEach((item) => {
-            shortLinkList.push(item.shortLink);
+            shortLinkList.push(item.address);
         })
         return shortLinkList;
     }
@@ -191,7 +186,9 @@ export default function useFileLink() {
         submitGenerateLinkForm,
 
         linkDialogVisible,
-        generateLinkResultDialogVisible, generateLinkResultLoading, openGenerateLinkResultDialog, copyText, data, dataList, generateALlLink
+        generateLinkResultDialogVisible, generateLinkResultLoading, openGenerateLinkResultDialog, copyText, data, dataList, generateALlLink,
+        batchGetFilePathLink
+
     }
 
 }

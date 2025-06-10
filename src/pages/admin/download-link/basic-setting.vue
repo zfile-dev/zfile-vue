@@ -122,7 +122,7 @@
           <el-form-item label="直链地址前缀" prop="directLinkPrefix">
             <el-input v-model="siteSetting.directLinkPrefix"></el-input>
             <div class="el-form-item-tips">
-              直链地址前缀, 如 <span class="select-all">{{ getServerAddress() }}<span
+              直链地址前缀, 如 <span class="select-all">{{ serverAddress }}<span
               class="text-red-400 font-bold">{{ siteSetting.directLinkPrefix }}</span>/path/filename</span>
             </div>
           </el-form-item>
@@ -259,10 +259,10 @@ const testAntPathMatcher = useDebounceFn(() => {
   });
 }, 250);
 
-const getServerAddress = () => {
-	// 如果 globalConfigStore.serverAddress 结尾没有 / 则加上
-	return globalConfigStore.serverAddress.endsWith("/") ? globalConfigStore.serverAddress : globalConfigStore.serverAddress + "/";
-};
+const serverAddress = computed(() => {
+	let address = (siteSetting.value?.forceBackendAddress || globalConfigStore.serverAddress);
+	return address.endsWith("/") ? address : address + "/";
+});
 
 const showLinkLimitInfo = ref(false);
 const openLinkLimitInfo = () => {

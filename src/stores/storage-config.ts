@@ -38,7 +38,8 @@ const useStorageConfigStore = defineStore('storageConfigStore', {
         loadMoreSize: 50,
         defaultSortField: 'name',
         defaultSortOrder: 'asc',
-        linkExpireTimes: ''
+        linkExpireTimes: '',
+        forceBackendAddress: ''
       },
       loginInfo: {
         isLogin: null,

@@ -24,6 +24,15 @@
 			</div>
 		</el-form-item>
 
+		<el-form-item prop="frontDomain" label="强制后端地址">
+			<el-input :prefix-icon="LinkIcon" v-model="siteSetting.forceBackendAddress" />
+			<div class="el-form-item-tips">
+				此处不配置，表示根据当前环境自动检测来获取后端地址(推荐)，如配置了则强制使用此地址。
+				<br>
+				用于获取直链、短链、代理下载地址，回调地址等场景。
+			</div>
+		</el-form-item>
+
 		<el-form-item prop="frontDomain" label="前端站点域名"
 					  v-show="globalConfigStore.zfileConfig.baseUrl || siteSetting.frontDomain">
 			<el-input :prefix-icon="LinkIcon" v-model="siteSetting.frontDomain" />

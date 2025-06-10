@@ -26,22 +26,14 @@ useResizeObserver(el, () => {
   resizeCount.value++;
 })
 
-import { concatPath, getFileNameIgnoreExt, getFileSuffix } from "~/utils";
+import { getFileNameIgnoreExt, getFileSuffix } from "~/utils";
 import { vue3dLoader } from "vue-3d-loader";
 
-import useFilePwd from "~/composables/file/useFilePwd";
-let { getPathPwd } = useFilePwd();
-
 import useRouterData from "~/composables/useRouterData";
-let { currentPath, storageKey } = useRouterData();
+let { currentPath } = useRouterData();
 
-import useStorageConfigStore from "~/stores/storage-config";
-let storageConfigStore = useStorageConfigStore();
-
-import useGlobalConfigStore from "~/stores/global-config";
-let globalConfigStore = useGlobalConfigStore();
-
-import { loadFileItemReq } from "~/api/home/home";
+import useFileLink from "~/composables/file/useFileLink";
+let { batchGetFilePathLink } = useFileLink();
 
 const loadFinish = ref(false);
 let mtlPath = ref();
@@ -63,32 +55,30 @@ let fileLinkUrl = ref();
 
 const init = async () => {
 
-  // 完整路径
-  let pathAndName = concatPath(currentPath.value, props.fileName);
-
-  // 完整直链路径
-
-  fileLinkUrl.value = concatPath(globalConfigStore.serverAddress,
-                                  storageConfigStore.globalConfig.directLinkPrefix,
-                                  storageKey.value,
-                                  pathAndName);
+	let loadPathLinkFiles = [
+		{
+			path: currentPath.value,
+			name: props.fileName
+		}
+	]
 
   if (fileSuffix === "obj") {
     let basicName = getFileNameIgnoreExt(props.fileName);
-
-    let mtlFileItemParam = {
-      storageKey: storageKey.value,
-      path: concatPath(currentPath.value, `${basicName}.mtl`),
-      password: getPathPwd()
-    }
-
-    let fileItemResult = await loadFileItemReq(mtlFileItemParam);
-
-    if (fileItemResult?.data?.code === constant.responseCode.SUCCESS) {
-      console.log('检测到当前存在 mtl 纹理文件: ' + mtlFileItemParam, fileItemResult);
-      mtlPath.value = fileItemResult.data.data.url;
-    }
+	  loadPathLinkFiles.push({
+		  path: currentPath.value,
+		  name: basicName + '.mtl',
+	  })
   }
+
+	let generateLinkResult = await batchGetFilePathLink(loadPathLinkFiles);
+	if (generateLinkResult) {
+		fileLinkUrl.value = generateLinkResult[0];
+		if (generateLinkResult.length > 1) {
+			mtlPath.value = generateLinkResult[1];
+		}
+	} else {
+		console.log('加载文件直链失败，无法预览。');
+	}
 
   loadFinish.value = true;
 }

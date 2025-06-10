@@ -120,14 +120,14 @@
 			<el-table-column min-width="400" show-overflow-tooltip prop="shortKey" label="下载链接">
 				<template #default="scope">
 					<div v-if="scope.row.shortKey">
-						<span>{{ generateShortLink(scope.row.shortKey) }}</span>
-						<i-ic-baseline-content-copy @click="copyText(generateShortLink(scope.row.shortKey))" class="ml-2 inline cursor-pointer" />
-						<i-material-symbols-open-in-new @click="openLink(generateShortLink(scope.row.shortKey))" class="ml-1 inline cursor-pointer text-blue-500 text-sm" />
+						<span>{{ scope.row.shortLink }}</span>
+						<i-ic-baseline-content-copy @click="copyText(scope.row.shortLink)" class="ml-2 inline cursor-pointer" />
+						<i-material-symbols-open-in-new @click="openLink(scope.row.shortLink)" class="ml-1 inline cursor-pointer text-blue-500 text-sm" />
 					</div>
 					<div v-else>
-						<span>{{ generateLink(scope.row) }}</span>
-						<i-ic-baseline-content-copy @click="copyText(generateLink(scope.row))" class="ml-2 inline cursor-pointer" />
-						<i-material-symbols-open-in-new @click="openLink(generateLink(scope.row))" class="ml-1 inline cursor-pointer text-blue-500 text-sm" />
+						<span>{{ scope.row.pathLink }}</span>
+						<i-ic-baseline-content-copy @click="copyText(scope.row.pathLink)" class="ml-2 inline cursor-pointer" />
+						<i-material-symbols-open-in-new @click="openLink(scope.row.pathLink)" class="ml-1 inline cursor-pointer text-blue-500 text-sm" />
 					</div>
 				</template>
 			</el-table-column>
@@ -165,10 +165,10 @@
 import { MagnifyingGlassIcon, TrashIcon, ArrowPathIcon } from "@heroicons/vue/24/outline";
 
 import { toClipboard } from "@soerenmartius/vue3-clipboard";
-import { concatPath, dateValueFormat, defaultTime, isNotMobile, shortcuts } from "~/utils";
+import { dateValueFormat, defaultTime, isNotMobile, shortcuts } from "~/utils";
 
 import { loadStorageListReq } from "~/api/admin/admin-storage";
-import { loadConfigReq, updateLinkSettingReq } from "~/api/admin/admin-setting";
+import { updateLinkSettingReq } from "~/api/admin/admin-setting";
 import { batchDeleteDownloadLogReq, batchDeleteDownloadLogReqByQueryReq, deleteDownloadLogReq, getDownloadLogListReq } from "~/api/admin/admin-download-log";
 
 import useAdminSetting from "~/composables/admin/useAdminSetting";
@@ -208,14 +208,6 @@ const loadData = () => {
 	});
 };
 
-
-const systemConfig = ref();
-const loadSystemConfig = () => {
-	loadConfigReq().then(res => {
-		systemConfig.value = res.data;
-	});
-};
-
 const storageList = ref();
 const loadSourceList = () => {
 	loadStorageListReq().then((response) => {
@@ -227,7 +219,6 @@ const loadSourceList = () => {
 onMounted(() => {
 	loadData();
 	loadSourceList();
-	loadSystemConfig();
 });
 
 
@@ -289,17 +280,8 @@ let copyText = (text) => {
 	});
 };
 
-
 let openLink = (url) => {
 	window.open(url);
-};
-
-let generateShortLink = (shortKey) => {
-	return concatPath(globalConfigStore.serverAddress, "s", shortKey);
-};
-
-let generateLink = (row) => {
-	return concatPath(globalConfigStore.serverAddress, systemConfig?.value?.directLinkPrefix, row.storageKey, row.path);
 };
 </script>
 

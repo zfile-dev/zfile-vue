@@ -67,7 +67,7 @@
 						<el-input v-model="item.provider" placeholder="如 github, google"/>
 						<div class="el-form-item-tips">
 							<span>用于在服务商回调地址中配置为：</span>
-							<span class="select-all link">{{ concatPath(globalConfigStore.serverAddress, "sso", item.provider, 'login/callback') }}</span>
+							<span class="select-all link">{{ concatPath(serverAddress, "sso", item.provider, 'login/callback') }}</span>
 						</div>
 					</el-form-item>
 					<el-form-item label="Client ID" prop="clientId">
@@ -112,6 +112,9 @@
 </template>
 
 <script setup>
+import useAdminSetting from "~/composables/admin/useAdminSetting";
+const { siteSetting } = useAdminSetting();
+
 import { concatPath } from "~/utils";
 import { baseSsoConfig } from "~/composables/admin/sso/baseSsoConfig";
 
@@ -162,6 +165,10 @@ const addByWellKnownEndpoint = (item) => {
 		});
 	});
 };
+
+const serverAddress = computed(() => {
+	return siteSetting.value?.forceBackendAddress || globalConfigStore.serverAddress;
+});
 </script>
 
 <style scoped lang="scss">

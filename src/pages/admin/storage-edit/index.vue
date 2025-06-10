@@ -20,7 +20,7 @@
     <el-form-item label="存储源别名" prop="key">
       <el-input v-model="storageItem.key"/>
       <div class="el-form-item-tips">
-        存储源别名，用于 URL 中展示, 如 {{ concatPath(globalConfigStore.serverAddress, storageItem.key || "{存储源别名}") }}
+        存储源别名，用于 URL 中展示, 如 {{ concatPath(serverAddress, storageItem.key || "{存储源别名}") }}
       </div>
     </el-form-item>
 
@@ -236,22 +236,23 @@
           <div class="font-bold" v-if="item.key === 'domain' && storageItem.storageSourceAllParam['domain']">
             注意:
             <ul>
-              <li v-show="showSchemaTips" class="text-red-500">如果你的 zfile 是 https，则该存储源的下载域名也应是 https，否则可能会影响预览/下载!</li>
-              <li>需域名支持跨域访问，否则也可能会导致下载/预览失败.</li>
+              <li v-show="showSchemaTips"
+                  class="text-red-500">如果你的 zfile 是 https，则该存储源的下载域名也应是 https，否则可能会影响打包下载和批量下载!</li>
+              <li>需域名支持跨域访问，否则可能会导致下载/预览失败.</li>
             </ul>
           </div>
           <!--  onedrive 动态地址提示 -->
           <div v-if="item.key === 'redirectUri' && item.description && ['onedrive', 'sharepoint'].includes(storageItem.type)">
-            如：{{ concatPath(globalConfigStore.serverAddress, 'onedrive/callback') }}
-            <i-ic-baseline-content-copy @click="copyText(concatPath(globalConfigStore.serverAddress, 'onedrive/callback'))" class="inline cursor-pointer ml-1" />
+            如：{{ concatPath(serverAddress, 'onedrive/callback') }}
+            <i-ic-baseline-content-copy @click="copyText(concatPath(serverAddress, 'onedrive/callback'))" class="inline cursor-pointer ml-1" />
           </div>
           <div v-if="item.key === 'redirectUri' && item.description && ['onedrive-china', 'sharepoint-china'].includes(storageItem.type)">
-            如：{{ concatPath(globalConfigStore.serverAddress, 'onedrive/china-callback') }}
-            <i-ic-baseline-content-copy @click="copyText(concatPath(globalConfigStore.serverAddress, 'onedrive/china-callback'))" class="inline cursor-pointer ml-1" />
+            如：{{ concatPath(serverAddress, 'onedrive/china-callback') }}
+            <i-ic-baseline-content-copy @click="copyText(concatPath(serverAddress, 'onedrive/china-callback'))" class="inline cursor-pointer ml-1" />
           </div>
           <div v-if="item.key === 'redirectUri' && item.description && storageItem.type === 'google-drive'">
-            如：{{ concatPath(globalConfigStore.serverAddress, 'gd/callback') }}
-            <i-ic-baseline-content-copy @click="copyText(concatPath(globalConfigStore.serverAddress, 'gd/callback'))" class="inline cursor-pointer ml-1" />
+            如：{{ concatPath(serverAddress, 'gd/callback') }}
+            <i-ic-baseline-content-copy @click="copyText(concatPath(serverAddress, 'gd/callback'))" class="inline cursor-pointer ml-1" />
           </div>
         </div>
       </el-form-item>
@@ -266,6 +267,9 @@
 
 <script setup>
 import {CheckBadgeIcon, LinkIcon} from '@heroicons/vue/24/solid'
+
+import useAdminSetting from "~/composables/admin/useAdminSetting";
+const { siteSetting } = useAdminSetting();
 
 import useGlobalConfigStore from "~/stores/global-config";
 let globalConfigStore = useGlobalConfigStore();

@@ -59,6 +59,15 @@ export const loadFileItemReq = (data) => {
     })
 }
 
+// 批量生成直链
+export const batchGeneratePathLinkReq = (data) => {
+	return axios({
+		url: `/api/path-link/batch/generate`,
+		method: "post",
+		data
+	})
+}
+
 // 批量生成短链
 export const batchGenerateShortLinkReq = (data) => {
     return axios({
