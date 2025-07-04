@@ -35,6 +35,9 @@
 			<!-- office 在线预览 -->
 			<office-viewer-dialog />
 
+			<!-- kkfileview 在线预览 -->
+			<KkFileViewerDialog />
+
 			<!-- 3d 在线预览 -->
 			<three3d-preview-dialog />
 

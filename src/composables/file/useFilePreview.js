@@ -10,6 +10,7 @@ import usePdfViewerDialog from "~/composables/file/usePdfViewerDialog";
 import useVideoPlayerDialog from "~/composables/file/useVideoPlayerDialog";
 import useOfficeViewerDialog from "~/composables/file/useOfficeViewerDialog";
 import useThree3dPreviewDialog from "~/composables/file/useThree3dPreviewDialog";
+import useKkFileViewDialog from "~/composables/file/useKkFileViewDialog";
 
 let fileDataStore = useFileDataStore();
 
@@ -18,6 +19,7 @@ const { openDialogWithData: openPdfDialog } = usePdfViewerDialog();
 const { openDialogWithData: openVideoDialog } = useVideoPlayerDialog();
 const { openDialogWithData: openOfficeDialog } = useOfficeViewerDialog();
 const { openDialogWithData: open3DDialog } = useThree3dPreviewDialog();
+const { openDialogWithData: openKkFileViewDialog } = useKkFileViewDialog();
 
 export default function useFilePreview() {
 
@@ -67,6 +69,10 @@ export default function useFilePreview() {
         open3DDialog(fileDataStore.currentClickRow.name, fileDataStore.currentClickRow.url);
     }
 
+    const openKkFileView = (row) => {
+        openKkFileViewDialog(row.name, row.url);
+    }
+
     return {
         openVideo,
         openText,
@@ -74,7 +80,8 @@ export default function useFilePreview() {
         openImage,
         openAudio,
         openPdf,
-        open3d
+        open3d,
+        openKkFileView
     }
 
 }
