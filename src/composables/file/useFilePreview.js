@@ -1,7 +1,9 @@
 import { v3ImgPreviewFn } from 'v3-img-preview-enhance'
+import { buildKkFileViewUrl } from "~/utils/models/path";
 
 // 基础依赖引入
 import useGlobalConfigStore from "~/stores/global-config";
+import useStorageConfigStore from "~/stores/storage-config";
 let globalConfigStore = useGlobalConfigStore();
 
 import useFileDataStore from "~/stores/file-data";
@@ -70,7 +72,15 @@ export default function useFilePreview() {
     }
 
     const openKkFileView = (row) => {
-        openKkFileViewDialog(row.name, row.url);
+        const openMode = globalConfigStore.zfileConfig.kkfileview.openMode;
+        const storageConfigStore = useStorageConfigStore();
+        const kkFileViewUrl = storageConfigStore.globalConfig.kkFileViewUrl;
+        const finalUrl = buildKkFileViewUrl(row, kkFileViewUrl);
+        if (openMode === 'newTab') {
+            window.open(finalUrl, '_blank');
+        } else {
+            openKkFileViewDialog(row.name, row.url);
+        }
     }
 
     return {

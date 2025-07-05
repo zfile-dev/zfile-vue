@@ -20,6 +20,7 @@
 <script setup>
 import { ref, watchEffect } from 'vue';
 import useStorageConfigStore from "~/stores/storage-config";
+import { buildKkFileViewUrl } from "~/utils/models/path";
 
 const storageConfigStore = useStorageConfigStore();
 
@@ -31,28 +32,6 @@ const props = defineProps({
 const isLoading = ref(true);
 const errorMessage = ref('');
 const iframeSrc = ref('');
-
-/**
- * 对字符串进行 Base64 编码, 同时兼容中文等 Unicode 字符.
- */
-function base64Encode(str) {
-  const encoder = new TextEncoder();
-  const utf8Bytes = encoder.encode(str);
-  const byteString = String.fromCharCode(...utf8Bytes);
-  return btoa(byteString);
-}
-
-/**
- * 生成一个安全的、唯一的字符串ID.
- * 优先使用 crypto.randomUUID, 如果不可用则回退到一个简单的随机字符串.
- */
-function generateSafeId() {
-  if (window.crypto && window.crypto.randomUUID) {
-    return window.crypto.randomUUID();
-  }
-  // 回退方案: 使用时间戳和随机数，足以保证在当前场景下的唯一性
-  return Date.now().toString(36) + Math.random().toString(36).substring(2);
-}
 
 watchEffect(() => {
   isLoading.value = true;
@@ -81,20 +60,9 @@ watchEffect(() => {
     return;
   }
 
-  const lastDotIndex = originalFileName.lastIndexOf('.');
-  const extension = (lastDotIndex !== -1) ? originalFileName.substring(lastDotIndex) : '';
-  
-  const safeBaseName = generateSafeId();
-  
-  const safeFileName = `${safeBaseName}${extension}`;
-  
-  const separator = fileUrl.includes('?') ? '&' : '?';
-  const urlToEncode = `${fileUrl}${separator}fullfilename=${safeFileName}`;
+  const file = { name: originalFileName, url: fileUrl };
 
-  const base64Url = base64Encode(urlToEncode);
-  const finalEncodedUrl = encodeURIComponent(base64Url);
-
-  iframeSrc.value = `${kkFileViewUrl}/onlinePreview?url=${finalEncodedUrl}`;
+  iframeSrc.value = buildKkFileViewUrl(file, kkFileViewUrl);
   isLoading.value = false;
 });
 </script>

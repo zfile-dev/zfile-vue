@@ -32,6 +32,9 @@ const useGlobalConfigStore = defineStore("globalConfigStore", {
 					gallery: true
 				},
 				officePreview: {},
+				kkfileview: {
+                    openMode: 'iframe'
+                },
 				admin: {
 					form: {
 						mobile: {
@@ -82,7 +85,15 @@ const useGlobalConfigStore = defineStore("globalConfigStore", {
 	actions: {
 		updateZfileConfig(val: any) {
 			this.zfileConfig = val;
-		}
+			const savedMode = localStorage.getItem('kkFileViewOpenMode');
+            if (savedMode && this.zfileConfig.kkfileview) {
+                this.zfileConfig.kkfileview.openMode = savedMode;
+            }
+		},
+		updateKkFileViewOpenMode(newMode: 'iframe' | 'newTab') {
+            this.zfileConfig.kkfileview.openMode = newMode;
+            localStorage.setItem('kkFileViewOpenMode', newMode);
+        }
 	},
 	getters: {
 		serverAddress(): string {

@@ -23,6 +23,9 @@
 		"gallery": true
 	},
 	"officePreview": {},
+	"kkfileview": {
+        "openMode": "iframe"
+    },
 	"admin": {
 		"form": {
 			"mobile": {

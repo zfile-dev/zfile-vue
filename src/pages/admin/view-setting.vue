@@ -242,6 +242,12 @@
 							提示：检测到当前 ZFile 服务地址 {{ currentHostname }} 属于环回地址，如果你的 kkFileView 部署在 Docker 中，将无法正常进行预览，请切换为局域网地址或其他 kkFileView 在 Docker 容器内可访问的地址。
 						</div>
 					</el-form-item>
+					<el-form-item label="kkFileView 打开方式">
+    					<el-radio-group v-model="kkFileViewOpenMode">
+        					<el-radio value="iframe">内嵌</el-radio>
+       						<el-radio value="newTab">新标签页</el-radio>
+    					</el-radio-group>
+					</el-form-item>
 				</el-form>
 			</el-tab-pane>
 
@@ -379,6 +385,13 @@ const resetCustomSuffix = (type) => {
     siteSetting.value.customKkFileViewSuffix = constant.fileTypeMap.kkfileview.join(',');
   }
 }
+
+const kkFileViewOpenMode = computed({
+  get: () => globalConfigStore.zfileConfig.kkfileview.openMode,
+  set: (newValue) => {
+    globalConfigStore.updateKkFileViewOpenMode(newValue);
+  }
+});
 
 const loopbackAddressTipShow = ref(false);
 const currentHostname = ref(window.location.hostname);
