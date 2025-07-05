@@ -161,7 +161,7 @@
             <el-input v-model="siteSetting.customOfficeSuffix">
               <template #suffix>
                 <el-tooltip content="恢复默认">
-                  <ArrowPathIcon class="w-4 cursor-pointer" @click="resetCustomSuffix('kkfileview')" />
+                  <ArrowPathIcon class="w-4 cursor-pointer" @click="resetCustomSuffix('office')" />
                 </el-tooltip>
               </template>
             </el-input>
@@ -171,7 +171,7 @@
             <el-input v-model="siteSetting.customKkFileViewSuffix">
               <template #suffix>
                 <el-tooltip content="恢复默认">
-                  <ArrowPathIcon class="w-4 cursor-pointer" @click="resetCustomSuffix('text')" />
+                  <ArrowPathIcon class="w-4 cursor-pointer" @click="resetCustomSuffix('kkfileview')" />
                 </el-tooltip>
               </template>
             </el-input>
@@ -235,6 +235,9 @@
 						 element-loading-text="保存中...">
 					<el-form-item label="kkFileView 服务地址">
 						<el-input v-model="siteSetting.kkFileViewUrl"></el-input>
+						<div class="el-form-item-tips">
+							部署文档参考: <a class="link" href="https://www.kkview.cn/zh-cn/docs/production.html" target="_blank">kkFileView 部署指南</a>
+						</div>
 						<div v-if="loopbackAddressTipShow" class="text-red-500 leading-none mt-2">
 							提示：检测到当前 ZFile 服务地址 {{ currentHostname }} 属于环回地址，如果你的 kkFileView 部署在 Docker 中，将无法正常进行预览，请切换为局域网地址或其他 kkFileView 在 Docker 容器内可访问的地址。
 						</div>
@@ -332,6 +335,8 @@ watch(() => siteSetting.value, (val, oldVal) => {
       siteSetting.value.customTextSuffix = constant.fileTypeMap.text.join(',');
     }  if (!siteSetting.value.customOfficeSuffix) {
       siteSetting.value.customOfficeSuffix = constant.fileTypeMap.office.join(',');
+    }  if (!siteSetting.value.customKkFileViewSuffix) {
+      siteSetting.value.customKkFileViewSuffix = constant.fileTypeMap.kkfileview.join(',');
     }
   }
 });
@@ -371,7 +376,7 @@ const resetCustomSuffix = (type) => {
   } else if (type === 'office') {
     siteSetting.value.customOfficeSuffix = constant.fileTypeMap.office.join(',');
   } else if (type === 'kkfileview') {
-    siteSetting.value.customOfficeSuffix = constant.fileTypeMap.kkfileview.join(',');
+    siteSetting.value.customKkFileViewSuffix = constant.fileTypeMap.kkfileview.join(',');
   }
 }
 
