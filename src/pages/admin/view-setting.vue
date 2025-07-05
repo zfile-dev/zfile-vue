@@ -243,7 +243,7 @@
 						</div>
 					</el-form-item>
 					<el-form-item label="kkFileView 打开方式">
-    					<el-radio-group v-model="kkFileViewOpenMode">
+    					<el-radio-group v-model="siteSetting.kkFileViewOpenMode">
         					<el-radio value="iframe">内嵌</el-radio>
        						<el-radio value="newTab">新标签页</el-radio>
     					</el-radio-group>
@@ -385,13 +385,6 @@ const resetCustomSuffix = (type) => {
     siteSetting.value.customKkFileViewSuffix = constant.fileTypeMap.kkfileview.join(',');
   }
 }
-
-const kkFileViewOpenMode = computed({
-  get: () => globalConfigStore.zfileConfig.kkfileview.openMode,
-  set: (newValue) => {
-    globalConfigStore.updateKkFileViewOpenMode(newValue);
-  }
-});
 
 const loopbackAddressTipShow = ref(false);
 const currentHostname = ref(window.location.hostname);
