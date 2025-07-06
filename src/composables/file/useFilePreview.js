@@ -3,6 +3,7 @@ import { buildKkFileViewUrl } from "~/utils/models/path";
 
 // 基础依赖引入
 import useStorageConfigStore from "~/stores/storage-config";
+const storageConfigStore = useStorageConfigStore();
 
 import useFileDataStore from "~/stores/file-data";
 import useTextViewerDialog from "~/composables/file/useTextViewerDialog";
@@ -70,7 +71,6 @@ export default function useFilePreview() {
     }
 
     const openKkFileView = (row) => {
-        const storageConfigStore = useStorageConfigStore();
         const kkFileViewUrl = storageConfigStore.globalConfig.kkFileViewUrl;
         const openMode = storageConfigStore.globalConfig.kkFileViewOpenMode;
         const finalUrl = buildKkFileViewUrl(row, kkFileViewUrl);
