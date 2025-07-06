@@ -17,6 +17,11 @@
 					<i-mdi-eye-outline class="contextmenu-icon" />
 					<label>预览</label>
 				</ContextmenuItem>
+				<ContextmenuItem v-show="storageConfigStore.globalConfig.kkFileViewUrl && storageConfigStore.permission.preview && selectStatistics.isSingleSelectFile"
+                                 @click="openKkFileView(selectRow)">
+                    <i-mdi-eye-outline class="contextmenu-icon" />
+                    <label>kkFileView 预览</label>
+                </ContextmenuItem>
 				<ContextmenuItem v-show="storageConfigStore.permission.download && selectStatistics.isSingleSelect"
 								 @click="batchDownloadFile">
 					<i-mdi-download-outline class="contextmenu-icon" />
@@ -110,6 +115,7 @@ import useStorageConfigStore from "~/stores/storage-config";
 let storageConfigStore = useStorageConfigStore();
 
 const { openRow } = useFileData();
+const { openKkFileView } = useFilePreview();
 const { selectRow, selectRows, selectStatistics } = useFileSelect();
 const { rename, batchDownloadFile, moveTo, copyTo, newFolder, batchDelete } = useFileOperator();
 const { openGenerateLinkDialog } = useFileLink();

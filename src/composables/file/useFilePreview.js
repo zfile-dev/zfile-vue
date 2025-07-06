@@ -1,8 +1,9 @@
 import { v3ImgPreviewFn } from 'v3-img-preview-enhance'
+import { buildKkFileViewUrl } from "~/utils/models/path";
 
 // 基础依赖引入
-import useGlobalConfigStore from "~/stores/global-config";
-let globalConfigStore = useGlobalConfigStore();
+import useStorageConfigStore from "~/stores/storage-config";
+const storageConfigStore = useStorageConfigStore();
 
 import useFileDataStore from "~/stores/file-data";
 import useTextViewerDialog from "~/composables/file/useTextViewerDialog";
@@ -10,6 +11,7 @@ import usePdfViewerDialog from "~/composables/file/usePdfViewerDialog";
 import useVideoPlayerDialog from "~/composables/file/useVideoPlayerDialog";
 import useOfficeViewerDialog from "~/composables/file/useOfficeViewerDialog";
 import useThree3dPreviewDialog from "~/composables/file/useThree3dPreviewDialog";
+import useKkFileViewDialog from "~/composables/file/useKkFileViewDialog";
 
 let fileDataStore = useFileDataStore();
 
@@ -18,6 +20,7 @@ const { openDialogWithData: openPdfDialog } = usePdfViewerDialog();
 const { openDialogWithData: openVideoDialog } = useVideoPlayerDialog();
 const { openDialogWithData: openOfficeDialog } = useOfficeViewerDialog();
 const { openDialogWithData: open3DDialog } = useThree3dPreviewDialog();
+const { openDialogWithData: openKkFileViewDialog } = useKkFileViewDialog();
 
 export default function useFilePreview() {
 
@@ -67,6 +70,17 @@ export default function useFilePreview() {
         open3DDialog(fileDataStore.currentClickRow.name, fileDataStore.currentClickRow.url);
     }
 
+    const openKkFileView = (row) => {
+        const kkFileViewUrl = storageConfigStore.globalConfig.kkFileViewUrl;
+        const openMode = storageConfigStore.globalConfig.kkFileViewOpenMode;
+        const finalUrl = buildKkFileViewUrl(row, kkFileViewUrl);
+        if (openMode === 'newTab') {
+            window.open(finalUrl, '_blank');
+        } else {
+            openKkFileViewDialog(row.name, row.url);
+        }
+    }
+
     return {
         openVideo,
         openText,
@@ -74,7 +88,8 @@ export default function useFilePreview() {
         openImage,
         openAudio,
         openPdf,
-        open3d
+        open3d,
+        openKkFileView
     }
 
 }

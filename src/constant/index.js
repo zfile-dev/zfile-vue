@@ -18,7 +18,32 @@ const fileTypeMap = {
   pdf: ['pdf'],
   office: ['doc', 'docx', 'csv', 'xls', 'xlsx', 'ppt', 'pptx', 'xlsm'],
   three3d: ['dae', 'fbx', 'gltf', 'glb', 'obj', 'ply', 'stl'],
-  document: ['pages', 'epub', 'numbers', 'keynote']
+  document: ['pages', 'epub', 'numbers', 'keynote'],
+  kkfileview: [
+  'doc', 'docx', 'xls', 'xlsx', 'xlsm', 'ppt', 'pptx', 'csv', 'tsv', 'dotm', 'xlt', 'xltm', 'dot', 'dotx', 'xlam', 'xla', 'pages', // Office 办公文档
+  'wps', 'dps', 'et', 'ett', 'wpt', // 国产 WPS Office 办公文档
+  'odt', 'ods', 'ots', 'odp', 'otp', 'six', 'ott', 'fodt', 'fods', // OpenOffice、LibreOffice 办公文档
+  'vsd', 'vsdx', // Visio 流程图文件
+  'wmf', 'emf', // Windows 系统图像文件
+  'psd', 'eps', // Photoshop 软件模型文件
+  'pdf', 'ofd', 'rtf', // 文档
+  'xmind', // Xmind 软件模型文件
+  'bpmn', // 工作流文件
+  'eml', // 邮件文件
+  'epub', // 图书文档
+  'obj', '3ds', 'stl', 'ply', 'gltf', 'glb', 'off', '3dm', 'fbx', 'dae', 'wrl', '3mf', 'ifc', 'brep', 'step', 'iges', 'fcstd', 'bim', // 3D 模型文件
+  'dwg', 'dxf', 'dwf', 'igs', 'dwt', 'dng', 'dwfx', 'cf2', 'plt', // CAD 模型文件 (部分与3D模型重复，但根据您的描述保留)
+  'txt', 'xml', 'md', 'java', 'php', 'py', 'js', 'css', // 纯文本文件
+  'zip', 'rar', 'jar', 'tar', 'gzip', '7z', // 压缩包文件
+  'jpg', 'jpeg', 'png', 'gif', 'bmp', 'ico', 'jfif', 'webp', // 图片预览
+  'tif', 'tiff', // 图信息模型文件
+  'tga', // 图像格式文件
+  'svg', // 矢量图像格式文件
+  'mp3', 'wav', 'mp4', 'flv', // 音频和常见视频格式
+  'avi', 'mov', 'rm', 'webm', 'ts', 'mkv', 'mpeg', 'ogg', 'mpg', 'rmvb', 'wmv', '3gp', 'swf', // 视频格式转码预览 
+  'dcm', // 医疗数位影像预览
+  'drawio' // 绘图预览
+  ],
 };
 
 // 可预览的文件类型

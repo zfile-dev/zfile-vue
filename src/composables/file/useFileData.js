@@ -34,7 +34,7 @@ let globalConfigStore = useGlobalConfigStore();
 
 // 引入文件预览组件
 import useFilePreview from '~/composables/file/useFilePreview';
-const { openAudio, openImage, openOffice, openPdf, openText, openVideo, open3d } = useFilePreview();
+const { openAudio, openImage, openOffice, openPdf, openText, openVideo, open3d, openKkFileView } = useFilePreview();
 
 // 文件操作相关
 import useFileOperator from '~/composables/file/useFileOperator';
@@ -203,6 +203,7 @@ export default function useFileData() {
                     case 'office': openOffice(row); break;
                     case 'pdf': openPdf(row); break;
                     case 'three3d': open3d(row); break;
+                    case 'kkfileview': openKkFileView(row); break;
                     default: batchDownloadFile(row);
                 }
             } else {

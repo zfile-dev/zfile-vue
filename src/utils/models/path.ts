@@ -68,3 +68,40 @@ export const encodeAllIgnoreSlashes = (str: string): string => {
 	}
 	return result;
 }
+
+export function buildKkFileViewUrl(file: any, kkFileViewUrl: string) {
+	const originalFileName = file.name;
+	const fileUrl = file.url;
+
+	if (!kkFileViewUrl || !fileUrl || !originalFileName) {
+		console.error("构建 kkFileView URL 失败：缺少必要参数。");
+		return null;
+	}
+
+	// 1. 构造安全文件名
+	const lastDotIndex = originalFileName.lastIndexOf('.');
+	const extension = (lastDotIndex !== -1) ? originalFileName.substring(lastDotIndex) : '';
+	let safeBaseName;
+	if (typeof window.crypto?.randomUUID === 'function') {
+		safeBaseName = window.crypto.randomUUID();
+	} else {
+		safeBaseName = Date.now().toString(36) + Math.random().toString(36).substring(2);
+	}
+	const safeFileName = `${safeBaseName}${extension}`;
+
+	// 2. 拼接 fullfilename 参数
+	const separator = fileUrl.includes('?') ? '&' : '?';
+	const urlToEncode = `${fileUrl}${separator}fullfilename=${safeFileName}`;
+
+	// 3. Base64 编码
+	const encoder = new TextEncoder();
+	const utf8Bytes = encoder.encode(urlToEncode);
+	const byteString = String.fromCharCode(...utf8Bytes);
+	const base64Url = btoa(byteString);
+
+	// 4. URL 编码
+	const finalEncodedUrl = encodeURIComponent(base64Url);
+
+	// 5. 返回最终 URL
+	return `${kkFileViewUrl}/onlinePreview?url=${finalEncodedUrl}`;
+}
