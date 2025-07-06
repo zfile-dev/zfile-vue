@@ -236,7 +236,7 @@
 					<el-form-item label="kkFileView 服务地址">
 						<el-input v-model="siteSetting.kkFileViewUrl"></el-input>
 						<div class="el-form-item-tips">
-							部署文档参考: <a class="link" href="https://www.kkview.cn/zh-cn/docs/production.html" target="_blank">kkFileView 部署指南</a>
+							<a class="link" href="https://www.kkview.cn/zh-cn/docs/production.html" target="_blank">kkFileView 部署指南</a>
 						</div>
 						<div v-if="loopbackAddressTipShow" class="text-red-500 leading-none mt-2">
 							提示：检测到当前 ZFile 服务地址 {{ currentHostname }} 属于环回地址，如果你的 kkFileView 部署在 Docker 中，将无法正常进行预览，请切换为局域网地址或其他 kkFileView 在 Docker 容器内可访问的地址。
