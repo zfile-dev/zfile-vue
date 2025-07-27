@@ -2,6 +2,10 @@ import { v3ImgPreviewFn } from 'v3-img-preview-enhance'
 import { buildKkFileViewUrl } from "~/utils/models/path";
 
 // 基础依赖引入
+import useGlobalConfigStore from "~/stores/global-config";
+let globalConfigStore = useGlobalConfigStore();
+
+// 基础依赖引入
 import useStorageConfigStore from "~/stores/storage-config";
 const storageConfigStore = useStorageConfigStore();
 
