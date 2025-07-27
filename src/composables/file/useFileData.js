@@ -54,7 +54,6 @@ if (skeletonData.length === 0) {
 // 文件列表查询条件
 let searchParam = reactive({
     path: '',
-    password: '',
     orderBy: '',
     orderDirection: ''
 });
@@ -71,7 +70,13 @@ export default function useFileData() {
         loadFile();
     };
 
-    // 加载数据
+    /**
+     * 加载数据
+     * @param   initParam
+     *              path: 指定加载的路径, 如果不指定则使用路由路径
+     *              password: 指定加载的密码, 如果不指定则获取 path 对应的密码，如果 path 为空，则获取当前路由路径
+     *              rememberPassword: 是否记住密码, 如果不指定则不记住密码
+     */
     const loadFile = (initParam) => {
         // 未指定 storageKey 时, 不执行任何操作.
         if (!storageKey.value) {
@@ -79,20 +84,19 @@ export default function useFileData() {
         }
         loading.value = true;
 
-        searchParam.path = currentPath.value;
+        let loadPath = initParam?.path || currentPath.value;
 
         let param = initParam || {};
         param.storageKey = storageKey.value;
-        param.path = currentPath.value;
-        param.password = param.password || getPathPwd(null, param.init);
+        param.path = loadPath;
+        param.password = param.password || getPathPwd(loadPath, param.init);
         param.orderBy = searchParam.orderBy || storageConfigStore.globalConfig.defaultSortField;
         param.orderDirection = searchParam.orderDirection || storageConfigStore.globalConfig.defaultSortOrder;
 
         let requestStorageId = storageKey.value;
         loadFileListReq(param).then((response) => {
-
+            // 将加载成功的密码存储起来.
             let passwordPattern = response.data.passwordPattern;
-
             putPathPwd(passwordPattern, param.password, initParam?.rememberPassword);
 
             // 如果请求的 storageKey 和当前的 storageKey 不一致
@@ -104,12 +108,11 @@ export default function useFileData() {
             let fileList = response.data.files;
 
             // 如果不是根路径, 则构建 back 上级路径的数据.
-            let searchPath = searchParam.path;
-            if (searchPath !== '' && searchPath !== '/') {
+            if (loadPath !== '' && loadPath !== '/') {
                 let parentPathName = path.basename(path.resolve(currentPath.value, "../"));
                 fileList.unshift({
                     name: parentPathName ? parentPathName : '/',
-                    path: path.resolve(searchPath, '../'),
+                    path: path.resolve(loadPath, '../'),
                     type: 'BACK'
                 });
             }
@@ -132,13 +135,13 @@ export default function useFileData() {
                 loadFile({password, rememberPassword});
             };
             const onCancel = () => {
-                if ((searchParam.path === '/' || searchParam.path === '') && storageConfigStore.globalConfig.rootShowStorage === true) {
+                if ((loadPath === '/' || loadPath === '') && storageConfigStore.globalConfig.rootShowStorage === true) {
                     fileDataStore.updateFileList(storageListAsFileList.value);
                     routerRef.value.push("/");
                     title.value = storageConfigStore.globalConfig.siteName + ' | 首页';
                     loading.value = false;
                 } else {
-                    let parentPath = path.resolve(searchParam.path, '../');
+                    let parentPath = path.resolve(loadPath, '../');
                     routerRef.value.push("/" + storageKey.value + parentPath);
                 }
             };
