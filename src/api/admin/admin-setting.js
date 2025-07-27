@@ -19,6 +19,15 @@ export const updateSiteSettingReq = (data) => {
     })
 }
 
+export const getServerAddressReq = () => {
+	return axios({
+		url: "/admin/serverAddress",
+		method: "get",
+		config: {
+			showDefaultMsg: false,
+		}
+	})
+}
 
 // ------------------显示设置------------------
 export const updateViewSettingReq = (data) => {

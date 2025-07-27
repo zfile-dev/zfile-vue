@@ -27,9 +27,17 @@
 		<el-form-item prop="frontDomain" label="强制后端地址">
 			<el-input :prefix-icon="LinkIcon" v-model="siteSetting.forceBackendAddress" />
 			<div class="el-form-item-tips">
-				此处不配置，表示根据当前环境自动检测来获取后端地址(推荐)，如配置了则强制使用此地址。
-				<br>
 				用于获取直链、短链、代理下载地址，回调地址等场景。
+				<br>
+				- 手动填写：强制使用此地址，如 <span class="text-blue-500 select-all">{{ frontDetectServerAddress }}</span>
+				<br>
+				- 保持为空：表示自动检测后端地址(适用于项目有多个可访问地址的情况，当前环境自动检测为: <span class="text-blue-500 select-all">{{ serverAddress }}</span>)
+				<br>
+				<div v-if="frontDetectServerAddress !== serverAddress">
+					<span class="text-red-500">注意: 自动检测到的后端地址 <span class="text-blue-500">{{ serverAddress }}</span> 似乎有异常，如果使用了反向代理请检查相关配置，参考:
+						<a href="https://docs.zfile.vip/question/nginx-proxy-config" target="_blank">Nginx 反向代理配置</a>
+					</span>
+				</div>
 			</div>
 		</el-form-item>
 
@@ -156,7 +164,7 @@ import { CloudArrowUpIcon } from "@heroicons/vue/24/outline";
 import { fileToBase64 } from "~/utils";
 
 import { getUserListReq } from "~/api/admin/admin-user";
-import { updateSiteSettingReq } from "~/api/admin/admin-setting";
+import { getServerAddressReq, updateSiteSettingReq } from "~/api/admin/admin-setting";
 
 import useGlobalConfigStore from "~/stores/global-config";
 let globalConfigStore = useGlobalConfigStore();
@@ -216,6 +224,7 @@ watch(() => siteSettingLoading.value, (newVal, oldValue) => {
 
 onMounted(() => {
     checkAdminStoragePermission();
+	loadServerAddress();
 });
 
 const router = useRouter();
@@ -260,6 +269,20 @@ const onSelectFile = (file, fileList) => {
 		});
 	}
 }
+
+const serverAddress = ref("");
+const loadServerAddress = () => {
+	getServerAddressReq().then((response) => {
+		serverAddress.value = response.data;
+	}).catch((error) => {
+		console.error("获取服务器地址失败:", error);
+	});
+};
+
+const frontDetectServerAddress = computed(() => {
+	let address = (globalConfigStore.serverAddress);
+	return address.endsWith("/") ? address.slice(0, -1) : address;
+});
 </script>
 
 <style lang="scss" scoped>
