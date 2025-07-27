@@ -685,6 +685,10 @@ let useLoadStorageSourceParamList = () => {
           storageItem.value.storageSourceAllParam[storageSourceParam.key] = storageSourceParam.defaultValue;
         }
 
+        if (storageSourceParam.hidden === true) {
+          fieldShowMap.value[storageSourceParam.key] = false;
+          continue;
+        }
         if (storageSourceParam.condition === "") {
           fieldShowMap.value[storageSourceParam.key] = true;
         } else {
