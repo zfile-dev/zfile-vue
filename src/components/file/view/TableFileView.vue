@@ -82,9 +82,10 @@
 
 		<el-table-column
 			prop="size"
-			v-if="isNotMobile"
+			v-if="storageConfigStore.globalConfig?.mobileShowSize || isNotMobile"
 			class-name="zfile-table-col-size"
 			sortable="custom"
+			:width="sizeColumnWeight"
 			min-width="20%">
 			<template #header>
 				<CircleStackIcon />
@@ -149,6 +150,27 @@ const { tableClickRow, tableDbClickRow, tableHoverRow, tableLeaveRow } = useTabl
 
 import useFileContextMenu from "~/composables/file/useFileContextMenu";
 const { showFileMenu } = useFileContextMenu();
+
+
+// 文件大小列宽度
+const sizeColumnWeight = computed(() => {
+	let size = storageConfigStore.globalConfig?.tableSize;
+	let mobileShowSize = storageConfigStore.globalConfig?.mobileShowSize;
+	if (isNotMobile.value || mobileShowSize === false) {
+		return "";
+	}
+	switch (size) {
+		case "small":
+			return "85px";
+		case "default":
+			return "100px";
+		case "large":
+			return "120px";
+		default:
+			return "";
+	}
+});
+
 </script>
 
 <style scoped lang="scss">

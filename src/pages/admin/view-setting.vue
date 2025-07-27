@@ -27,6 +27,10 @@
             </el-radio-group>
           </el-form-item>
 
+					<el-form-item label="移动端显示文件大小">
+						<el-switch v-model="siteSetting.mobileShowSize" />
+					</el-form-item>
+
 					<el-form-item label="根目录显示所有存储源">
 						<el-switch v-model="siteSetting.rootShowStorage" />
 						<div class="el-form-item-tips">
