@@ -1,8 +1,8 @@
-import { concatPath, fileSizeFormat } from "~/utils";
+import { concatPath, fileSizeFormat, generateQRCode } from "~/utils";
 import { batchGeneratePathLinkReq, batchGenerateShortLinkReq } from "~/api/home/home";
 
 import { toClipboard } from '@soerenmartius/vue3-clipboard'
-import { encodeData, rendererRect, rendererRound,
+import { rendererRect, rendererRound,
     rendererDSJ, rendererLine, rendererFuncB } from 'beautify-qrcode';
 
 const generateLinkLoading = ref(false);
@@ -74,26 +74,6 @@ export default function useFileLink() {
     }
 
     /**
-     * svg 转为 src data uri
-     * @param   svgText     svg 文本
-     * @returns {string}    src data uri
-     */
-    const svgToDataUri = (svgText) => {
-        let xmlElement = document.createElement("xml")
-        xmlElement.innerHTML = svgText;
-
-        // 增加 svg 底色, 防止复制后是透明.
-        let rectElement = document.createElement("rect")
-        rectElement.setAttribute('width', '100%');
-        rectElement.setAttribute('height', '100%');
-        rectElement.style.fill = '#ffffff';
-
-        xmlElement.children[0].prepend(rectElement);
-
-        return 'data:image/svg+xml;utf8,' + encodeURIComponent(xmlElement.innerHTML);
-    }
-
-    /**
      * 生成直链
      *
      * @param files          要生成的直链列表
@@ -121,17 +101,17 @@ export default function useFileLink() {
 
             if (files.length === 1) {
                 // 生成二维码
-                const qrcode = encodeData({
+                const qrcodeOptions = {
                     text: currentLinkDialogType.value === 'pathLink' ? pathLinkList[index] : shortLinkList[index],
                     correctLevel: 2,
                     isSpace: false
-                });
+                }
                 item.qrcode = {
-                    a1: svgToDataUri(rendererRect(qrcode)),
-                    a2: svgToDataUri(rendererRound(qrcode)),
-                    sp1: svgToDataUri(rendererDSJ(qrcode)),
-                    aa1: svgToDataUri(rendererLine(qrcode)),
-                    ab2: svgToDataUri(rendererFuncB(qrcode)),
+                    a1: generateQRCode(qrcodeOptions, rendererRect),
+                    a2: generateQRCode(qrcodeOptions, rendererRound),
+                    sp1: generateQRCode(qrcodeOptions, rendererDSJ),
+                    aa1: generateQRCode(qrcodeOptions, rendererLine),
+                    ab2: generateQRCode(qrcodeOptions, rendererFuncB)
                 }
                 item.currentImg = item.qrcode.a1;
             }
