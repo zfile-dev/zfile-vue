@@ -72,3 +72,22 @@ export const getFileType = (name: string): string | undefined => {
 	}
 	return fileType;
 }
+
+
+/**
+ * 将 File 对象转换为 Base64 字符串
+ * @param {File} file - 用户选择的文件对象
+ * @returns {Promise<string>} - 返回一个 Promise，成功时解析为 Base64 格式的 data URL
+ */
+export function fileToBase64(file) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			resolve(reader.result);
+		};
+		reader.onerror = (error) => {
+			reject(error);
+		};
+	});
+}

@@ -66,9 +66,47 @@
 		</el-form-item>
 
 		<el-form-item prop="siteHomeLogo" label="首页 Logo 图片地址">
-			<el-input id="siteHomeLogo" :prefix-icon="PhotoIcon" v-model="siteSetting.siteHomeLogo" />
-			<div class="el-form-item-tips">用于设置首页上面包屑左侧 Logo，留空为不显示，会自动居中显示，如有需要可通过自定义
-				css 来修改默认样式, logo 元素的 id 为 zfile-home-logo
+			<el-input id="siteHomeLogo" :prefix-icon="PhotoIcon" v-model="siteSetting.siteHomeLogo">
+				<template #append>
+					<el-upload
+						ref="uploadRef"
+						accept="image/*"
+						:multiple="false"
+						:show-file-list="false"
+						:auto-upload="false"
+						:on-change="onSelectFile"
+					>
+						<template #trigger>
+							<el-tooltip content="手动上传最大支持 1MB">
+								<el-button>
+									<CloudArrowUpIcon class="h-4 w-4"></CloudArrowUpIcon>
+								</el-button>
+							</el-tooltip>
+						</template>
+					</el-upload>
+				</template>
+			</el-input>
+			<div class="el-form-item-tips">
+				<span>首页左上角 Logo，支持以下几种格式：</span>
+				<ul class="list-disc ml-4">
+					<li>http://xxx，其中 http 必须小写</li>
+					<li>https://xxx，其中 https 必须小写</li>
+					<li>带 data:image 前缀的 base64 图片</li>
+					<li>不带 data:image 前缀的 base64 图片, 自动添加前缀: data:image/jpeg;base64,</li>
+				</ul>
+			</div>
+			<div>
+				<el-button type="primary" v-show="siteSetting.siteHomeLogo && siteHomeLogoShow === false" @click="siteHomeLogoShow = true">
+					预览
+				</el-button>
+			</div>
+			<div v-show="siteSetting.siteHomeLogo" v-if="siteHomeLogoShow">
+				<el-button type="primary" @click="siteHomeLogoShow = false">
+					隐藏预览
+				</el-button>
+				<div class="mt-2">
+					<auto-icon :icon="siteSetting.siteHomeLogo" class="h-6 w-auto" />
+				</div>
 			</div>
 		</el-form-item>
 
@@ -113,6 +151,9 @@
 
 <script setup>
 import { DocumentTextIcon, LinkIcon, CheckBadgeIcon, ShieldCheckIcon, HomeIcon, PhotoIcon, ExclamationTriangleIcon } from "@heroicons/vue/24/solid";
+
+import { CloudArrowUpIcon } from "@heroicons/vue/24/outline";
+import { fileToBase64 } from "~/utils";
 
 import { getUserListReq } from "~/api/admin/admin-user";
 import { updateSiteSettingReq } from "~/api/admin/admin-setting";
@@ -201,6 +242,23 @@ const checkAdminStoragePermission = () => {
 			});
 		}
 	});
+}
+
+const siteHomeLogoShow = ref(false);
+const onSelectFile = (file, fileList) => {
+	if (file.size > 1024 * 1024) {
+		ElMessage.error("上传的图片不能大于 1MB");
+		return;
+	}
+	if (file.status === 'ready') {
+		fileToBase64(file.raw).then(base64 => {
+			siteSetting.value.siteHomeLogo = base64;
+			siteHomeLogoShow.value = true;
+		}).catch(err => {
+			ElMessage.error("图片转换失败，请重试");
+			console.error(err);
+		});
+	}
 }
 </script>
 
