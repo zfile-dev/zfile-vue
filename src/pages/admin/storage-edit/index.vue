@@ -202,6 +202,11 @@
           <el-input v-else v-model="storageItem.storageSourceAllParam[item.key]"/>
         </template>
 
+	      <!-- 通用 input-number -->
+	      <template v-else-if="item.type === 'number'">
+		      <el-input-number v-model="storageItem.storageSourceAllParam[item.key]"/>
+	      </template>
+
         <!-- 通用 textarea -->
         <template v-else-if="item.type === 'textarea'">
           <el-input type="textarea" v-model="storageItem.storageSourceAllParam[item.key]" />
