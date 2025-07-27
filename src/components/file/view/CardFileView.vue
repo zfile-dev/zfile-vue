@@ -9,7 +9,7 @@
          @contextmenu="showCardFileMenu(item, $event)"
          @click="clickRow(item)"
          @dblclick="dblclickRow(item)"
-         :class="{'select-row': selectRows.includes(item)}"
+         :class="tableRowClassName({row: item, rowIndex: item.index})"
          class="zfile-card-file-item">
       <div class="mb-3">
         <div class="zfile-card-file-icon">
@@ -36,7 +36,7 @@ const { basicLoading } = useFileLoading();
 
 // 表格选择
 import useFileSelect from "~/composables/file/useFileSelect";
-let { initSelectFun, selectRowsChange } = useFileSelect();
+let { initSelectFun, selectRowsChange, tableRowClassName } = useFileSelect();
 
 // 文件操作
 import useTableOperator from "~/composables/file/useTableOperator";
@@ -66,12 +66,16 @@ const clearSelection = () => {
 };
 
 const toggleRowSelection = (row, selected) => {
+  const isSelected = selectRows.value.includes(row);
+
   if (selected === undefined) {
-    selected = !selectRows.value.includes(row);
+    selected = !isSelected;
   }
 
   if (selected) {
-    selectRows.value.push(row);
+    if (!isSelected) {
+      selectRows.value.push(row);
+    }
   } else {
     selectRows.value = selectRows.value.filter((item) => item !== row);
   }
