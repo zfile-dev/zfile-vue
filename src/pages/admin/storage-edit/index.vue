@@ -711,6 +711,9 @@ let useLoadStorageSourceParamList = () => {
               conditionValue = convertStr(conditionValue);
 
               if (conditionSymbol === '==') {
+								if (conditionValue === '') {
+									return storageItem.value.storageSourceAllParam[conditionField] === conditionValue || storageItem.value.storageSourceAllParam[conditionField] === null;
+								}
                 return storageItem.value.storageSourceAllParam[conditionField] === conditionValue;
               } else if (conditionSymbol === '!=') {
                 return storageItem.value.storageSourceAllParam[conditionField] !== conditionValue;
