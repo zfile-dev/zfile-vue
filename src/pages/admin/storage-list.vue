@@ -46,6 +46,7 @@
                     刷新令牌成功
                   </div>
                   <div class="text-xs text-gray-500">上次刷新时间: {{storage?.refreshTokenInfo?.lastRefreshTime}}</div>
+                  <div class="text-xs text-gray-500">令牌到期时间: {{storage?.refreshTokenInfo?.data?.expiredAtDate}}</div>
                 </div>
                 <template #reference>
                   <el-tag type="success" v-show="storage?.refreshTokenInfo?.success">刷新令牌成功</el-tag>
