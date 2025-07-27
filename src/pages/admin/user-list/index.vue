@@ -123,7 +123,7 @@
 						</el-tooltip>
 						<el-popconfirm title="是否确认删除?" confirm-button-text="是" cancel-button-text="否" @confirm="deleteUser(scope.row.id)">
 							<template #reference>
-								<TrashIcon class="z-btn-danger" />
+								<TrashIcon v-show="scope.row.id > guestId" class="z-btn-danger" />
 							</template>
 						</el-popconfirm>
 					</div>
