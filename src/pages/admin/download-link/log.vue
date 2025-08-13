@@ -264,7 +264,7 @@ const batchDeleteLinkLogByQuery = () => {
 	ElMessageBox.confirm(`是否确认删除当前查询条件下的 ${searchParam.value.total} 条直链下载日志？(如数量不对，请先点击查询后再用该功能按条件删除)`, "提示", {
 		type: "warning"
 	}).then(() => {
-		batchDeleteDownloadLogReqByQueryReq(getSearchParam().value).then(res => {
+		batchDeleteDownloadLogReqByQueryReq(searchParam.value).then(res => {
 			ElMessage.success("清空成功");
 			loadData();
 		});
