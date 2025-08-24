@@ -28,6 +28,12 @@
           <div class="rules-tips"><b>*</b>：单级路径通配符，如表达式 <span class="code select-all">/*</span> 表示根路径下的直接子文件夹会加载此文档显示.</div>
           <div class="rules-tips"><b>**</b>：多级路径通配符，如表达式 <span class="code select-all">/music/**</span> 表示 /music 文件夹及以下所有文件夹都会加载此文档.</div>
           <div class="rules-tips">注：系统匹配到第一个符合的规则就会取文档进行显示，所以请调整好规则顺序，下方规则可进行拖拽排序。</div>
+
+          <div class="rules-tips mt-4">路径模式：针对在 <span class="code select-all">用户管理</span> -> <span class="code select-all">编辑用户</span> -> <span class="code select-all">授予根目录</span> 为不同用户配置了不同根路径的场景.</div>
+          <div class="rules-tips">如：为 admin 配置某存储源根目录为 <span class="code select-all">/</span>，为 guest 配置某存储源根目录为 <span class="code select-all">/music</span></div>
+          <div class="rules-tips">- 相对路径：目录文档表达式填写 / 时，admin 和 guest 访问各自的 / 目录都能看到该目录文档。</div>
+          <div class="rules-tips">- 绝对路径：目录文档表达式填写 / 时，admin 访问 / 目录能看到该目录文档，而 guest 访问 / 目录时看不到。</div>
+          <div class="rules-tips">- 绝对路径：目录文档表达式填写 /music 时，admin 访问 /music 目录与 guest 访问 / 目录时都能看到该目录文档。</div>
           <div class="rules-tips-link">
             <a target="_blank" class="link" href="http://www.ruanyifeng.com/blog/2018/09/bash-wildcards.html"><DocumentMagnifyingGlassIcon class="inline mr-1"></DocumentMagnifyingGlassIcon><span>参考文章 (Wikipedia)</span></a>
             <a target="_blank" class="link" href="http://www.ruanyifeng.com/blog/2018/09/bash-wildcards.html"><DocumentMagnifyingGlassIcon class="inline mr-1"></DocumentMagnifyingGlassIcon>参考文章 (阮一峰)</a>
@@ -55,6 +61,14 @@
         <template #default="scope">
           <el-input @click="openReadmeEditor(scope.row)" readonly :prefix-icon="DocumentTextIcon" placeholder="请点击编辑文档" v-model="scope.row.readmeText" />
         </template>
+      </el-table-column-plus>
+      <el-table-column-plus label="路径模式" width="120" prop="pathMode">
+	      <template #default="scope">
+		      <el-select v-model="scope.row.pathMode">
+			      <el-option label="相对路径" value="relative" />
+			      <el-option label="绝对路径" value="absolute" />
+		      </el-select>
+	      </template>
       </el-table-column-plus>
       <el-table-column-plus label="显示位置" width="120" prop="displayMode">
         <template #default="scope">
