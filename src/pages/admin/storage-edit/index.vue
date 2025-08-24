@@ -198,7 +198,7 @@
 
         <!-- 通用 input -->
         <template v-else-if="item.type === 'input'">
-          <el-input v-if="trimInputFields.includes(item.key)" v-model.trim="storageItem.storageSourceAllParam[item.key]" />
+          <el-input v-if="trimInputFields.includes(item.key)" v-model.trim="storageItem.storageSourceAllParam[item.key]" :disabled="inputIsReadOnly(item.key)" />
           <el-input v-else v-model="storageItem.storageSourceAllParam[item.key]"/>
         </template>
 
@@ -258,6 +258,9 @@
           <div v-if="item.key === 'redirectUri' && item.description && storageItem.type === 'google-drive'">
             如：{{ concatPath(serverAddress, 'gd/callback') }}
             <i-ic-baseline-content-copy @click="copyText(concatPath(serverAddress, 'gd/callback'))" class="inline cursor-pointer ml-1" />
+          </div>
+          <div v-if="item.key === 'accessToken' && storageItem.type === 'open115'">
+            <open115-login :app-id="storageItem.storageSourceAllParam.clientId" @success="onOpen115LoginSuccess" />
           </div>
         </div>
       </el-form-item>
@@ -795,6 +798,19 @@ const trimInputFields = [
   'clientId',
   'clientSecret'
 ]
+
+const inputIsReadOnly = (key) => {
+	if (storageItem.value.type === 'open115' && (key === 'accessToken' || key === 'refreshToken') ) {
+		return true;
+	}
+	return false;
+}
+
+const onOpen115LoginSuccess = (data) => {
+	storageItem.value.storageSourceAllParam['accessToken'] = data.accessToken;
+	storageItem.value.storageSourceAllParam['refreshToken'] = data.refreshToken;
+	storageItem.value.storageSourceAllParam['refreshTokenExpiredAt'] = data.expiredAt;
+}
 
 </script>
 

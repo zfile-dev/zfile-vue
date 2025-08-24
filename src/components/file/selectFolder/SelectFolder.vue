@@ -4,7 +4,7 @@
       <div class="zfile-select-folder-breadcrumb h-12">
         <breadcrumb class="h-12" :items="breadcrumbData" @breadcrumb-click="onClickBreadcrumb" />
       </div>
-      <div class="zfile-select-folder-body">
+      <div class="zfile-select-folder-body" v-loading="listLoading">
         <nav class="space-y-1" aria-label="Sidebar">
           <a v-for="item in fileList"
              @click="onChangePath(item)"
@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { concatPath, concatPathAndEncodeAll } from "~/utils";
+import { concatPath } from "~/utils";
 import { ElMessage } from "element-plus";
 
 import { inject } from 'vue'
@@ -124,13 +124,15 @@ onMounted(() => {
 })
 
 
+const listLoading = ref(false);
+
 const loadFileList = async (password, rememberPassword) => {
   const param = {
     storageKey: props.storageKey,
     path: selectPath.value,
     password: password || getPathPwd(selectPath.value, true)
   };
-
+	listLoading.value = true;
   loadFileListReq(param).then((res) => {
     // 过滤所有 type 为 FOLDER 的数据
     res.data.files = res.data.files.filter((item) => {
@@ -155,6 +157,8 @@ const loadFileList = async (password, rememberPassword) => {
     } else {
       ElMessage.error(data.msg);
     }
+  }).finally(() => {
+	  listLoading.value = false;
   });
 };
 
