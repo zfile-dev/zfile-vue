@@ -799,6 +799,10 @@ const trimInputFields = [
   'clientSecret'
 ]
 
+const serverAddress = computed(() => {
+	return siteSetting.value?.forceBackendAddress || globalConfigStore.serverAddress
+});
+
 const inputIsReadOnly = (key) => {
 	if (storageItem.value.type === 'open115' && (key === 'accessToken' || key === 'refreshToken') ) {
 		return true;
