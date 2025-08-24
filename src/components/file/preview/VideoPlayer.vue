@@ -314,17 +314,9 @@ const initArtPlayer = async (name, url) => {
 
   art = new Artplayer(options);
 
-  // art.on('error', (count) => {
-  // 	if (count === 5) {
-  // 		ElMessage.warning({
-  // 			title: '提示',
-  // 			message: '加载视频失败, 可能浏览器不支持此视频格式的解码，可尝试使用本地播放器打开',
-  // 			duration: 5000,
-  // 			showClose: true,
-  // 			grouping: true
-  // 		});
-  // 	}
-  // });
+	art.on("error", () => {
+		art.video.crossOrigin = null
+	});
 
   art.on('destory', () => {
   })
