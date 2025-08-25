@@ -53,7 +53,7 @@
 								<div class="flex w-full space-x-4 items-center justify-center" >
 									<a v-for="item in ssoList" :key="item.provider" class="cursor-pointer inline" :href="concatPath(globalConfigStore.serverAddress, 'sso', item.provider, 'login')">
 										<el-tooltip :content="item.name">
-											<auto-icon class="inline" :icon="item.icon" />
+											<auto-icon class="inline" :icon="item.icon" :click-preview="false" />
 										</el-tooltip>
 									</a>
 								</div>

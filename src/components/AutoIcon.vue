@@ -2,7 +2,7 @@
 	<el-image
 		v-if="icon"
 		:src="iconConvertToSrc(icon)"
-		:preview-src-list="[iconConvertToSrc(icon)]"
+		:preview-src-list="clickPreview ? [iconConvertToSrc(icon)] : []"
 		inline
 		class="h-8 w-8 inline-block"
 	></el-image>
@@ -14,6 +14,10 @@ defineProps({
 	icon: {
 		type: Object,
 		required: true,
+	},
+	clickPreview: {
+		type: Boolean,
+		default: true,
 	},
 });
 
