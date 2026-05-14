@@ -8,3 +8,12 @@ export const getOnlyOfficeConfigTokenReq = (data) => {
     data
   })
 }
+
+// 获取分享 OnlyOffice 配置文件 token
+export const getShareOnlyOfficeConfigTokenReq = (data) => {
+  return axios({
+    url: `/api/share/onlyOffice/config/token`,
+    method: "post",
+    data
+  })
+}
